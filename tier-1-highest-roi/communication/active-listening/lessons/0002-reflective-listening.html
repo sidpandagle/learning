@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 2: Reflective Listening</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --danger: #dc2626;
+      --danger-light: #fff1f2;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 48px 0 16px;
+      letter-spacing: -0.01em;
+    }
+
+    p { margin-bottom: 16px; }
+
+    .callout {
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout.fact {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+    }
+    .callout.warning {
+      background: var(--warn-light);
+      border-left: 3px solid var(--warn);
+    }
+    .callout.insight {
+      background: var(--purple-light);
+      border-left: 3px solid var(--purple);
+    }
+    .callout.success {
+      background: var(--success-light);
+      border-left: 3px solid var(--success);
+    }
+    .callout strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    /* Formula box */
+    .formula {
+      background: var(--ink);
+      color: white;
+      border-radius: 12px;
+      padding: 32px;
+      margin: 32px 0;
+      text-align: center;
+    }
+    .formula-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      margin-bottom: 16px;
+    }
+    .formula-line {
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .formula-line em {
+      color: #93c5fd;
+      font-style: normal;
+    }
+    .formula-note {
+      font-size: 0.85rem;
+      opacity: 0.6;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+
+    /* Two-type comparison */
+    .type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    @media (max-width: 500px) { .type-grid { grid-template-columns: 1fr; } }
+    .type-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .type-card .type-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+    .type-card.content .type-label { color: var(--accent); }
+    .type-card.emotion .type-label { color: var(--purple); }
+    .type-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 12px; }
+    .type-card .example {
+      font-size: 0.88rem;
+      font-style: italic;
+      color: var(--ink);
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 10px 14px;
+      line-height: 1.5;
+    }
+
+    /* Speaker says */
+    .speaker-says {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 24px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .speaker-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e0e7ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .speaker-name { font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+    .speaker-quote { font-size: 0.95rem; line-height: 1.55; }
+
+    /* What it isn't */
+    .not-list { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
+    .not-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .not-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .not-label { font-weight: 700; margin-bottom: 4px; font-size: 0.95rem; }
+    .not-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+    .not-bad { color: var(--danger); font-size: 0.82rem; margin-top: 6px; font-family: monospace; background: var(--danger-light); padding: 4px 8px; border-radius: 4px; }
+    .not-good { color: var(--success); font-size: 0.82rem; margin-top: 4px; font-family: monospace; background: var(--success-light); padding: 4px 8px; border-radius: 4px; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    /* Practice section */
+    .practice-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .practice-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .practice-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
+
+    .scenario { display: none; }
+    .scenario.active { display: block; }
+
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .scenario-progress { font-size: 0.8rem; color: var(--muted); }
+    .scenario-tag {
+      font-size: 0.75rem;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+    .tag-content { background: var(--accent-light); color: var(--accent); }
+    .tag-emotion { background: var(--purple-light); color: var(--purple); }
+
+    .scenario-prompt {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .scenario-prompt .prompt-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .scenario-prompt .prompt-text {
+      font-size: 0.95rem;
+      line-height: 1.55;
+      font-style: italic;
+    }
+
+    .scenario-q { font-weight: 600; font-size: 0.95rem; margin-bottom: 14px; }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      transition: all 0.15s;
+      color: var(--ink);
+      font-family: inherit;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.correct { border-color: var(--success); background: var(--success-light); font-weight: 600; }
+    .option-btn.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option-btn.reveal { border-color: var(--success); background: var(--success-light); opacity: 0.6; }
+
+    .feedback {
+      display: none;
+      margin-top: 16px;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .feedback.show { display: block; }
+    .feedback.good { background: var(--success-light); color: #065f46; border-left: 3px solid var(--success); }
+    .feedback.bad { background: var(--danger-light); color: #991b1b; border-left: 3px solid var(--danger); }
+
+    .next-btn {
+      display: none;
+      margin-top: 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .next-btn:hover { opacity: 0.85; }
+    .next-btn.show { display: inline-block; }
+
+    /* Final result */
+    .practice-result { display: none; }
+    .result-score {
+      text-align: center;
+      padding: 28px;
+      border-radius: 10px;
+      background: var(--success-light);
+      margin-bottom: 20px;
+    }
+    .result-score .score-num {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--success);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .result-score p { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+    .takeaway-box {
+      background: var(--ink);
+      color: white;
+      border-radius: 10px;
+      padding: 24px 28px;
+    }
+    .takeaway-box h4 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.5;
+      margin-bottom: 10px;
+    }
+    .takeaway-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    .cite { font-size: 0.8rem; color: var(--muted); }
+    .cite a { color: var(--accent); text-decoration: none; }
+    .cite a:hover { text-decoration: underline; }
+
+    .footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print {
+      .practice-section { display: none; }
+      .page { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 2</span>
+    <span>Active Listening</span>
+    <span>&middot;</span>
+    <span>~12 minutes</span>
+  </div>
+
+  <h1>Reflective Listening</h1>
+  <p class="subtitle">One sentence before you respond. How to prove to the speaker — and to your own brain — that you actually heard them.</p>
+
+  <h2>The technique in one line</h2>
+
+  <p>Before you respond to anything in a meeting, you reflect back what you heard. Not repeating their words. Not agreeing with them. Just showing that you understood what they said.</p>
+
+  <p>This sounds simple. It is not natural. Most of the time, you'll feel an impulse to skip it — because you already know what to say. That impulse is exactly the <a href="./0001-the-listening-gap.html">cognitive surplus</a> filling up with your response instead of their meaning.</p>
+
+  <div class="callout fact">
+    <strong>Why it works</strong>
+    Carl Rogers, who codified reflective listening in the 1950s, showed that when people feel genuinely heard, they continue sharing — and they often surface the real issue, not just the presenting one. In a meeting, what someone says first is rarely the complete picture. The reflection is what opens the rest of it. <span class="cite">(<a href="https://positivepsychology.com/active-listening-techniques/" target="_blank">Positive Psychology, 2024</a>)</span>
+  </div>
+
+  <h2>The formula</h2>
+
+  <div class="formula">
+    <div class="formula-label">The reflective statement</div>
+    <div class="formula-line"><em>Starter phrase</em> + what you understood them to mean</div>
+    <div class="formula-note">
+      You are not quoting them back. You are paraphrasing —<br>
+      capturing the meaning, not the exact words.
+    </div>
+  </div>
+
+  <p><strong>Starter phrases that work in meetings:</strong></p>
+  <ul style="padding-left:20px; line-height:2.2; margin-bottom:16px;">
+    <li>"So what I'm hearing is…"</li>
+    <li>"It sounds like…"</li>
+    <li>"If I'm understanding you right…"</li>
+    <li>"Sounds like you're saying…"</li>
+  </ul>
+
+  <p>Each of these signals: <em>I am checking my understanding, not asserting it.</em> That matters because it keeps the speaker in control of their own meaning.</p>
+
+  <div class="callout warning">
+    <strong>Critical: always leave room for correction</strong>
+    End your reflection with a slight upward tone or an implicit question — not a statement. "It sounds like the timeline is what's worrying you?" is better than "So you're worried about the timeline." The first invites correction. The second closes it.
+  </div>
+
+  <h2>Two types of reflection</h2>
+
+  <p>There are two things you can reflect: what someone said (content), or how they seemed to feel about it (emotion). Both are useful. Emotion reflections are higher-risk, higher-reward.</p>
+
+  <div class="type-grid">
+    <div class="type-card content">
+      <div class="type-label">Content reflection</div>
+      <p>Paraphrase the facts and information. Lower risk. Good default in professional settings.</p>
+      <div class="example">"So the issue is that the data isn't ready in time for the Thursday deadline?"</div>
+    </div>
+    <div class="type-card emotion">
+      <div class="type-label">Emotion reflection</div>
+      <p>Name the feeling underneath what was said. More powerful — but only do this if you're fairly sure you've read it right.</p>
+      <div class="example">"It sounds like you've been sitting with this problem for a while and are pretty frustrated with the lack of movement?"</div>
+    </div>
+  </div>
+
+  <p>In most professional meetings, start with content reflection. Move to emotion reflection when you sense the stakes are high for the other person — frustration, stress, or something that clearly matters to them.</p>
+
+  <h2>A real example</h2>
+
+  <p>Here's what this looks like in a meeting. A colleague says:</p>
+
+  <div class="speaker-says">
+    <div class="speaker-avatar">👤</div>
+    <div>
+      <div class="speaker-name">Colleague</div>
+      <div class="speaker-quote">"I keep raising this dependency with the other team and they just say they'll get to it. We've been blocked for two weeks. I don't know what else I can do at this point."</div>
+    </div>
+  </div>
+
+  <p>Most responses skip the reflection entirely and jump to advice: "Have you tried escalating to their manager?" or "We could just work around it."</p>
+
+  <p>A content reflection first: <em>"So you've been blocked for two weeks and you've already tried flagging it — and it's still not moving?"</em></p>
+
+  <p>An emotion reflection: <em>"Sounds like you're feeling a bit stuck — like you've done the right thing and it's still not working?"</em></p>
+
+  <p>Either of these does something the advice didn't: it confirms you understood the actual situation before you try to fix it. And more often than not, the speaker will respond by adding something new — <em>"Yeah, and the thing is, it's going to affect the whole Q3 plan if it goes on much longer."</em> That's the real problem. You wouldn't have heard it if you'd jumped straight to the workaround.</p>
+
+  <h2>What reflective listening is not</h2>
+
+  <div class="not-list">
+    <div class="not-item">
+      <div class="not-icon">🦜</div>
+      <div>
+        <div class="not-label">Parroting</div>
+        <div class="not-desc">Repeating their exact words back sounds robotic and creates no value. It signals you heard the sounds, not the meaning.</div>
+        <div class="not-bad">❌ Them: "I'm worried about the deadline." You: "You're worried about the deadline."</div>
+        <div class="not-good">✓ "It sounds like the timeline is the main pressure right now?"</div>
+      </div>
+    </div>
+    <div class="not-item">
+      <div class="not-icon">✅</div>
+      <div>
+        <div class="not-label">Agreement</div>
+        <div class="not-desc">Reflecting someone's view does not mean you agree with it. You can accurately capture what someone said and then disagree — but only after you've proven you understood it first.</div>
+        <div class="not-bad">❌ "So what you're saying is X… but I disagree, because—"</div>
+        <div class="not-good">✓ "So what you're saying is X? [pause for confirmation] Here's my concern with that approach…"</div>
+      </div>
+    </div>
+    <div class="not-item">
+      <div class="not-icon">💊</div>
+      <div>
+        <div class="not-label">A ticket to giving advice</div>
+        <div class="not-desc">Reflecting once and then launching into a long solution misses the point. The reflection creates space — honour it. Ask a question, or wait to see if they continue. The advice can come after.</div>
+        <div class="not-bad">❌ "It sounds like you're blocked. Anyway, here's what I'd do: [three paragraphs]"</div>
+        <div class="not-good">✓ "It sounds like you're blocked. What's your read on why the other team keeps deprioritising it?"</div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Practice: pick the best reflection</h2>
+  <p>Four meeting scenarios. For each, pick the option that best reflects what the speaker said. You'll get immediate feedback on why.</p>
+
+  <!-- PRACTICE -->
+  <div class="practice-section">
+    <div class="practice-title">Reflection practice</div>
+    <div class="practice-subtitle">4 scenarios. Pick the best reflective response.</div>
+
+    <!-- S1 -->
+    <div class="scenario active" id="s1">
+      <div class="scenario-header">
+        <span class="scenario-progress">Scenario 1 of 4</span>
+        <span class="scenario-tag tag-content">Content reflection</span>
+      </div>
+      <div class="scenario-prompt">
+        <div class="prompt-label">Your colleague says</div>
+        <div class="prompt-text">"We've been going back and forth on this design for three weeks. Every time we think it's settled, someone new comes in and reopens it."</div>
+      </div>
+      <div class="scenario-q">Which response is the best reflection?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s1', false, 'A', this)">A — "You've been going back and forth on this design for three weeks and someone keeps reopening it."</button>
+        <button class="option-btn" onclick="check('s1', true, 'B', this)">B — "So the core issue is that decisions aren't sticking — you reach alignment and then it gets undone?"</button>
+        <button class="option-btn" onclick="check('s1', false, 'C', this)">C — "Sounds frustrating. Have you tried documenting the decisions so there's a record?"</button>
+      </div>
+      <div class="feedback" id="fb-s1"></div>
+      <button class="next-btn" id="next-s1" onclick="advance('s1', 's2')">Next scenario →</button>
+    </div>
+
+    <!-- S2 -->
+    <div class="scenario" id="s2">
+      <div class="scenario-header">
+        <span class="scenario-progress">Scenario 2 of 4</span>
+        <span class="scenario-tag tag-emotion">Emotion reflection</span>
+      </div>
+      <div class="scenario-prompt">
+        <div class="prompt-label">Your manager says (in a 1-1)</div>
+        <div class="prompt-text">"I'm fine with the plan, but I'll be honest — I'm a bit nervous about presenting it to the exec team. They tend to pick apart anything that looks even slightly uncertain."</div>
+      </div>
+      <div class="scenario-q">Which response best reflects what your manager said?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s2', false, 'A', this)">A — "So you're nervous about the exec presentation. I can help you prepare for it."</button>
+        <button class="option-btn" onclick="check('s2', false, 'B', this)">B — "You're fine with the plan but nervous about presenting to execs because they like to challenge uncertain things."</button>
+        <button class="option-btn" onclick="check('s2', true, 'C', this)">C — "Sounds like it's less the plan itself and more how the execs will react — especially if they sense any gaps?"</button>
+      </div>
+      <div class="feedback" id="fb-s2"></div>
+      <button class="next-btn" id="next-s2" onclick="advance('s2', 's3')">Next scenario →</button>
+    </div>
+
+    <!-- S3 -->
+    <div class="scenario" id="s3">
+      <div class="scenario-header">
+        <span class="scenario-progress">Scenario 3 of 4</span>
+        <span class="scenario-tag tag-content">Content reflection</span>
+      </div>
+      <div class="scenario-prompt">
+        <div class="prompt-label">A stakeholder says</div>
+        <div class="prompt-text">"I know we agreed on this direction last month, but the business context has changed. I'm not saying we go back to square one — just that we need to factor in the new constraints."</div>
+      </div>
+      <div class="scenario-q">Which response best reflects what the stakeholder said?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s3', false, 'A', this)">A — "So you want to change the direction we agreed on last month?"</button>
+        <button class="option-btn" onclick="check('s3', true, 'B', this)">B — "If I'm hearing you right — you're not reopening the whole decision, just asking us to revisit it in light of what's changed?"</button>
+        <button class="option-btn" onclick="check('s3', false, 'C', this)">C — "I hear you, but changing direction this late in the process would be really difficult for the team."</button>
+      </div>
+      <div class="feedback" id="fb-s3"></div>
+      <button class="next-btn" id="next-s3" onclick="advance('s3', 's4')">Next scenario →</button>
+    </div>
+
+    <!-- S4 -->
+    <div class="scenario" id="s4">
+      <div class="scenario-header">
+        <span class="scenario-progress">Scenario 4 of 4</span>
+        <span class="scenario-tag tag-emotion">Emotion reflection</span>
+      </div>
+      <div class="scenario-prompt">
+        <div class="prompt-label">A direct report says</div>
+        <div class="prompt-text">"I'm doing the work, I just feel like no one really knows what I'm contributing. It's not like I need a gold star — I just think some of my work is invisible."</div>
+      </div>
+      <div class="scenario-q">Which response is the best reflection?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s4', false, 'A', this)">A — "You feel like your work is invisible and you want more recognition?"</button>
+        <button class="option-btn" onclick="check('s4', false, 'B', this)">B — "I hear you. Let me make sure I'm highlighting your work in the next team update."</button>
+        <button class="option-btn" onclick="check('s4', true, 'C', this)">C — "It sounds like it's not really about praise — it's more that you're not sure whether the impact of your work is being seen?"</button>
+      </div>
+      <div class="feedback" id="fb-s4"></div>
+      <button class="next-btn" id="next-s4" onclick="showResult()">See results →</button>
+    </div>
+
+    <!-- Result -->
+    <div class="practice-result" id="practice-result">
+      <div class="result-score">
+        <div class="score-num" id="score-display">–</div>
+        <p id="score-label">correct out of 4</p>
+      </div>
+      <div class="takeaway-box">
+        <h4>The skill to carry into your next meeting</h4>
+        <p>Once per meeting, before you give your response to anything, say one reflective sentence first. Not every time — just once. Pick the moment that feels most important. Notice what the other person does next.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>Reflective listening = paraphrase first, respond second</li>
+    <li>Content reflection captures facts; emotion reflection captures feeling — use both, but start with content</li>
+    <li>It is not parroting, not agreeing, and not a preamble to a lecture</li>
+    <li>The reflection creates space — and that space usually surfaces what the person actually meant</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    Lesson 3: <strong>Asking the right question</strong> — what to say after the reflection. The difference between a question that opens up a conversation and one that redirects it back to your agenda. One type works; one doesn't.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher anything in the Claude Code session — e.g. "When should I use emotion reflection vs content reflection?" or "Give me more examples for technical meetings."</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://positivepsychology.com/active-listening-techniques/" target="_blank">Positive Psychology — Active Listening Techniques</a> &middot;
+      <a href="https://www.mindtools.com/az4wxv7/active-listening" target="_blank">MindTools — Active Listening</a> &middot;
+      <a href="https://coactive.com/blog/levels-of-listening/" target="_blank">Co-Active Institute — Levels of Listening</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);">
+      Active Listening &middot;
+      <a href="../lessons/0001-the-listening-gap.html">← Lesson 1</a> &middot;
+      Lesson 2 of series &middot;
+      Lesson 3 coming next
+    </p>
+  </div>
+
+</div>
+
+<script>
+  const feedbackData = {
+    s1: {
+      A: { correct: false, text: "A is parroting — it copies their words almost verbatim. That signals you heard the sounds, not the meaning. A good reflection paraphrases: it captures what they meant, not what they said." },
+      B: { correct: true,  text: "Correct. B goes beyond the surface words ('back and forth') and captures the actual problem: decisions aren't holding. That's the meaning behind what they said. It also ends implicitly as a question — room for correction." },
+      C: { correct: false, text: "C opens with a emotion label ('sounds frustrating') but then immediately jumps to advice. That skips the reflection entirely. The speaker hasn't confirmed you understood — and advice before understanding is just noise." }
+    },
+    s2: {
+      A: { correct: false, text: "A starts as a reflection but instantly pivots to a fix ('I can help you prepare'). That closes down the space the reflection was about to open. Let the reflection land before you move to action." },
+      B: { correct: false, text: "B is a fairly accurate paraphrase — but it's a content reflection when an emotion reflection was available. It also sounds a bit like a transcript. Compare to C, which names what's actually at stake for them." },
+      C: { correct: true,  text: "Correct. C shifts focus to what your manager is actually concerned about — not the plan itself, but the exec team's reaction to uncertainty. It reflects the underlying worry, not just the stated facts. The question framing ('especially if they sense any gaps?') invites them to confirm or correct." }
+    },
+    s3: {
+      A: { correct: false, text: "A misrepresents what was said. The stakeholder explicitly said they're NOT going back to square one — they want to incorporate new constraints. A's reflection gets the meaning wrong, which is worse than no reflection. Always check that your paraphrase is accurate." },
+      B: { correct: true,  text: "Correct. B captures the critical nuance the stakeholder was careful to make: not reopening the whole thing, just adjusting for change. Getting that distinction right is what reflective listening is for — it proves you caught the precise point they were trying to make." },
+      C: { correct: false, text: "C is a pushback, not a reflection. There's no paraphrase at all — it jumps straight to a counter-argument. Even if your concern is valid, leading with it means the stakeholder now has to repeat themselves, and the conversation becomes positional rather than collaborative." }
+    },
+    s4: {
+      A: { correct: false, text: "A is partially right but uses their exact word ('invisible') and adds 'recognition' — which they specifically pushed back on ('not a gold star'). A careful reflection would honour that distinction, not flatten it." },
+      B: { correct: false, text: "B goes straight to a fix. The direct report hasn't been fully heard yet — they might have more to say. Moving immediately to action short-circuits that and makes the conversation about your response, not their experience." },
+      C: { correct: true,  text: "Correct. C honours the distinction they drew: it's not about praise, it's about whether the work is being seen. 'Impact being seen' is more accurate than 'recognition' — and it shows you listened to how they framed it, not just the surface complaint." }
+    }
+  };
+
+  let score = 0;
+
+  function check(scenarioId, isCorrect, option, btn) {
+    const opts = btn.closest('.options').querySelectorAll('.option-btn');
+    opts.forEach(b => { b.disabled = true; });
+
+    const fb = document.getElementById('fb-' + scenarioId);
+    const nextBtn = document.getElementById('next-' + scenarioId);
+    const data = feedbackData[scenarioId][option];
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      fb.className = 'feedback show good';
+      score++;
+    } else {
+      btn.classList.add('wrong');
+      fb.className = 'feedback show bad';
+      // Reveal the correct answer
+      opts.forEach(b => {
+        const opt = b.getAttribute('onclick').match(/'([A-C])'/)[1];
+        if (feedbackData[scenarioId][opt].correct) {
+          b.classList.add('reveal');
+        }
+      });
+    }
+
+    fb.textContent = data.text;
+    nextBtn.classList.add('show');
+  }
+
+  function advance(currentId, nextId) {
+    document.getElementById(currentId).classList.remove('active');
+    document.getElementById(nextId).classList.add('active');
+  }
+
+  function showResult() {
+    document.getElementById('s4').classList.remove('active');
+    const result = document.getElementById('practice-result');
+    result.style.display = 'block';
+    document.getElementById('score-display').textContent = score + '/4';
+    document.getElementById('score-label').textContent = score === 4 ? 'Perfect — you caught every nuance.' : score >= 3 ? 'Strong. You\'re getting the pattern.' : score >= 2 ? 'Decent start. Review the feedback on the ones you missed.' : 'The feedback on each question is the lesson — read through it carefully.';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

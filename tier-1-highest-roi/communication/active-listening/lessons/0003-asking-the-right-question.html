@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 3: Asking the Right Question</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --danger: #dc2626;
+      --danger-light: #fff1f2;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 40px; font-size: 13px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light); color: var(--accent);
+      padding: 3px 10px; border-radius: 99px; font-weight: 600;
+    }
+
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    p { margin-bottom: 16px; }
+
+    .callout { border-radius: 10px; padding: 20px 24px; margin: 28px 0; }
+    .callout.fact { background: var(--accent-light); border-left: 3px solid var(--accent); }
+    .callout.warning { background: var(--warn-light); border-left: 3px solid var(--warn); }
+    .callout.insight { background: var(--purple-light); border-left: 3px solid var(--purple); }
+    .callout.success { background: var(--success-light); border-left: 3px solid var(--success); }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    .q-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+    @media (max-width: 520px) { .q-type-grid { grid-template-columns: 1fr; } }
+    .q-type-card {
+      border-radius: 10px; padding: 20px 22px; border: 1.5px solid var(--border); background: var(--card);
+    }
+    .q-type-card.open { border-color: var(--success); background: var(--success-light); }
+    .q-type-card.closed { border-color: var(--danger); background: var(--danger-light); }
+    .q-type-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 10px; }
+    .q-type-card.open .q-type-label { color: var(--success); }
+    .q-type-card.closed .q-type-label { color: var(--danger); }
+    .q-type-examples { font-size: 0.9rem; color: var(--muted); line-height: 1.8; }
+    .q-type-examples em { color: var(--ink); font-style: normal; font-weight: 500; }
+    .q-type-why { font-size: 0.85rem; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.5; }
+
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 28px 0; font-size: 0.92rem; }
+    .comparison-table th { text-align: left; padding: 10px 14px; background: var(--bg); border-bottom: 2px solid var(--border); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .comparison-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .comparison-table tr:last-child td { border-bottom: none; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
+    .tag.open { background: var(--success-light); color: var(--success); }
+    .tag.agenda { background: var(--danger-light); color: var(--danger); }
+    .tag.neutral { background: var(--warn-light); color: var(--warn); }
+
+    .practice-section { margin: 48px 0; }
+    .scenario-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 28px; margin-bottom: 16px; display: none;
+    }
+    .scenario-card.active { display: block; }
+    .scenario-num { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; margin-bottom: 12px; }
+    .scenario-context { font-size: 0.88rem; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+    .scenario-says {
+      background: var(--bg); border-left: 3px solid var(--border);
+      padding: 14px 18px; border-radius: 0 8px 8px 0;
+      margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6;
+    }
+    .scenario-q { font-weight: 600; margin-bottom: 14px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; text-align: left; cursor: pointer; font-size: 0.92rem;
+      line-height: 1.45; transition: all 0.15s; color: var(--ink); font-family: inherit;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.correct { border-color: var(--success); background: var(--success-light); color: var(--success); font-weight: 600; }
+    .option-btn.wrong { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+    .option-btn.reveal { border-color: var(--success); background: var(--success-light); color: var(--success); opacity: 0.7; }
+    .feedback {
+      margin-top: 14px; padding: 14px 18px; border-radius: 8px;
+      font-size: 0.9rem; line-height: 1.6; display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.good { background: var(--success-light); color: #065f46; }
+    .feedback.bad { background: var(--danger-light); color: #7f1d1d; }
+    .next-btn {
+      margin-top: 16px; padding: 10px 22px; background: var(--accent); color: white;
+      border: none; border-radius: 8px; cursor: pointer; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600; display: none;
+    }
+    .next-btn.show { display: inline-block; }
+
+    .practice-result { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 36px; text-align: center; }
+    .practice-result.show { display: block; }
+    .score-num { font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+    .takeaway-box { background: var(--ink); color: white; border-radius: 10px; padding: 24px 28px; margin-top: 24px; text-align: left; }
+    .takeaway-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 10px; }
+    .takeaway-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    .footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .practice-section { display: none; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 3</span>
+    <span>Active Listening</span>
+    <span>&middot;</span>
+    <span>~12 minutes</span>
+  </div>
+
+  <h1>Asking the Right Question</h1>
+  <p class="subtitle">After you reflect, what do you say next? The difference between a question that opens a conversation and one that quietly redirects it back to your agenda.</p>
+
+  <h2>The reflection opened a door. Now what?</h2>
+
+  <p>In <a href="0002-reflective-listening.html">Lesson 2</a>, you learned to reflect before you respond — paraphrase what the speaker meant, and let that land. The reflection creates space. The speaker either confirms you understood, or corrects you.</p>
+
+  <p>What happens after that space is the next decision. Most people fill it with one of two things: a question, or their own point. If you use a question, the quality of that question determines whether the conversation goes deeper or gets redirected back to you.</p>
+
+  <div class="callout warning">
+    <strong>The hidden agenda problem</strong>
+    Not all questions are created equal. Some questions are genuinely curious — they invite the speaker to go further. Others are rhetorical — they are opinions dressed up as questions. A question that starts with "Don't you think…" or "Wouldn't it make more sense to…" is not really a question. It's your agenda wearing a question mark.
+  </div>
+
+  <h2>Two types of questions</h2>
+
+  <div class="q-type-grid">
+    <div class="q-type-card open">
+      <div class="q-type-label">Opens the conversation</div>
+      <div class="q-type-examples">
+        <em>"What's driving that concern?"</em><br>
+        <em>"How are you thinking about it?"</em><br>
+        <em>"What would success look like for you?"</em><br>
+        <em>"What's making this harder than expected?"</em>
+      </div>
+      <div class="q-type-why">Invites the speaker to think out loud. You learn something you didn't already know. The direction is theirs to choose.</div>
+    </div>
+    <div class="q-type-card closed">
+      <div class="q-type-label">Redirects to your agenda</div>
+      <div class="q-type-examples">
+        <em>"Don't you think we should just…?"</em><br>
+        <em>"Have you considered doing X instead?"</em><br>
+        <em>"Wouldn't it be simpler to…?"</em><br>
+        <em>"Why didn't you just…?"</em>
+      </div>
+      <div class="q-type-why">Signals your preferred answer before they've finished explaining their situation. The direction is yours, not theirs.</div>
+    </div>
+  </div>
+
+  <p>The difference is not about open vs. closed syntax ("what" vs. "yes/no"). It's about who the question serves. A question serves the speaker when it invites them to go further in <em>their</em> direction. It serves you when it steers them toward a conclusion you've already reached.</p>
+
+  <div class="callout fact">
+    <strong>Research finding</strong>
+    Studies on high-performing teams consistently find that psychological safety — the degree to which people feel free to speak openly — is the single strongest predictor of team effectiveness. Curiosity-driven questions are one of the fastest ways to signal that safety to another person. <span style="font-size:0.82rem;color:var(--muted)">(<a href="https://hbr.org/2017/08/high-performing-teams-need-psychological-safety-heres-how-to-create-it" target="_blank" style="color:var(--accent)">Harvard Business Review, 2017</a>)</span>
+  </div>
+
+  <h2>The full loop, so far</h2>
+
+  <p>You now have the first two moves of a complete listening sequence:</p>
+
+  <ol style="padding-left:22px; line-height:2.2; margin-bottom:16px;">
+    <li><strong>Reflect</strong> — paraphrase what they meant before you respond</li>
+    <li><strong>Ask</strong> — if you don't fully understand, ask a question that opens, not one that redirects</li>
+  </ol>
+
+  <p>Used together, these two moves cover most meeting situations where listening breaks down. The reflection proves you heard them. The question signals you want to understand more, not just rebut.</p>
+
+  <div class="callout insight">
+    <strong>In practice</strong>
+    You don't have to use both every time. If the reflection is enough — if the speaker confirms you got it — move on. Use the question when there's still something you genuinely don't understand after reflecting. "What's behind that for you?" is better than a follow-on reflection that's just guessing.
+  </div>
+
+  <h2>Question quality at a glance</h2>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>What the speaker said</th>
+        <th>Question</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"I'm worried about the timeline."</td>
+        <td>"What part of the timeline is most uncertain for you right now?"</td>
+        <td><span class="tag open">Opens</span></td>
+      </tr>
+      <tr>
+        <td>"I'm worried about the timeline."</td>
+        <td>"Don't you think we have enough buffer?"</td>
+        <td><span class="tag agenda">Agenda</span></td>
+      </tr>
+      <tr>
+        <td>"I'm not sure this is the right approach."</td>
+        <td>"What would make you more confident in it?"</td>
+        <td><span class="tag open">Opens</span></td>
+      </tr>
+      <tr>
+        <td>"I'm not sure this is the right approach."</td>
+        <td>"Have you looked at the data we shared?"</td>
+        <td><span class="tag agenda">Agenda</span></td>
+      </tr>
+      <tr>
+        <td>"I need more time on this."</td>
+        <td>"How much time are you thinking, and what's driving that?"</td>
+        <td><span class="tag open">Opens</span></td>
+      </tr>
+      <tr>
+        <td>"I need more time on this."</td>
+        <td>"Can we at least move forward with part of it?"</td>
+        <td><span class="tag neutral">Moves on</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>Practice: Which question opens it?</h2>
+
+  <p>Four meeting scenarios. After reading what the speaker said, pick the question that opens the conversation rather than redirecting it.</p>
+
+  <div class="practice-section">
+
+    <!-- Scenario 1 -->
+    <div class="scenario-card active" id="s1">
+      <div class="scenario-num">Scenario 1 of 4</div>
+      <div class="scenario-context">Design review. Your colleague has just reviewed the spec you wrote.</div>
+      <div class="scenario-says">"I think the spec is mostly solid, but I'm not sure the rollout plan is realistic."</div>
+      <div class="scenario-q">Which question do you ask?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s1', false, 'A', this)">A — "We've done rollouts like this before — why is this one different?"</button>
+        <button class="option-btn" onclick="check('s1', true, 'B', this)">B — "What part of the rollout are you most uncertain about?"</button>
+        <button class="option-btn" onclick="check('s1', false, 'C', this)">C — "Do you think we need more time in the plan?"</button>
+      </div>
+      <div class="feedback" id="fb-s1"></div>
+      <button class="next-btn" id="next-s1" onclick="advance('s1', 's2')">Next scenario →</button>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="scenario-card" id="s2">
+      <div class="scenario-num">Scenario 2 of 4</div>
+      <div class="scenario-context">1:1 with a direct report. They've been quieter than usual this week.</div>
+      <div class="scenario-says">"I don't know, I've just been feeling kind of off about the project lately."</div>
+      <div class="scenario-q">Which question do you ask?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s2', false, 'A', this)">A — "Is it the new scope that's bothering you? I know that was a lot."</button>
+        <button class="option-btn" onclick="check('s2', false, 'B', this)">B — "Do you think it would help to take a few days off?"</button>
+        <button class="option-btn" onclick="check('s2', true, 'C', this)">C — "What does 'off about it' feel like — is it the work itself, or something else?"</button>
+      </div>
+      <div class="feedback" id="fb-s2"></div>
+      <button class="next-btn" id="next-s2" onclick="advance('s2', 's3')">Next scenario →</button>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario-card" id="s3">
+      <div class="scenario-num">Scenario 3 of 4</div>
+      <div class="scenario-context">Cross-team meeting. A stakeholder is pushing back on a proposal.</div>
+      <div class="scenario-says">"My concern is that this creates a dependency we haven't accounted for."</div>
+      <div class="scenario-q">Which question do you ask?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s3', true, 'A', this)">A — "Which dependency are you thinking of specifically?"</button>
+        <button class="option-btn" onclick="check('s3', false, 'B', this)">B — "Wouldn't the dependency be manageable if we add a buffer?"</button>
+        <button class="option-btn" onclick="check('s3', false, 'C', this)">C — "Have you seen the dependency map in the proposal?"</button>
+      </div>
+      <div class="feedback" id="fb-s3"></div>
+      <button class="next-btn" id="next-s3" onclick="advance('s3', 's4')">Next scenario →</button>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div class="scenario-card" id="s4">
+      <div class="scenario-num">Scenario 4 of 4</div>
+      <div class="scenario-context">Strategy meeting. A senior leader has expressed hesitation about the direction.</div>
+      <div class="scenario-says">"I just feel like we're moving fast without fully understanding the downside risk."</div>
+      <div class="scenario-q">Which question do you ask?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s4', false, 'A', this)">A — "Should we slow down and run another round of analysis?"</button>
+        <button class="option-btn" onclick="check('s4', false, 'B', this)">B — "Don't you think the risk analysis we did covers the main scenarios?"</button>
+        <button class="option-btn" onclick="check('s4', true, 'C', this)">C — "What kind of downside are you most concerned about — is it execution risk, or something more structural?"</button>
+      </div>
+      <div class="feedback" id="fb-s4"></div>
+      <button class="next-btn" id="next-s4" onclick="showResult()">See results →</button>
+    </div>
+
+    <!-- Result -->
+    <div class="practice-result" id="practice-result">
+      <div class="score-num" id="score-display">–</div>
+      <p id="score-label" style="color:var(--muted); margin-bottom:0;">correct out of 4</p>
+      <div class="takeaway-box">
+        <h4>The habit to build</h4>
+        <p>Before asking a question in your next meeting, pause one beat and ask yourself: does this question give them a direction to go, or does it push them toward a conclusion I've already reached? If you can hear your own answer embedded in the question, rewrite it.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>After reflecting, the next move is either "that's enough, respond" or "I still don't fully understand — ask"</li>
+    <li>An opening question invites the speaker to go further in their direction</li>
+    <li>An agenda question steers toward your preferred conclusion — even if it's phrased as curiosity</li>
+    <li>The tell: if your answer is embedded in the question, it's not really a question</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    Lesson 4: <strong>Re-engaging when you zone out</strong> — you will zone out in meetings. The skill isn't preventing it; it's catching it early and re-entering without the other person noticing you were gone.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher anything in the Claude Code session — e.g. "When is it okay to ask a leading question?" or "What if I genuinely disagree and want to push back?"</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://hbr.org/2018/05/the-surprising-power-of-questions" target="_blank">HBR — The Surprising Power of Questions</a> &middot;
+      <a href="https://www.mindtools.com/a6bss9e/open-and-closed-questions" target="_blank">MindTools — Open and Closed Questions</a> &middot;
+      <a href="https://coactive.com/blog/levels-of-listening/" target="_blank">Co-Active Institute — Levels of Listening</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);">
+      Active Listening &middot;
+      <a href="0002-reflective-listening.html">← Lesson 2</a> &middot;
+      Lesson 3 of series &middot;
+      <a href="0004-re-engaging-when-you-zone-out.html">Lesson 4 →</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+  const feedbackData = {
+    s1: {
+      A: { correct: false, text: "A is an agenda question — it implies the situation isn't new, pushing back before you understand their concern. They haven't explained what makes this rollout different; you're already telling them it isn't." },
+      B: { correct: true,  text: "Correct. B is specific and genuinely open — it invites them to identify the exact part they're uncertain about, which you don't yet know. You learn something real, and they get to lead the direction." },
+      C: { correct: false, text: "C is a yes/no question that nudges toward 'more time' as the solution — but they haven't said time is the issue. You're jumping to a solution before understanding the problem. That's a quieter version of the Solution Jumper pattern from Lesson 1." }
+    },
+    s2: {
+      A: { correct: false, text: "A names a cause (the new scope) before they've told you what's wrong. Even if you're right, leading with your guess signals that you're not really listening — you're filling in the blanks yourself. Let them tell you." },
+      B: { correct: false, text: "B jumps straight to a fix (time off) when they've barely described what they're feeling. The problem might have nothing to do with rest. Fixing before understanding is the classic Solution Jumper move." },
+      C: { correct: true,  text: "Correct. C opens in two directions at once — the nature of the feeling, and whether it's about the work or something else entirely. It shows you took 'kind of off' seriously without deciding what it means yet. That's what curiosity looks like." }
+    },
+    s3: {
+      A: { correct: true,  text: "Correct. A is short, specific, and genuinely curious. 'Which dependency' invites them to name the exact thing in their head — something you don't yet know. All you did was ask them to be more concrete." },
+      B: { correct: false, text: "B is a solution disguised as a question. You're already proposing that a buffer solves it before you've heard which dependency they're worried about. The question doesn't open anything — it's a mini-pitch." },
+      C: { correct: false, text: "C is a deflection — directing them back to a document rather than engaging with the concern they just raised. Even if the dependency map covers it, they brought it up for a reason. Find out what that reason is first." }
+    },
+    s4: {
+      A: { correct: false, text: "A hands them a solution (slow down, run more analysis) before understanding the concern. 'Should we…' questions almost always contain a proposed action — which means you're steering, not listening." },
+      B: { correct: false, text: "B is the clearest agenda question here. It's essentially saying 'our risk analysis is good, do you agree?' — but framed as a question. Senior leaders will notice this kind of move, and it tends to shut down the real concern rather than surface it." },
+      C: { correct: true,  text: "Correct. C does two things well: it paraphrases their framing ('moving fast without understanding downside risk') and then opens by asking them to distinguish between types of risk. You learn what specifically is bothering them — which is what you need before you can respond usefully." }
+    }
+  };
+
+  let score = 0;
+
+  function check(scenarioId, isCorrect, option, btn) {
+    const opts = btn.closest('.options').querySelectorAll('.option-btn');
+    opts.forEach(b => b.disabled = true);
+    const fb = document.getElementById('fb-' + scenarioId);
+    const nextBtn = document.getElementById('next-' + scenarioId);
+    const data = feedbackData[scenarioId][option];
+    if (isCorrect) {
+      btn.classList.add('correct');
+      fb.className = 'feedback show good';
+      score++;
+    } else {
+      btn.classList.add('wrong');
+      fb.className = 'feedback show bad';
+      opts.forEach(b => {
+        const opt = b.getAttribute('onclick').match(/'([A-C])'/)[1];
+        if (feedbackData[scenarioId][opt].correct) b.classList.add('reveal');
+      });
+    }
+    fb.textContent = data.text;
+    nextBtn.classList.add('show');
+  }
+
+  function advance(currentId, nextId) {
+    document.getElementById(currentId).classList.remove('active');
+    document.getElementById(nextId).classList.add('active');
+  }
+
+  function showResult() {
+    document.getElementById('s4').classList.remove('active');
+    const result = document.getElementById('practice-result');
+    result.classList.add('show');
+    document.getElementById('score-display').textContent = score + '/4';
+    document.getElementById('score-label').textContent =
+      score === 4 ? 'Perfect — you caught every agenda question.' :
+      score >= 3 ? 'Strong. You\'re learning to spot the redirect.' :
+      score >= 2 ? 'Decent start. Review the feedback on the ones you missed.' :
+      'The feedback on each question is the lesson — read through it carefully.';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

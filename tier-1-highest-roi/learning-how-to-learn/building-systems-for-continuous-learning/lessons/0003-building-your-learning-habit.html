@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 3 — Building Your Learning Habit</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-border: #bfdbfe;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --purple: #7c3aed;
+      --purple-light: #faf5ff;
+      --green: #059669;
+      --green-light: #ecfdf5;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px; font-size: 13px; color: var(--text-muted);
+    }
+    .lesson-number {
+      background: var(--accent); color: white; font-weight: 700;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box {
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 48px;
+    }
+    .learn-box h3 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px;
+    }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 {
+      font-size: 1.3rem; font-weight: 700; margin-top: 48px;
+      margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border);
+    }
+
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-light);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem;
+    }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout.green { border-left-color: var(--green); background: var(--green-light); }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    /* Habit loop diagram */
+    .habit-loop {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin: 32px auto; max-width: 500px; flex-wrap: wrap;
+    }
+    .habit-step {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 14px 18px; text-align: center;
+      min-width: 120px; flex: 1;
+    }
+    .habit-step .icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .habit-step .name { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+    .habit-step .desc { font-size: 0.8rem; margin-top: 4px; color: var(--text); }
+    .habit-arrow {
+      font-size: 1.2rem; color: var(--text-muted); padding: 0 4px; flex-shrink: 0;
+    }
+    @media (max-width: 500px) {
+      .habit-loop { flex-direction: column; }
+      .habit-arrow { transform: rotate(90deg); }
+    }
+
+    /* Stacking formula */
+    .stack-formula {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;
+    }
+    .stack-formula .formula {
+      font-size: 1rem; font-weight: 600; line-height: 1.8;
+    }
+    .stack-formula .cue { color: #059669; }
+    .stack-formula .new { color: var(--accent); }
+    .stack-formula .reward { color: var(--purple); }
+
+    /* Examples */
+    .examples { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
+    .example-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 16px; font-size: 0.9rem;
+    }
+    .example-item .ex-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }
+
+    /* Minimums table */
+    .minimums {
+      width: 100%; border-collapse: collapse; margin: 24px 0;
+      font-size: 0.9rem; background: var(--surface); border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .minimums th { background: #f9fafb; padding: 10px 16px; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .minimums td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .minimums tr:last-child td { border-bottom: none; }
+    .min-tag { font-weight: 700; color: var(--accent); }
+    .good-tag { color: var(--success); font-weight: 600; }
+
+    /* Builder */
+    .builder-section {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .builder-badge {
+      background: var(--green); color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 16px;
+    }
+    .builder-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .builder-section > p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .form-field { margin-bottom: 20px; }
+    .form-field label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 6px; }
+    .form-field .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+    .form-field input, .form-field select {
+      width: 100%; font-family: inherit; font-size: 0.9rem;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px;
+      color: var(--text); background: var(--bg); outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-field input:focus, .form-field select:focus { border-color: var(--accent); }
+
+    .generate-btn {
+      background: var(--accent); color: white; border: none;
+      border-radius: 8px; padding: 12px 24px; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; width: 100%; transition: background 0.15s;
+    }
+    .generate-btn:hover { background: #1d4ed8; }
+
+    .habit-output {
+      display: none; margin-top: 20px; background: var(--accent-light);
+      border: 1px solid var(--accent-border); border-radius: 10px; padding: 20px;
+    }
+    .habit-output.show { display: block; }
+    .habit-output h4 { font-weight: 700; margin-bottom: 12px; font-size: 0.95rem; }
+    .habit-output .formula-line {
+      font-size: 0.9rem; line-height: 2; padding: 12px 14px;
+      background: white; border-radius: 8px; border: 1px solid var(--accent-border);
+      margin-bottom: 12px;
+    }
+    .habit-output .copy-note {
+      font-size: 0.8rem; color: var(--text-muted);
+    }
+
+    /* Nav */
+    .lesson-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none;
+      border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #1d4ed8; border-color: #1d4ed8; color: white; }
+
+    .teacher-box {
+      background: #fdf4ff; border: 1px solid #e9d5ff;
+      border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem;
+    }
+    .teacher-box h3 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--purple); margin-bottom: 8px;
+    }
+
+    @media print {
+      .builder-section, .lesson-nav, .teacher-box { display: none; }
+      body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 3 of 3</span>
+    <span>⏱ ~15 minutes</span>
+    <span>· Beginner</span>
+  </div>
+
+  <h1>Building Your Learning Habit</h1>
+  <p class="tagline">Knowing the best techniques doesn't matter if you never sit down to use them. Here's how to make learning automatic.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Why motivation is an unreliable fuel for consistent learning</li>
+      <li>The habit loop — how habits actually form</li>
+      <li>Habit stacking: the simplest technique for locking in a new routine</li>
+      <li>Setting a "minimum viable session" so you never skip twice</li>
+      <li>Your personal learning habit — designed in this lesson</li>
+    </ul>
+  </div>
+
+  <h2>Motivation is not enough</h2>
+
+  <p>You've learned <em>how</em> memory works (<a href="0001-the-forgetting-curve.html">Lesson 1</a>) and the most powerful technique to retain it (<a href="0002-active-recall.html">Lesson 2</a>). But there's a third problem: actually sitting down to learn — consistently, not just when you feel inspired.</p>
+
+  <p>Most people rely on motivation to drive their learning. The problem? Motivation is a feeling. Feelings fluctuate. Some mornings you're energised. Some evenings you're drained. If learning depends on how you feel, it will always lose to distraction, fatigue, and the infinite scroll.</p>
+
+  <p>The goal of this lesson is to move learning from the "things I do when motivated" bucket to the "things I just do" bucket. The tool is habits. <cite>(<a href="https://ingestai.io/blog/personal-knowledge-management-system" target="_blank">ingestai.io — PKM Guide</a>)</cite></p>
+
+  <h2>How habits form: the loop</h2>
+
+  <p>A habit is a behaviour that has been automated by the brain. When you do something enough times in the same context, your brain stops deliberating about it — it just runs the sequence on autopilot. This is the habit loop:</p>
+
+  <div class="habit-loop">
+    <div class="habit-step">
+      <div class="icon">🔔</div>
+      <div class="name">Cue</div>
+      <div class="desc">A trigger that starts the behaviour</div>
+    </div>
+    <div class="habit-arrow">→</div>
+    <div class="habit-step">
+      <div class="icon">⚡</div>
+      <div class="name">Routine</div>
+      <div class="desc">The behaviour itself</div>
+    </div>
+    <div class="habit-arrow">→</div>
+    <div class="habit-step">
+      <div class="icon">🎯</div>
+      <div class="name">Reward</div>
+      <div class="desc">What reinforces the loop</div>
+    </div>
+  </div>
+
+  <p>To build a learning habit, you need all three. A clear cue tells your brain when to start. A defined routine removes decision-making. A reward — even a small one — reinforces the loop so it strengthens over time.</p>
+
+  <h2>The simplest technique: habit stacking</h2>
+
+  <p>Instead of trying to build a habit from scratch, attach it to a habit that already exists. This is called <strong>habit stacking</strong> — you stack the new behaviour onto an existing routine as an anchor. <cite>(<a href="https://ingestai.io/blog/personal-knowledge-management-system" target="_blank">ingestai.io</a>)</cite></p>
+
+  <div class="stack-formula">
+    <div class="formula">
+      <span class="cue">After I [existing habit]</span><br>
+      I will <span class="new">[learning behaviour]</span><br>
+      Then I will <span class="reward">[immediate small reward]</span>
+    </div>
+  </div>
+
+  <div class="examples">
+    <div class="example-item">
+      <div class="ex-label">Example 1 — Morning stack</div>
+      After I pour my morning coffee, I will review 5 flashcards. Then I will drink the coffee.
+    </div>
+    <div class="example-item">
+      <div class="ex-label">Example 2 — Commute stack</div>
+      After I sit down on my commute, I will listen to one lesson or podcast. Then I will check my phone.
+    </div>
+    <div class="example-item">
+      <div class="ex-label">Example 3 — Evening stack</div>
+      After I brush my teeth, I will write a 3-minute brain dump of something I learned today. Then I will read for pleasure.
+    </div>
+  </div>
+
+  <div class="callout green">
+    <strong>Why this works</strong>
+    The existing habit provides the cue — you don't need to remember to learn, because you've attached it to something you already do. The brain doesn't have to start from zero.
+  </div>
+
+  <h2>The minimum viable session</h2>
+
+  <p>One of the biggest killers of new habits is perfectionism. You decide learning means 45 minutes of deep focus. Life gets busy. You miss a day. You feel bad. You miss another day. The habit collapses.</p>
+
+  <p>The solution: define a <strong>minimum viable session</strong> (MVS) — a version of your habit so small it's almost impossible to skip. If your minimum is low enough, you'll almost always do at least that. And once you start, you usually continue longer.</p>
+
+  <table class="minimums">
+    <tr>
+      <th>Learning goal</th>
+      <th>Full session</th>
+      <th>Minimum viable session</th>
+    </tr>
+    <tr>
+      <td>Review with flashcards</td>
+      <td>20 minutes</td>
+      <td class="min-tag">5 cards — ~2 minutes</td>
+    </tr>
+    <tr>
+      <td>Read a non-fiction book</td>
+      <td>30 minutes</td>
+      <td class="min-tag">2 pages — ~4 minutes</td>
+    </tr>
+    <tr>
+      <td>Brain dump after a lesson</td>
+      <td>10 minutes</td>
+      <td class="min-tag">3 bullet points — ~90 seconds</td>
+    </tr>
+    <tr>
+      <td>Work through a course</td>
+      <td>45 minutes</td>
+      <td class="min-tag">One short video — ~5 minutes</td>
+    </tr>
+  </table>
+
+  <div class="callout purple">
+    <strong>The rule</strong>
+    Never skip twice. Missing once is an accident. Missing twice is the start of a new (bad) habit. Your minimum viable session is your insurance against the second miss.
+  </div>
+
+  <h2>The identity shift</h2>
+
+  <p>The deepest form of habit is one that's tied to identity. Instead of "I'm trying to learn more," the goal is: <strong>"I'm someone who learns every day."</strong> Small daily wins — even 5 cards, even one page — are votes for that identity. Each small act says: this is who I am.</p>
+
+  <p>This matters because when the habit is tied to identity, skipping feels wrong rather than just unfortunate. You're not breaking a plan — you're acting out of character. <cite>(<a href="https://www.egwbecosystem.org/post/unlocking-your-personal-learning-operating-system-for-success-in-modern-workplaces" target="_blank">Personal Learning Operating System — EGWB</a>)</cite></p>
+
+  <!-- Builder -->
+  <div class="builder-section">
+    <span class="builder-badge">Design Your Habit</span>
+    <h3>Build your personal learning habit stack</h3>
+    <p>Fill in the fields below to generate your personal habit stack formula — something concrete you can start tomorrow.</p>
+
+    <div class="form-field">
+      <label>An existing daily habit (your anchor)</label>
+      <div class="hint">Something you do every day without thinking — morning coffee, brushing teeth, sitting down for lunch...</div>
+      <input type="text" id="anchor" placeholder="e.g. making my morning coffee">
+    </div>
+
+    <div class="form-field">
+      <label>What you want to learn</label>
+      <div class="hint">Keep this broad for now — you can get specific later</div>
+      <input type="text" id="subject" placeholder="e.g. effective learning techniques">
+    </div>
+
+    <div class="form-field">
+      <label>Your learning method (from Lesson 2)</label>
+      <select id="method">
+        <option value="review 5 flashcards on">Review 5 flashcards on</option>
+        <option value="do a 3-minute brain dump about">Brain dump (3 min) about</option>
+        <option value="spend 10 minutes reading about">Read for 10 minutes about</option>
+        <option value="watch one short video about">Watch one short video about</option>
+        <option value="use the Feynman technique to explain">Explain using Feynman technique</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label>Your minimum viable session</label>
+      <div class="hint">Make this absurdly easy — this is your "never skip twice" floor</div>
+      <input type="text" id="minimum" placeholder="e.g. just 2 flashcards, takes 30 seconds">
+    </div>
+
+    <div class="form-field">
+      <label>Your small reward after</label>
+      <div class="hint">Something you already enjoy doing right after — phone, coffee, snack, podcast...</div>
+      <input type="text" id="reward" placeholder="e.g. check my phone">
+    </div>
+
+    <button class="generate-btn" onclick="generateHabit()">Generate my habit stack →</button>
+
+    <div class="habit-output" id="habit-result">
+      <h4>Your Learning Habit Stack</h4>
+      <div class="formula-line" id="formula-display"></div>
+      <div class="formula-line" id="minimum-display"></div>
+      <p class="copy-note">Copy this somewhere visible — your phone lock screen, a sticky note on your desk, or a reminder in your calendar. The cue needs to be where you can't miss it.</p>
+    </div>
+  </div>
+
+  <h2>Putting the three lessons together</h2>
+
+  <p>You now have the foundation of a personal learning system:</p>
+
+  <ol style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+    <li><strong>The Forgetting Curve</strong> — You know why passive reading doesn't work and why review is essential</li>
+    <li><strong>Active Recall</strong> — You know the most effective method of review: self-testing, not rereading</li>
+    <li><strong>The Learning Habit</strong> — You have a structure to make learning happen consistently</li>
+  </ol>
+
+  <p>These three elements are the core. Everything else — spaced repetition schedules, knowledge management tools, prioritisation frameworks — builds on top of them. Future lessons will go deeper. But if you only ever implement these three, you will learn more effectively than most people ever do.</p>
+
+  <div class="callout green">
+    <strong>Your first week challenge</strong>
+    For the next 7 days, run your habit stack once per day. Don't try to be perfect. Hit your minimum viable session if that's all you have time for. At the end of the week, come back and tell your teacher what happened — that conversation will shape what comes next.
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Good questions to continue with: <em>"I tried the brain dump and couldn't remember much — what does that mean?"</em> or <em>"What should I actually learn first — do you have a recommendation?"</em> or <em>"How do I know if my learning habit is working?"</em> Your teacher adapts to your progress.</p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0002-active-recall.html" class="nav-btn">← Lesson 2: Active Recall</a>
+    <span style="font-size: 0.85rem; color: var(--text-muted); text-align: right;">More lessons coming — ask your teacher what's next</span>
+  </div>
+
+</div>
+
+<script>
+  function generateHabit() {
+    const anchor = document.getElementById('anchor').value.trim() || 'my morning coffee';
+    const subject = document.getElementById('subject').value.trim() || 'something I want to learn';
+    const method = document.getElementById('method').value;
+    const minimum = document.getElementById('minimum').value.trim() || 'at least 1 minute of review';
+    const reward = document.getElementById('reward').value.trim() || 'something I enjoy';
+
+    const formula = `After I ${anchor}, I will ${method} ${subject}. Then I will ${reward}.`;
+    const minLine = `On hard days: my minimum is just "${minimum}" — that still counts.`;
+
+    document.getElementById('formula-display').textContent = formula;
+    document.getElementById('minimum-display').textContent = minLine;
+    document.getElementById('habit-result').classList.add('show');
+  }
+</script>
+</body>
+</html>

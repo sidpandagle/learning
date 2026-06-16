@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 5: Putting It All Together</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --danger: #dc2626;
+      --danger-light: #fff1f2;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--ink); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 40px; font-size: 13px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill { background: var(--accent-light); color: var(--accent); padding: 3px 10px; border-radius: 99px; font-weight: 600; }
+    .lesson-meta .pill-final { background: var(--purple-light); color: var(--purple); padding: 3px 10px; border-radius: 99px; font-weight: 600; }
+
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    p { margin-bottom: 16px; }
+
+    .callout { border-radius: 10px; padding: 20px 24px; margin: 28px 0; }
+    .callout.fact { background: var(--accent-light); border-left: 3px solid var(--accent); }
+    .callout.warning { background: var(--warn-light); border-left: 3px solid var(--warn); }
+    .callout.insight { background: var(--purple-light); border-left: 3px solid var(--purple); }
+    .callout.success { background: var(--success-light); border-left: 3px solid var(--success); }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    .loop-visual { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 32px; margin: 32px 0; }
+    .loop-title { text-align: center; font-weight: 700; font-size: 1rem; margin-bottom: 24px; }
+    .loop-steps { display: flex; gap: 0; align-items: stretch; }
+    @media (max-width: 540px) { .loop-steps { flex-direction: column; } .loop-arrow { transform: rotate(90deg); padding: 8px 0; } }
+    .loop-step { flex: 1; text-align: center; padding: 16px 12px; border-radius: 10px; }
+    .loop-step.l1 { background: #fff1f2; }
+    .loop-step.l2 { background: #eff6ff; }
+    .loop-step.l3 { background: #ecfdf5; }
+    .loop-step.l4 { background: var(--warn-light); }
+    .loop-step-num { font-size: 1.4rem; margin-bottom: 6px; }
+    .loop-step-name { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+    .loop-step-ref { font-size: 0.75rem; color: var(--muted); }
+    .loop-arrow { display: flex; align-items: center; padding: 0 6px; color: var(--border); font-size: 1.2rem; flex-shrink: 0; }
+
+    .meeting-transcript {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; margin: 28px 0;
+    }
+    .transcript-header { background: var(--bg); padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    .transcript-line { padding: 14px 24px; border-bottom: 1px solid var(--border); font-size: 0.93rem; line-height: 1.6; display: flex; gap: 14px; align-items: flex-start; }
+    .transcript-line:last-child { border-bottom: none; }
+    .speaker-tag { font-weight: 700; font-size: 0.8rem; flex-shrink: 0; min-width: 80px; padding-top: 2px; }
+    .speaker-tag.them { color: var(--accent); }
+    .speaker-tag.you { color: var(--purple); }
+    .transcript-line.highlight { background: var(--warn-light); }
+    .drift-badge { display: inline-block; background: var(--warn); color: white; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+
+    .decision-point {
+      background: var(--card); border: 1.5px solid var(--accent); border-radius: 12px;
+      padding: 28px; margin-bottom: 16px; display: none;
+    }
+    .decision-point.active { display: block; }
+    .decision-num { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); font-weight: 700; margin-bottom: 12px; }
+    .decision-context { font-size: 0.88rem; color: var(--muted); margin-bottom: 10px; font-style: italic; }
+    .decision-q { font-weight: 600; margin-bottom: 14px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; text-align: left; cursor: pointer; font-size: 0.92rem;
+      line-height: 1.45; transition: all 0.15s; color: var(--ink); font-family: inherit;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.correct { border-color: var(--success); background: var(--success-light); color: var(--success); font-weight: 600; }
+    .option-btn.wrong { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+    .option-btn.reveal { border-color: var(--success); background: var(--success-light); color: var(--success); opacity: 0.7; }
+    .feedback { margin-top: 14px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; line-height: 1.6; display: none; }
+    .feedback.show { display: block; }
+    .feedback.good { background: var(--success-light); color: #065f46; }
+    .feedback.bad { background: var(--danger-light); color: #7f1d1d; }
+    .next-btn { margin-top: 16px; padding: 10px 22px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 600; display: none; }
+    .next-btn.show { display: inline-block; }
+
+    .final-result { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 40px; text-align: center; }
+    .final-result.show { display: block; }
+    .final-score { font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+    .series-complete { background: linear-gradient(135deg, #7c3aed, #2563eb); color: white; border-radius: 12px; padding: 28px; margin-top: 24px; text-align: left; }
+    .series-complete h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; }
+    .series-complete ul { padding-left: 20px; line-height: 2.2; font-size: 0.93rem; color: rgba(255,255,255,0.9); }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+    .footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .decision-point, .final-result { display: none !important; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 5</span>
+    <span class="pill-final">Final Lesson</span>
+    <span>Active Listening</span>
+    <span>&middot;</span>
+    <span>~15 minutes</span>
+  </div>
+
+  <h1>Putting It All Together</h1>
+  <p class="subtitle">A realistic meeting plays out. You'll need to use all four skills — catch the gap, reflect, ask the right question, re-engage when you drift. No isolated exercises this time.</p>
+
+  <h2>The full loop</h2>
+
+  <p>Across the four previous lessons, you've built a complete listening sequence. Here it is as one integrated loop:</p>
+
+  <div class="loop-visual">
+    <div class="loop-title">The Active Listening Loop</div>
+    <div class="loop-steps">
+      <div class="loop-step l1">
+        <div class="loop-step-num">🧠</div>
+        <div class="loop-step-name">Catch the gap</div>
+        <div class="loop-step-ref"><a href="0001-the-listening-gap.html" style="color:var(--muted)">Lesson 1</a></div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step l2">
+        <div class="loop-step-num">🪞</div>
+        <div class="loop-step-name">Reflect first</div>
+        <div class="loop-step-ref"><a href="0002-reflective-listening.html" style="color:var(--muted)">Lesson 2</a></div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step l3">
+        <div class="loop-step-num">❓</div>
+        <div class="loop-step-name">Open question</div>
+        <div class="loop-step-ref"><a href="0003-asking-the-right-question.html" style="color:var(--muted)">Lesson 3</a></div>
+      </div>
+      <div class="loop-arrow">→</div>
+      <div class="loop-step l4">
+        <div class="loop-step-num">🔁</div>
+        <div class="loop-step-name">Re-engage</div>
+        <div class="loop-step-ref"><a href="0004-re-engaging-when-you-zone-out.html" style="color:var(--muted)">Lesson 4</a></div>
+      </div>
+    </div>
+  </div>
+
+  <p>Today's exercise plays out like a real meeting. You'll read a transcript, and at four decision points, choose the right move. Each decision point maps to one of the four skills.</p>
+
+  <h2>The meeting</h2>
+
+  <p>You're in a 1:1 with your manager, Alex. The subject is a project you've been leading. Read the transcript, then work through the decision points below.</p>
+
+  <div class="meeting-transcript">
+    <div class="transcript-header">1:1 — You & Alex — Tuesday, 10am</div>
+    <div class="transcript-line">
+      <span class="speaker-tag them">Alex</span>
+      <span>I wanted to check in on the Orion project. I've been getting some signals from the stakeholder side that things feel a bit uncertain.</span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag you">You</span>
+      <span><em>[Decision Point 1 — see below]</em></span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag them">Alex</span>
+      <span>Yeah, exactly. It's not that they think you're doing a bad job — I don't think that. It's more that they're not sure what's coming next or when. There's a communication gap somewhere.</span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag you">You</span>
+      <span><em>[Decision Point 2 — see below]</em></span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag them">Alex</span>
+      <span>Right, it's less about the format — more that they feel like they only hear from you when something needs to be escalated. The proactive cadence isn't there. Anyway, I also wanted to flag the resourcing situation, which is a different issue. The team headcount request got pushed back again. I know that puts pressure on the timeline...</span>
+    </div>
+    <div class="transcript-line highlight">
+      <span class="speaker-tag you">You</span>
+      <span><em>[You zone out here — you start thinking about how to handle the headcount news. <span class="drift-badge">DRIFT</span>]</em></span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag them">Alex</span>
+      <span>...so I need you to think about what we can descope or delay without blowing the core commitment. I don't want to take this to the stakeholders as a problem — I want to go to them with a proposal.</span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag you">You</span>
+      <span><em>[Decision Point 3 — see below]</em></span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag them">Alex</span>
+      <span>Exactly. And the other thing I want to understand is whether you feel supported. I'm not always available and I know that's been a gap on my end too. I don't want you running into walls without a way through.</span>
+    </div>
+    <div class="transcript-line">
+      <span class="speaker-tag you">You</span>
+      <span><em>[Decision Point 4 — see below]</em></span>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Decision Points</h2>
+
+  <!-- DP1 -->
+  <div class="decision-point active" id="dp1">
+    <div class="decision-num">Decision Point 1 — Catch the gap / Reflect</div>
+    <div class="decision-context">Alex just said stakeholders feel uncertain. This is the first thing he's said — you haven't responded yet.</div>
+    <div class="decision-q">What do you say?</div>
+    <div class="options">
+      <button class="option-btn" onclick="check('dp1', false, 'A', this)">A — "I've been on top of the project — I think the issue might be on the stakeholder side. What specifically are they uncertain about?"</button>
+      <button class="option-btn" onclick="check('dp1', true, 'B', this)">B — "So it sounds like the signal you're picking up is less about delivery and more about how they're feeling about the direction — is that right?"</button>
+      <button class="option-btn" onclick="check('dp1', false, 'C', this)">C — "Got it. I'll set up a stakeholder update this week."</button>
+    </div>
+    <div class="feedback" id="fb-dp1"></div>
+    <button class="next-btn" id="next-dp1" onclick="advance('dp1', 'dp2')">Next decision point →</button>
+  </div>
+
+  <!-- DP2 -->
+  <div class="decision-point" id="dp2">
+    <div class="decision-num">Decision Point 2 — Ask the right question</div>
+    <div class="decision-context">Alex has clarified: it's a communication gap, not a performance concern. He said stakeholders only hear from you when something is being escalated — the proactive cadence isn't there.</div>
+    <div class="decision-q">What do you say next?</div>
+    <div class="options">
+      <button class="option-btn" onclick="check('dp2', false, 'A', this)">A — "Would it help if I sent a weekly update email to the stakeholder group?"</button>
+      <button class="option-btn" onclick="check('dp2', true, 'B', this)">B — "What kind of proactive communication would actually feel reassuring to them — is it format, frequency, or the content itself?"</button>
+      <button class="option-btn" onclick="check('dp2', false, 'C', this)">C — "I didn't realize the cadence was an issue — I've been sending updates whenever there's something material to share."</button>
+    </div>
+    <div class="feedback" id="fb-dp2"></div>
+    <button class="next-btn" id="next-dp2" onclick="advance('dp2', 'dp3')">Next decision point →</button>
+  </div>
+
+  <!-- DP3 -->
+  <div class="decision-point" id="dp3">
+    <div class="decision-num">Decision Point 3 — Re-engage after drift</div>
+    <div class="decision-context">You zoned out when Alex mentioned headcount. Your anchor word was "resourcing / timeline pressure." Alex just finished saying: he wants a descope proposal to take to stakeholders, not a problem.</div>
+    <div class="decision-q">What do you do?</div>
+    <div class="options">
+      <button class="option-btn" onclick="check('dp3', false, 'A', this)">A — "I need to be honest — I missed some of what you said. Can you repeat it?"</button>
+      <button class="option-btn" onclick="check('dp3', true, 'B', this)">B — "So the priority is to arrive at stakeholders with a concrete proposal — what can be adjusted — rather than surfacing the headcount problem directly?"</button>
+      <button class="option-btn" onclick="check('dp3', false, 'C', this)">C — "Got it. I'll come back to you with options by end of week."</button>
+    </div>
+    <div class="feedback" id="fb-dp3"></div>
+    <button class="next-btn" id="next-dp3" onclick="advance('dp3', 'dp4')">Next decision point →</button>
+  </div>
+
+  <!-- DP4 -->
+  <div class="decision-point" id="dp4">
+    <div class="decision-num">Decision Point 4 — Full loop</div>
+    <div class="decision-context">Alex has shifted tone — this is now about whether you feel supported. He admitted there's a gap on his end too. This is a human moment, not a project question.</div>
+    <div class="decision-q">What's the right move?</div>
+    <div class="options">
+      <button class="option-btn" onclick="check('dp4', false, 'A', this)">A — "I'm fine — I'm used to figuring things out independently. Don't worry about it."</button>
+      <button class="option-btn" onclick="check('dp4', false, 'B', this)">B — "Honestly yes, I've been struggling a bit — there have been some blockers I didn't know how to escalate."</button>
+      <button class="option-btn" onclick="check('dp4', true, 'C', this)">C — Reflect first: "It sounds like you're flagging this as a two-way thing — you want to know if I'm blocked, but also you're aware you haven't been as available." Then answer honestly.</button>
+    </div>
+    <div class="feedback" id="fb-dp4"></div>
+    <button class="next-btn" id="next-dp4" onclick="showFinal()">See final results →</button>
+  </div>
+
+  <!-- Final result -->
+  <div class="final-result" id="final-result">
+    <div class="final-score" id="final-score-display">–</div>
+    <p id="final-score-label" style="color:var(--muted); margin-bottom:0;">correct out of 4</p>
+    <div class="series-complete">
+      <h3>Series complete — Active Listening</h3>
+      <ul>
+        <li>You know why the gap exists and which of your three patterns fills it</li>
+        <li>You can reflect before responding — paraphrasing meaning, not words</li>
+        <li>You can ask questions that open a conversation rather than redirect it</li>
+        <li>You have a recovery loop for when you zone out</li>
+        <li>You've practiced all four in sequence in a realistic meeting</li>
+      </ul>
+    </div>
+    <div style="margin-top:24px; background: var(--bg); border-radius:10px; padding:20px 24px; text-align:left;">
+      <p style="font-weight:700; margin-bottom:8px;">The one thing to do next</p>
+      <p style="color:var(--muted); font-size:0.93rem; margin:0;">In your next real meeting: use the reflect-then-ask sequence once. Just once. Pick the most important moment, offer one reflection, then one question. That's it. Don't try to do all four skills at once — integrate one move at a time until it's natural.</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned across this series</h2>
+
+  <table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-top:12px;">
+    <thead>
+      <tr style="border-bottom:2px solid var(--border);">
+        <th style="text-align:left; padding:8px 12px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted);">Lesson</th>
+        <th style="text-align:left; padding:8px 12px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted);">Core skill</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:12px 12px;"><a href="0001-the-listening-gap.html" style="color:var(--accent)">1 — The Listening Gap</a></td>
+        <td style="padding:12px 12px; color:var(--muted);">Name your dominant gap-filling pattern</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:12px 12px;"><a href="0002-reflective-listening.html" style="color:var(--accent)">2 — Reflective Listening</a></td>
+        <td style="padding:12px 12px; color:var(--muted);">Paraphrase meaning before responding</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:12px 12px;"><a href="0003-asking-the-right-question.html" style="color:var(--accent)">3 — Asking the Right Question</a></td>
+        <td style="padding:12px 12px; color:var(--muted);">Open questions vs. agenda questions</td>
+      </tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:12px 12px;"><a href="0004-re-engaging-when-you-zone-out.html" style="color:var(--accent)">4 — Re-engaging When You Zone Out</a></td>
+        <td style="padding:12px 12px; color:var(--muted);">Last Word Anchor + reflection re-entry</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 12px;"><strong>5 — Putting It All Together</strong></td>
+        <td style="padding:12px 12px; color:var(--muted);">Integrated sequence in a real meeting</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher in Claude Code — "What do I work on next?" or "Can we go deeper on reflective listening in difficult conversations?"</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://hbr.org/2018/05/the-surprising-power-of-questions" target="_blank">HBR — The Surprising Power of Questions</a> &middot;
+      <a href="https://positivepsychology.com/active-listening-techniques/" target="_blank">Positive Psychology — Active Listening Techniques</a> &middot;
+      <a href="https://coactive.com/blog/levels-of-listening/" target="_blank">Co-Active Institute — Levels of Listening</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);">
+      Active Listening &middot;
+      <a href="0004-re-engaging-when-you-zone-out.html">← Lesson 4</a> &middot;
+      Lesson 5 of 5 — Series complete
+    </p>
+  </div>
+
+</div>
+
+<script>
+  const feedbackData = {
+    dp1: {
+      A: { correct: false, text: "A is defensive before you understand the concern, and ends with an agenda question ('what specifically are they uncertain about') before doing the work of reflecting. You've already positioned yourself as doing fine — which closes down the space for Alex to tell you more. Reflect first." },
+      B: { correct: true,  text: "Correct. B is a clean content reflection that captures the nuance: it's about the feeling of uncertainty, not delivery quality. It also ends as an implicit check ('is that right?') — which invites Alex to confirm or correct before you react." },
+      C: { correct: false, text: "C jumps straight to a fix (stakeholder update) without confirming you understood the problem. You might be solving the wrong thing. Alex said 'signals' and 'feel uncertain' — there's more information to surface before you move to action." }
+    },
+    dp2: {
+      A: { correct: false, text: "A proposes a specific format (weekly email) before understanding what kind of communication would actually help. Alex hasn't said format is the issue — he said the proactive cadence isn't there. Your proposed solution might not fit what they need." },
+      B: { correct: true,  text: "Correct. B asks an opening question that invites Alex to distinguish between three different possible issues: format, frequency, or content. You don't know which one it is yet — and this question lets him tell you, rather than guessing." },
+      C: { correct: false, text: "C is a defence: explaining your rationale for why the current cadence made sense. Even if it's true, it's not what Alex needs right now — he needs to know you heard the concern and want to understand it better. Defending yourself at this point closes the conversation down." }
+    },
+    dp3: {
+      A: { correct: false, text: "Admitting you missed it is honest, but it breaks the flow and costs Alex. You had an anchor ('resourcing / timeline pressure') and you caught Alex's final sentence clearly. You have enough to reflect — use it." },
+      B: { correct: true,  text: "Correct. You built the reflection from what you did catch: the anchor ('headcount / resourcing pressure') and Alex's final clear statement (a proposal, not a problem). The reflection is accurate and complete. Alex confirms and the conversation continues — he never knew you were gone." },
+      C: { correct: false, text: "'Got it' + a deliverable sounds like you understood — but you're committing to something ('options by end of week') without confirming what Alex actually wants. He said 'descope proposal' — your response doesn't close that loop. A reflection confirms understanding before you commit." }
+    },
+    dp4: {
+      A: { correct: false, text: "A shuts the door Alex just opened. He explicitly said there's a gap on his end too — 'I'm fine' doesn't engage with that honestly, and it also forecloses a useful conversation about support. This is the moment to reflect and then be real." },
+      B: { correct: false, text: "B is honest, but it skips the reflect step — and in a moment like this, reflecting first matters. Alex said something that acknowledges his own gap, not just yours. Jumping straight into your answer without reflecting on what he said can feel like you only heard the invitation to talk about yourself, not what he was saying." },
+      C: { correct: true,  text: "Correct. The reflection does something important here: it names the two-way nature of what Alex said (he wants to know if you're blocked, AND he's acknowledging his own availability gap). That shows you heard the full thing — not just the part about you. After the reflection lands, you can answer honestly, and it lands differently." }
+    }
+  };
+
+  let score = 0;
+
+  function check(scenarioId, isCorrect, option, btn) {
+    const opts = btn.closest('.options').querySelectorAll('.option-btn');
+    opts.forEach(b => b.disabled = true);
+    const fb = document.getElementById('fb-' + scenarioId);
+    const nextBtn = document.getElementById('next-' + scenarioId);
+    const data = feedbackData[scenarioId][option];
+    if (isCorrect) {
+      btn.classList.add('correct');
+      fb.className = 'feedback show good';
+      score++;
+    } else {
+      btn.classList.add('wrong');
+      fb.className = 'feedback show bad';
+      opts.forEach(b => {
+        const opt = b.getAttribute('onclick').match(/'([A-C])'/)[1];
+        if (feedbackData[scenarioId][opt].correct) b.classList.add('reveal');
+      });
+    }
+    fb.textContent = data.text;
+    nextBtn.classList.add('show');
+  }
+
+  function advance(currentId, nextId) {
+    document.getElementById(currentId).classList.remove('active');
+    document.getElementById(nextId).classList.add('active');
+  }
+
+  function showFinal() {
+    document.getElementById('dp4').classList.remove('active');
+    const result = document.getElementById('final-result');
+    result.classList.add('show');
+    document.getElementById('final-score-display').textContent = score + '/4';
+    document.getElementById('final-score-label').textContent =
+      score === 4 ? 'Perfect — all four skills, correctly applied.' :
+      score >= 3 ? 'Strong. One edge case to revisit, but the pattern is there.' :
+      score >= 2 ? 'Decent. Review the missed decisions — the reasoning is in the feedback.' :
+      'Work through the feedback on each one — the distinctions are the lesson.';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

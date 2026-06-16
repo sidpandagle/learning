@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1: The Listening Gap</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    /* Header */
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+
+    /* Sections */
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 48px 0 16px;
+      letter-spacing: -0.01em;
+    }
+
+    p { margin-bottom: 16px; }
+
+    /* Callout boxes */
+    .callout {
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout.fact {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+    }
+    .callout.warning {
+      background: var(--warn-light);
+      border-left: 3px solid var(--warn);
+    }
+    .callout.insight {
+      background: #f5f3ff;
+      border-left: 3px solid #7c3aed;
+    }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    /* The gap visual */
+    .gap-visual {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 32px 0;
+      text-align: center;
+    }
+    .gap-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 32px;
+      margin: 24px 0 16px;
+    }
+    .bar-group { text-align: center; }
+    .bar {
+      border-radius: 6px 6px 0 0;
+      width: 80px;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+    }
+    .bar.speak { background: var(--accent); height: 60px; }
+    .bar.process { background: #7c3aed; height: 200px; }
+    .bar-label { font-size: 0.85rem; color: var(--muted); }
+    .bar-sublabel { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .gap-arrow {
+      font-size: 2rem;
+      color: var(--border);
+      align-self: center;
+      padding-bottom: 40px;
+    }
+    .gap-caption {
+      font-size: 0.9rem;
+      color: var(--muted);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* Pattern cards */
+    .patterns {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .pattern-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .pattern-icon {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .pattern-name { font-weight: 700; margin-bottom: 4px; }
+    .pattern-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.5; }
+    .pattern-tell { font-size: 0.85rem; margin-top: 8px; color: var(--ink); }
+    .pattern-tell span { font-weight: 600; color: var(--warn); }
+
+    /* Levels */
+    .levels { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
+    .level {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .level-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .level-1 .level-num { background: #fee2e2; color: #dc2626; }
+    .level-2 .level-num { background: #fef9c3; color: #ca8a04; }
+    .level-3 .level-num { background: var(--success-light); color: var(--success); }
+    .level-title { font-weight: 700; margin-bottom: 3px; }
+    .level-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+    .level-example { font-size: 0.85rem; margin-top: 8px; font-style: italic; color: var(--muted); }
+
+    /* Quiz */
+    .quiz-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .quiz-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .quiz-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
+
+    .quiz-question {
+      margin-bottom: 28px;
+      display: none;
+    }
+    .quiz-question.active { display: block; }
+    .q-text { font-weight: 600; margin-bottom: 16px; line-height: 1.4; }
+    .q-progress {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: all 0.15s;
+      color: var(--ink);
+      font-family: inherit;
+    }
+    .option-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.selected { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+
+    /* Result */
+    .quiz-result { display: none; }
+    .result-type {
+      text-align: center;
+      padding: 28px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .result-type .icon { font-size: 3rem; margin-bottom: 12px; }
+    .result-type h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+    .result-type p { font-size: 0.95rem; color: var(--muted); max-width: 380px; margin: 0 auto; }
+
+    .result-interrupter { background: #fff1f2; }
+    .result-zoner { background: #fffbeb; }
+    .result-solver { background: #f0fdf4; }
+
+    .practice-box {
+      background: var(--ink);
+      color: white;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-top: 20px;
+    }
+    .practice-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 10px; }
+    .practice-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    /* Divider */
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    /* Citation */
+    .cite { font-size: 0.8rem; color: var(--muted); }
+    .cite a { color: var(--accent); text-decoration: none; }
+    .cite a:hover { text-decoration: underline; }
+
+    /* Footer */
+    .footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    /* Print */
+    @media print {
+      .quiz-section { display: none; }
+      .page { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 1</span>
+    <span>Active Listening</span>
+    <span>&middot;</span>
+    <span>~10 minutes</span>
+  </div>
+
+  <h1>The Listening Gap</h1>
+  <p class="subtitle">Why your brain is wired to miss what people actually mean — and which pattern is costing you the most in meetings.</p>
+
+  <h2>There is a gap in every conversation</h2>
+
+  <p>When someone speaks in a meeting, they deliver about <strong>125 words per minute</strong>. Your brain can process language at <strong>400–500 words per minute</strong>. That leaves a surplus of roughly 275–375 words per minute of unused mental capacity.</p>
+
+  <p>That surplus doesn't stay empty. Your brain fills it with something — and whatever it fills it with is the reason you miss what people actually mean.</p>
+
+  <div class="gap-visual">
+    <p style="font-weight:700; margin-bottom:4px;">The Cognitive Surplus</p>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:0;">What happens to the spare capacity in every conversation</p>
+    <div class="gap-bars">
+      <div class="bar-group">
+        <div class="bar speak">125</div>
+        <div class="bar-label">Speaking speed</div>
+        <div class="bar-sublabel">words/min</div>
+      </div>
+      <div class="gap-arrow">→</div>
+      <div class="bar-group">
+        <div class="bar process">500</div>
+        <div class="bar-label">Processing speed</div>
+        <div class="bar-sublabel">words/min</div>
+      </div>
+    </div>
+    <p class="gap-caption">275–375 WPM of spare mental capacity fills with something. The question is: what fills yours?</p>
+  </div>
+
+  <div class="callout fact">
+    <strong>Research finding</strong>
+    Studies consistently show we listen at roughly 25% efficiency — retaining only a quarter of what was said. The gap above is the structural reason why. <span class="cite">(<a href="https://ahead-app.com/blog/confidence/the-science-of-active-listening-5-research-backed-techniques-to-enhance-your-communication-20250128-204937" target="_blank">Ahead App, 2025</a>)</span>
+  </div>
+
+  <h2>Three ways the gap gets filled</h2>
+
+  <p>Most people fall into one dominant pattern. Recognising yours is the first step to changing it.</p>
+
+  <div class="patterns">
+    <div class="pattern-card">
+      <div class="pattern-icon">✂️</div>
+      <div>
+        <div class="pattern-name">The Interrupter</div>
+        <div class="pattern-desc">Locks onto a point and can't wait. Jumps in before the speaker finishes — often finishing their sentences or steering to a new thread. The spare capacity fills with <em>urgency to speak</em>.</div>
+        <div class="pattern-tell"><span>Tell-tale sign:</span> You often start your response with "Yes, and—" or "Right, but—" within a breath of the other person stopping.</div>
+      </div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-icon">🌫️</div>
+      <div>
+        <div class="pattern-name">The Zoner</div>
+        <div class="pattern-desc">Physically present, mentally elsewhere. Picks up the thread intermittently but misses the connective tissue — the nuance between points. The spare capacity fills with <em>unrelated thought</em>.</div>
+        <div class="pattern-tell"><span>Tell-tale sign:</span> You've asked someone to repeat something they said 30 seconds ago, or you're tracking "when is this meeting ending?"</div>
+      </div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-icon">🔧</div>
+      <div>
+        <div class="pattern-name">The Solution Jumper</div>
+        <div class="pattern-desc">Hears the problem and immediately shifts into fix-it mode. Stops listening to understand and starts listening to confirm a solution already forming. The spare capacity fills with <em>your answer</em>.</div>
+        <div class="pattern-tell"><span>Tell-tale sign:</span> You can articulate your response before the speaker has finished explaining the problem.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <strong>The cost in meetings</strong>
+    When you're filling the gap with your own content, you're hearing the speaker's words — but you're missing their meaning. The real message (what they actually need, fear, or are trying to signal) lives in the parts you're not attending to.
+  </div>
+
+  <h2>Three levels of listening</h2>
+
+  <p>The Co-Active Training Institute — one of the most widely-used coaching frameworks in the world — maps listening onto three levels. Most people in meetings operate at Level 1, almost always.</p>
+
+  <div class="levels">
+    <div class="level level-1">
+      <div class="level-num">1</div>
+      <div>
+        <div class="level-title">Internal Listening</div>
+        <div class="level-desc">Your attention is on yourself — your reactions, your judgements, what you want to say next. You hear the speaker, but you're filtering everything through your own frame.</div>
+        <div class="level-example">"They're saying X, which reminds me of Y, and I think I should say Z."</div>
+      </div>
+    </div>
+    <div class="level level-2">
+      <div class="level-num">2</div>
+      <div>
+        <div class="level-title">Focused Listening</div>
+        <div class="level-desc">Your attention is fully on the other person. You're noticing their words, their tone, what they choose to say and not say. This is where understanding begins.</div>
+        <div class="level-example">"They said 'a bit frustrated' — but the way they said it sounded more like exhausted."</div>
+      </div>
+    </div>
+    <div class="level level-3">
+      <div class="level-num">3</div>
+      <div>
+        <div class="level-title">Global Listening</div>
+        <div class="level-desc">Your attention expands to the whole environment — energy in the room, what's not being said, the underlying tension. Advanced skill, used selectively.</div>
+        <div class="level-example">"The whole team went quiet when she said that. Something landed differently than intended."</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="cite">Framework: <a href="https://coactive.com/blog/levels-of-listening/" target="_blank">Three Levels of Listening — Co-Active Training Institute</a></p>
+
+  <div class="callout insight">
+    <strong>The goal for now</strong>
+    You don't need to live at Level 3. The mission is to catch yourself at Level 1 and shift to Level 2, especially in the moments that matter in a meeting.
+  </div>
+
+  <hr>
+
+  <h2>Self-assessment: What fills your gap?</h2>
+  <p>Answer these 5 quick scenarios honestly. You'll get a personalised micro-practice to take into your next meeting.</p>
+
+  <!-- QUIZ -->
+  <div class="quiz-section">
+    <div class="quiz-title">Which listener are you?</div>
+    <div class="quiz-subtitle">5 scenarios. Pick the option that sounds most like you — even if none is perfect.</div>
+
+    <!-- Q1 -->
+    <div class="quiz-question active" id="q1">
+      <div class="q-progress">Question 1 of 5</div>
+      <div class="q-text">A colleague is describing a problem they ran into. Midway through, you already have a solution in mind. What happens next?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q1', 'solver', this)">I wait for a pause, then offer my solution — I might cut in slightly early if the pause doesn't come.</button>
+        <button class="option-btn" onclick="answer('q1', 'interrupter', this)">I jump in. The solution is obvious and I don't want to waste time.</button>
+        <button class="option-btn" onclick="answer('q1', 'zoner', this)">I half-listen to the rest, but I'm mostly thinking about something else while I wait.</button>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-question" id="q2">
+      <div class="q-progress">Question 2 of 5</div>
+      <div class="q-text">Someone is giving a long update in a meeting. At what point do you notice your attention drifting?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q2', 'zoner', this)">Pretty quickly — after the first 30–60 seconds I'm often thinking about something else.</button>
+        <button class="option-btn" onclick="answer('q2', 'solver', this)">Once I've understood the core problem — I stop listening and start solving.</button>
+        <button class="option-btn" onclick="answer('q2', 'interrupter', this)">When I disagree or have something to add — that's when I struggle to keep quiet.</button>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-question" id="q3">
+      <div class="q-progress">Question 3 of 5</div>
+      <div class="q-text">After a meeting, a colleague asks "what do you think Sarah was really worried about?" How confident are you?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q3', 'interrupter', this)">Not very — I was tracking what was said but probably missed the subtext.</button>
+        <button class="option-btn" onclick="answer('q3', 'zoner', this)">Not confident at all — I'd struggle to summarise her main points, let alone her worry.</button>
+        <button class="option-btn" onclick="answer('q3', 'solver', this)">I know what the problem was, but the "worried about" part — I'm less sure.</button>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-question" id="q4">
+      <div class="q-progress">Question 4 of 5</div>
+      <div class="q-text">Someone raises a concern and you immediately think "we've tried that before, it doesn't work." What do you do?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q4', 'interrupter', this)">Say so — it's helpful to flag it right away so we don't waste time.</button>
+        <button class="option-btn" onclick="answer('q4', 'solver', this)">Let them finish, but I'm already mentally composing the explanation of why it won't work.</button>
+        <button class="option-btn" onclick="answer('q4', 'zoner', this)">I probably zone out at this point — if I've already formed an opinion, I stop paying close attention.</button>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="quiz-question" id="q5">
+      <div class="q-progress">Question 5 of 5</div>
+      <div class="q-text">Which of these would colleagues most likely say about you in meetings?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q5', 'solver', this)">"They always have an answer — sometimes before you've even finished explaining the problem."</button>
+        <button class="option-btn" onclick="answer('q5', 'interrupter', this)">"They're enthusiastic and engaged — but sometimes they cut across you before you're done."</button>
+        <button class="option-btn" onclick="answer('q5', 'zoner', this)">"They're usually quiet in meetings — sometimes you're not sure if they were fully following."</button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="quiz-result" id="quiz-result">
+      <div id="result-interrupter" class="result-type result-interrupter" style="display:none">
+        <div class="icon">✂️</div>
+        <h3>Your pattern: The Interrupter</h3>
+        <p>You're highly engaged — which is actually the root of the problem. Your brain moves fast, you form strong views, and silence feels like wasted opportunity. The gap fills with urgency.</p>
+      </div>
+      <div id="result-zoner" class="result-type result-zoner" style="display:none">
+        <div class="icon">🌫️</div>
+        <h3>Your pattern: The Zoner</h3>
+        <p>You're not disengaged by nature — you just haven't been given enough reason to stay present. The gap fills with whatever else is on your mind, which is usually a lot.</p>
+      </div>
+      <div id="result-solver" class="result-type result-solver" style="display:none">
+        <div class="icon">🔧</div>
+        <h3>Your pattern: The Solution Jumper</h3>
+        <p>You're a natural problem-solver — which is an asset everywhere except the moment you need to actually understand the problem. The gap fills with your answer before the question is complete.</p>
+      </div>
+
+      <div id="practice-interrupter" class="practice-box" style="display:none">
+        <h4>Your micro-practice for the next meeting</h4>
+        <p>When you feel the urge to speak — pause for exactly <strong>two seconds</strong> after the other person stops. Count silently: <em>one, two</em>. Only then open your mouth. That pause will feel uncomfortable at first. That discomfort is the practice. You'll find the speaker often continues and says something more important.</p>
+      </div>
+      <div id="practice-zoner" class="practice-box" style="display:none">
+        <h4>Your micro-practice for the next meeting</h4>
+        <p>Before your next meeting, pick <strong>one person</strong> and commit to tracking: <em>what does this person actually need from this meeting?</em> Write it down after. Not what was discussed — what they needed. That question gives your brain something to do with the spare capacity, and it will automatically pull you back when you drift.</p>
+      </div>
+      <div id="practice-solver" class="practice-box" style="display:none">
+        <h4>Your micro-practice for the next meeting</h4>
+        <p>When someone describes a problem, your job for the first 60 seconds is to listen for the <strong>feeling behind the problem</strong> — not the facts of it. Are they frustrated? Uncertain? Overwhelmed? Find that before you reach for a solution. A single question like <em>"how long has this been a problem?"</em> will surface more than three minutes of advice.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>The listening gap is structural — it's not a character flaw</li>
+    <li>Everyone fills the gap with something; your pattern is your default</li>
+    <li>Level 1 listening (focused on yourself) is the default for most people in meetings</li>
+    <li>Shifting to Level 2 (focused on the speaker) is the goal — not eliminating your thoughts, but redirecting attention</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    Lesson 2 will teach you the first concrete technique for staying at Level 2: <strong>reflective listening</strong> — how to prove to the speaker (and your own brain) that you heard them. It's one sentence, and it changes how meetings feel.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher anything about this lesson in the Claude Code session — e.g. "I don't understand the three levels" or "Can you give me an example of Level 2 in a real meeting?"</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://ahead-app.com/blog/confidence/the-science-of-active-listening-5-research-backed-techniques-to-enhance-your-communication-20250128-204937" target="_blank">Ahead App — Science of Active Listening</a> &middot;
+      <a href="https://coactive.com/blog/levels-of-listening/" target="_blank">Co-Active Institute — Levels of Listening</a> &middot;
+      <a href="https://thedecisionlab.com/reference-guide/psychology/active-listening" target="_blank">The Decision Lab</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);">Active Listening &middot; Lesson 1 of series &middot; <a href="../lessons/0002-reflective-listening.html">Next lesson &rarr;</a></p>
+  </div>
+
+</div>
+
+<script>
+  const scores = { interrupter: 0, zoner: 0, solver: 0 };
+  const answered = {};
+
+  function answer(qId, type, btn) {
+    // Deselect previous selection for this question
+    const q = document.getElementById(qId);
+    q.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    // Update scores (remove previous answer for this q)
+    if (answered[qId]) {
+      scores[answered[qId]]--;
+    }
+    scores[type]++;
+    answered[qId] = type;
+
+    // Advance after short delay
+    setTimeout(() => {
+      const nums = { q1:1, q2:2, q3:3, q4:4, q5:5 };
+      const current = nums[qId];
+      if (current < 5) {
+        q.classList.remove('active');
+        document.getElementById('q' + (current + 1)).classList.add('active');
+      } else {
+        showResult();
+      }
+    }, 350);
+  }
+
+  function showResult() {
+    // Hide all questions
+    document.querySelectorAll('.quiz-question').forEach(q => q.classList.remove('active'));
+
+    // Determine winner
+    const winner = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+
+    document.getElementById('result-' + winner).style.display = 'block';
+    document.getElementById('practice-' + winner).style.display = 'block';
+
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

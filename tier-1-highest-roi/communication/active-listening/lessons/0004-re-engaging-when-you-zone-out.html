@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4: Re-engaging When You Zone Out</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --danger: #dc2626;
+      --danger-light: #fff1f2;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--ink); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 40px; font-size: 13px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill { background: var(--accent-light); color: var(--accent); padding: 3px 10px; border-radius: 99px; font-weight: 600; }
+
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    p { margin-bottom: 16px; }
+
+    .callout { border-radius: 10px; padding: 20px 24px; margin: 28px 0; }
+    .callout.fact { background: var(--accent-light); border-left: 3px solid var(--accent); }
+    .callout.warning { background: var(--warn-light); border-left: 3px solid var(--warn); }
+    .callout.insight { background: var(--purple-light); border-left: 3px solid var(--purple); }
+    .callout.success { background: var(--success-light); border-left: 3px solid var(--success); }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    .signal-list { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
+    .signal-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 20px;
+    }
+    .signal-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+    .signal-name { font-weight: 700; margin-bottom: 3px; }
+    .signal-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+
+    .technique-steps { display: flex; flex-direction: column; gap: 0; margin: 28px 0; }
+    .technique-step {
+      display: flex; gap: 20px; align-items: flex-start;
+      padding: 20px 0; border-bottom: 1px solid var(--border);
+    }
+    .technique-step:last-child { border-bottom: none; }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem; flex-shrink: 0; margin-top: 2px;
+    }
+    .step-title { font-weight: 700; margin-bottom: 5px; }
+    .step-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.5; }
+    .step-example { font-size: 0.88rem; margin-top: 10px; font-style: italic; padding: 10px 14px; background: var(--bg); border-radius: 6px; }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; text-align: left; cursor: pointer; font-size: 0.92rem;
+      line-height: 1.45; transition: all 0.15s; color: var(--ink); font-family: inherit;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.correct { border-color: var(--success); background: var(--success-light); color: var(--success); font-weight: 600; }
+    .option-btn.wrong { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+    .option-btn.reveal { border-color: var(--success); background: var(--success-light); color: var(--success); opacity: 0.7; }
+
+    .scenario-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-bottom: 16px; display: none; }
+    .scenario-card.active { display: block; }
+    .scenario-num { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; margin-bottom: 12px; }
+    .scenario-context { font-size: 0.88rem; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+    .scenario-situation { background: var(--warn-light); border-left: 3px solid var(--warn); border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 16px; font-size: 0.93rem; line-height: 1.6; }
+    .scenario-says { background: var(--bg); border-left: 3px solid var(--border); padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; }
+    .scenario-q { font-weight: 600; margin-bottom: 14px; font-size: 0.95rem; }
+
+    .feedback { margin-top: 14px; padding: 14px 18px; border-radius: 8px; font-size: 0.9rem; line-height: 1.6; display: none; }
+    .feedback.show { display: block; }
+    .feedback.good { background: var(--success-light); color: #065f46; }
+    .feedback.bad { background: var(--danger-light); color: #7f1d1d; }
+
+    .next-btn { margin-top: 16px; padding: 10px 22px; background: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.9rem; font-weight: 600; display: none; }
+    .next-btn.show { display: inline-block; }
+
+    .practice-result { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 36px; text-align: center; }
+    .practice-result.show { display: block; }
+    .score-num { font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 8px; }
+    .takeaway-box { background: var(--ink); color: white; border-radius: 10px; padding: 24px 28px; margin-top: 24px; text-align: left; }
+    .takeaway-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 10px; }
+    .takeaway-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+    .footer { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .scenario-card, .practice-result { display: none !important; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 4</span>
+    <span>Active Listening</span>
+    <span>&middot;</span>
+    <span>~10 minutes</span>
+  </div>
+
+  <h1>Re-engaging When You Zone Out</h1>
+  <p class="subtitle">You will zone out in meetings. The skill isn't preventing it — it's catching it early and getting back without the other person noticing you were gone.</p>
+
+  <h2>Zoning out is not a character flaw</h2>
+
+  <p>In <a href="0001-the-listening-gap.html">Lesson 1</a>, you learned that your brain has 275–375 words per minute of spare capacity in every conversation. For Zoners, that capacity fills with unrelated thought — and by the time you notice, you've missed a minute of conversation.</p>
+
+  <p>The goal is not to never zone out. The goal is to catch it fast, and re-enter the conversation cleanly. Done well, the other person doesn't know you were gone.</p>
+
+  <div class="callout fact">
+    <strong>Research finding</strong>
+    Mind-wandering studies show that people are "not present" roughly 47% of the time during everyday activities — and meetings with low personal relevance push that number higher. The realistic objective is not sustained perfect attention; it's a fast recovery loop. <span style="font-size:0.82rem;color:var(--muted)">(<a href="https://www.science.org/doi/10.1126/science.1192439" target="_blank" style="color:var(--accent)">Killingsworth & Gilbert, Science, 2010</a>)</span>
+  </div>
+
+  <h2>The early warning signals</h2>
+
+  <p>Zoning out rarely happens all at once. There are tells — internal signals that attention is drifting before it's fully gone. Learning to notice them early is the key to a fast recovery.</p>
+
+  <div class="signal-list">
+    <div class="signal-item">
+      <div class="signal-icon">🔁</div>
+      <div>
+        <div class="signal-name">The replay loop</div>
+        <div class="signal-desc">You're internally replaying something they said 30 seconds ago, turning it over — while the conversation has moved on without you.</div>
+      </div>
+    </div>
+    <div class="signal-item">
+      <div class="signal-icon">📋</div>
+      <div>
+        <div class="signal-name">The task pull</div>
+        <div class="signal-desc">Your mental to-do list has surfaced. You're planning what you'll do after the meeting, or drafting a message in your head.</div>
+      </div>
+    </div>
+    <div class="signal-item">
+      <div class="signal-icon">🪟</div>
+      <div>
+        <div class="signal-name">The blank reception</div>
+        <div class="signal-desc">Words are arriving but not landing. You can hear the sounds but can't construct meaning from them — a sign your processing has disconnected.</div>
+      </div>
+    </div>
+    <div class="signal-item">
+      <div class="signal-icon">⏱️</div>
+      <div>
+        <div class="signal-name">The clock check</div>
+        <div class="signal-desc">You've mentally asked "how much longer?" — a sure sign you've left the conversation and started tracking something else.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>The re-entry technique: Last Word Anchor</h2>
+
+  <p>When you catch the signal, use this three-step re-entry. It works because it gives you something concrete to focus on immediately — the speaker's most recent words — rather than trying to reconstruct what you missed.</p>
+
+  <div class="technique-steps">
+    <div class="technique-step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Catch the signal</div>
+        <div class="step-desc">Name it silently: <em>"I've drifted."</em> Don't judge it. Just notice it and stop the drift from continuing.</div>
+      </div>
+    </div>
+    <div class="technique-step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Anchor to the last word you caught</div>
+        <div class="step-desc">What's the last concrete word or phrase you actually heard? Put your attention there. Don't try to reconstruct what you missed — just start from now.</div>
+        <div class="step-example">"They said '...the client deadline...' — okay, that's my anchor. What are they saying about it?"</div>
+      </div>
+    </div>
+    <div class="technique-step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Use a reflection to land</div>
+        <div class="step-desc">Once you've been back for 10–15 seconds and have enough context, offer a short reflection from <a href="0002-reflective-listening.html">Lesson 2</a>. This confirms you're present, and gives the speaker something to respond to — which lets the conversation continue naturally.</div>
+        <div class="step-example">"So it sounds like the deadline is the main pressure right now?" — even if you missed the setup, this re-engages you without exposing the gap.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <strong>What not to do</strong>
+    Don't fake presence by nodding and hoping it was nothing important. And don't interrupt with "sorry, can you repeat that?" — it's honest, but it breaks the speaker's flow and signals you weren't listening. The reflection technique bridges the gap more gracefully than either option.
+  </div>
+
+  <div class="callout insight">
+    <strong>The body posture reset</strong>
+    Physical posture affects attention in both directions — a slumped body accelerates zoning out; an upright, forward-leaning posture accelerates re-entry. When you catch the drift signal, a subtle posture shift (sitting slightly forward, both feet on the floor) is a reliable way to re-anchor. It works faster than willpower alone. <span style="font-size:0.82rem;color:var(--muted)">(<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4141721/" target="_blank" style="color:var(--accent)">Carney et al., 2010</a>)</span>
+  </div>
+
+  <hr>
+
+  <h2>Practice: What's the right re-entry?</h2>
+
+  <p>Three scenarios where you've zoned out. Choose the best way to re-engage.</p>
+
+  <div>
+
+    <!-- Scenario 1 -->
+    <div class="scenario-card active" id="s1">
+      <div class="scenario-num">Scenario 1 of 3</div>
+      <div class="scenario-context">Team meeting. Your manager is giving a project update.</div>
+      <div class="scenario-situation">You catch yourself mentally drafting a Slack message. You've been gone for about 20 seconds. The last words you heard were "...the engineering estimate..."</div>
+      <div class="scenario-says">Manager: "...so if that changes, we'll need to rethink the whole launch sequence."</div>
+      <div class="scenario-q">What do you do?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s1', false, 'A', this)">A — "Sorry, I missed that — can you go back to the engineering estimate?"</button>
+        <button class="option-btn" onclick="check('s1', true, 'B', this)">B — Stay quiet, listen for 15 more seconds, then offer: "So the launch sequence is contingent on the estimate holding?"</button>
+        <button class="option-btn" onclick="check('s1', false, 'C', this)">C — Nod and stay quiet, hoping it wasn't critical.</button>
+      </div>
+      <div class="feedback" id="fb-s1"></div>
+      <button class="next-btn" id="next-s1" onclick="advance('s1', 's2')">Next scenario →</button>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="scenario-card" id="s2">
+      <div class="scenario-num">Scenario 2 of 3</div>
+      <div class="scenario-context">1:1 with a colleague. They're explaining a problem they're having with another team.</div>
+      <div class="scenario-situation">You realize you've been replaying something they said earlier and missed the last 30 seconds entirely. You have no anchor word — you genuinely don't know what they're talking about right now.</div>
+      <div class="scenario-says">Colleague: "...which is why I just don't know what to do at this point."</div>
+      <div class="scenario-q">What do you do?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s2', false, 'A', this)">A — Reflect with: "It sounds like you're stuck." (Vague, but buys time.)</button>
+        <button class="option-btn" onclick="check('s2', true, 'B', this)">B — "I want to make sure I'm actually following this — can you tell me more about what the situation looks like right now?"</button>
+        <button class="option-btn" onclick="check('s2', false, 'C', this)">C — "That's tough" and wait for them to continue.</button>
+      </div>
+      <div class="feedback" id="fb-s2"></div>
+      <button class="next-btn" id="next-s2" onclick="advance('s2', 's3')">Next scenario →</button>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario-card" id="s3">
+      <div class="scenario-num">Scenario 3 of 3</div>
+      <div class="scenario-context">Cross-team meeting. Someone is explaining a technical constraint.</div>
+      <div class="scenario-situation">You drifted for about 10 seconds. Your anchor word is "...database migration..." and they're still on that topic.</div>
+      <div class="scenario-says">Speaker: "...it means we can't make the schema change without a full freeze."</div>
+      <div class="scenario-q">What do you do?</div>
+      <div class="options">
+        <button class="option-btn" onclick="check('s3', true, 'A', this)">A — Listen for another 10 seconds to get more context, then reflect: "So the schema change and a freeze are linked — you can't do one without the other?"</button>
+        <button class="option-btn" onclick="check('s3', false, 'B', this)">B — Ask: "What kind of freeze are we talking about?" immediately.</button>
+        <button class="option-btn" onclick="check('s3', false, 'C', this)">C — Say "Got it" and take a note to look it up later.</button>
+      </div>
+      <div class="feedback" id="fb-s3"></div>
+      <button class="next-btn" id="next-s3" onclick="showResult()">See results →</button>
+    </div>
+
+    <!-- Result -->
+    <div class="practice-result" id="practice-result">
+      <div class="score-num" id="score-display">–</div>
+      <p id="score-label" style="color:var(--muted); margin-bottom:0;">correct out of 3</p>
+      <div class="takeaway-box">
+        <h4>Your recovery loop</h4>
+        <p>Next time you catch yourself drifting in a meeting: (1) name it silently, (2) find your last anchor word, (3) listen for 10–15 seconds, (4) offer a short reflection. That's the whole thing. Practice it once per meeting until it's automatic.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>Zoning out is structural — your brain wanders ~47% of the time; the skill is the recovery, not the prevention</li>
+    <li>Early signals (replay loop, task pull, blank reception, clock check) are your cue to act</li>
+    <li>The Last Word Anchor: find what you last heard, listen for 15 seconds, then reflect to land</li>
+    <li>A posture reset accelerates re-entry faster than willpower</li>
+    <li>When you have no anchor at all, it's okay to ask — but frame it as "tell me more" rather than "I missed that"</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    Lesson 5: <strong>Putting it all together</strong> — a full meeting scenario that requires you to use all four skills in sequence: catching the gap, reflecting, asking the right question, and re-engaging. Your final lesson in this series.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher anything in the Claude Code session — e.g. "What if I zone out during something critical and can't fake my way back?" or "How do I handle it when someone notices I drifted?"</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://www.science.org/doi/10.1126/science.1192439" target="_blank">Killingsworth & Gilbert — A Wandering Mind Is an Unhappy Mind (Science, 2010)</a> &middot;
+      <a href="https://www.mindtools.com/az4wxv7/active-listening" target="_blank">MindTools — Active Listening</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);">
+      Active Listening &middot;
+      <a href="0003-asking-the-right-question.html">← Lesson 3</a> &middot;
+      Lesson 4 of series &middot;
+      <a href="0005-putting-it-all-together.html">Lesson 5 →</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+  const feedbackData = {
+    s1: {
+      A: { correct: false, text: "Asking them to repeat the engineering estimate breaks their flow and signals you weren't present. This is the honest option, but it costs them — and it's avoidable. You only need to go back if the gap is unbridgeable; 20 seconds with a good anchor word usually isn't." },
+      B: { correct: true,  text: "Correct. You had an anchor ('engineering estimate'), stayed quiet to collect 15 more seconds of context, and then offered a reflection built from what you actually heard ('launch sequence is contingent on the estimate'). Clean re-entry. The speaker didn't need to know you were gone." },
+      C: { correct: false, text: "Nodding without engagement is the Zoner's default — and it's exactly the pattern you're trying to break. Even if it wasn't critical this time, habitual fake presence means you miss the moments when it is. The reflection technique is the better option for the same amount of effort." }
+    },
+    s2: {
+      A: { correct: false, text: "'It sounds like you're stuck' is technically a reflection, but it's so vague that it's barely better than 'that's tough.' If you missed 30 seconds and have no anchor, a vague reflection is a gamble — it might not match what they were actually saying, and a misfire here can feel worse than admitting you lost the thread." },
+      B: { correct: true,  text: "Correct. When you have no anchor and the gap is too large to bridge with a reflection, the graceful move is an opening question that invites them to re-explain in their own words — without making them repeat themselves verbatim. 'Tell me more about the situation right now' is honest, forward-looking, and gives them a natural re-entry point too." },
+      C: { correct: false, text: "'That's tough' is a filler response that closes down the conversation rather than continuing it. They were looking for engagement, not sympathy — and a generic reaction signals you weren't tracking. It also doesn't help you re-enter; you're still lost." }
+    },
+    s3: {
+      A: { correct: true,  text: "Correct. You had a clean anchor ('database migration'), the gap was only 10 seconds, and the speaker finished a complete thought ('can't do one without the other'). Listening for another 10 seconds gave you enough to offer a precise reflection. You re-entered without breaking anything." },
+      B: { correct: false, text: "Asking immediately — before you've re-oriented — means you might ask something that was already answered while you were drifting. Wait, listen, then ask. Jumping straight to a question when you have enough context to reflect is also the less elegant move — it puts the burden on them to explain, when a reflection gives them the chance to confirm or correct." },
+      C: { correct: false, text: "'Got it' when you don't got it is a compounding mistake — you're now missing context you'll need later, and you've signalled (falsely) that you understood. Looking it up after doesn't recover the conversational context; it just fills in the technical gap. The reflection was available to you here; use it." }
+    }
+  };
+
+  let score = 0;
+
+  function check(scenarioId, isCorrect, option, btn) {
+    const opts = btn.closest('.options').querySelectorAll('.option-btn');
+    opts.forEach(b => b.disabled = true);
+    const fb = document.getElementById('fb-' + scenarioId);
+    const nextBtn = document.getElementById('next-' + scenarioId);
+    const data = feedbackData[scenarioId][option];
+    if (isCorrect) {
+      btn.classList.add('correct');
+      fb.className = 'feedback show good';
+      score++;
+    } else {
+      btn.classList.add('wrong');
+      fb.className = 'feedback show bad';
+      opts.forEach(b => {
+        const opt = b.getAttribute('onclick').match(/'([A-C])'/)[1];
+        if (feedbackData[scenarioId][opt].correct) b.classList.add('reveal');
+      });
+    }
+    fb.textContent = data.text;
+    nextBtn.classList.add('show');
+  }
+
+  function advance(currentId, nextId) {
+    document.getElementById(currentId).classList.remove('active');
+    document.getElementById(nextId).classList.add('active');
+  }
+
+  function showResult() {
+    document.getElementById('s3').classList.remove('active');
+    const result = document.getElementById('practice-result');
+    result.classList.add('show');
+    document.getElementById('score-display').textContent = score + '/3';
+    document.getElementById('score-label').textContent =
+      score === 3 ? 'Perfect — you know the recovery loop.' :
+      score === 2 ? 'Strong. One edge case to revisit.' :
+      'Review the feedback — the distinctions are subtle but important.';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

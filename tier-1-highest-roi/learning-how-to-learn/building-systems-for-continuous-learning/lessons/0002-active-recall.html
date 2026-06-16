@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 2 — Active Recall</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-border: #bfdbfe;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --purple: #7c3aed;
+      --purple-light: #faf5ff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px; font-size: 13px; color: var(--text-muted);
+    }
+    .lesson-number {
+      background: var(--accent); color: white;
+      font-weight: 700; font-size: 11px; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+    }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box {
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 48px;
+    }
+    .learn-box h3 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px;
+    }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 {
+      font-size: 1.3rem; font-weight: 700;
+      margin-top: 48px; margin-bottom: 16px;
+      padding-top: 16px; border-top: 2px solid var(--border);
+    }
+
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-light);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem;
+    }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    /* Comparison table */
+    .compare-table {
+      width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 0.9rem;
+    }
+    .compare-table th {
+      background: var(--tag-bg, #f3f4f6); padding: 10px 14px;
+      text-align: left; font-size: 0.8rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+    }
+    .compare-table td { padding: 12px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+    .compare-table tr:hover td { background: #fafaf8; }
+    .tag-bad { background: #fef2f2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+    .tag-good { background: var(--success-light); color: #14532d; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+
+    /* Method cards */
+    .methods { display: flex; flex-direction: column; gap: 16px; margin: 28px 0; }
+    .method-card {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 20px 22px;
+    }
+    .method-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .method-card .method-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+    .method-card p { font-size: 0.9rem; margin-bottom: 0; }
+
+    /* Interactive exercise */
+    .exercise-section {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .exercise-badge {
+      background: var(--purple); color: white; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 16px;
+    }
+    .exercise-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .exercise-section p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; }
+
+    .concept-reveal {
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; font-size: 0.9rem;
+    }
+    .concept-reveal strong { color: var(--accent); }
+
+    .recall-area {
+      width: 100%;
+      min-height: 100px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      resize: vertical;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .recall-area:focus { border-color: var(--accent); }
+    .recall-area::placeholder { color: var(--text-muted); }
+
+    .reveal-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: white;
+      border: none; border-radius: 8px; padding: 10px 20px;
+      font-size: 0.875rem; font-weight: 600; cursor: pointer;
+      margin-top: 12px; transition: background 0.15s;
+    }
+    .reveal-btn:hover { background: #1d4ed8; }
+
+    .answer-reveal {
+      display: none; background: var(--success-light);
+      border: 1px solid #bbf7d0; border-radius: 10px;
+      padding: 18px 20px; margin-top: 16px; font-size: 0.9rem; line-height: 1.6;
+    }
+    .answer-reveal.show { display: block; }
+    .answer-reveal h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--success); margin-bottom: 10px; font-weight: 700; }
+
+    .self-grade {
+      display: none; margin-top: 16px; gap: 10px; flex-wrap: wrap;
+    }
+    .self-grade.show { display: flex; }
+    .self-grade p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0; width: 100%; }
+    .grade-btn {
+      padding: 8px 16px; border-radius: 8px; border: 1.5px solid;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; background: white;
+      transition: background 0.15s;
+    }
+    .grade-btn.green { border-color: var(--success); color: var(--success); }
+    .grade-btn.green:hover { background: var(--success-light); }
+    .grade-btn.yellow { border-color: var(--warning); color: var(--warning); }
+    .grade-btn.yellow:hover { background: var(--warning-light); }
+    .grade-btn.red { border-color: var(--danger); color: var(--danger); }
+    .grade-btn.red:hover { background: var(--danger-light); }
+
+    .grade-feedback { display: none; margin-top: 12px; font-size: 0.875rem; padding: 12px 14px; border-radius: 8px; }
+    .grade-feedback.show { display: block; }
+
+    /* Nav */
+    .lesson-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 8px; font-size: 0.875rem;
+      font-weight: 600; text-decoration: none; border: 1.5px solid var(--border);
+      color: var(--text); transition: border-color 0.15s;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #1d4ed8; border-color: #1d4ed8; color: white; }
+
+    .teacher-box {
+      background: #fdf4ff; border: 1px solid #e9d5ff;
+      border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem;
+    }
+    .teacher-box h3 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--purple); margin-bottom: 8px;
+    }
+
+    @media print {
+      .exercise-section, .lesson-nav, .teacher-box { display: none; }
+      body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 2 of 3</span>
+    <span>⏱ ~15 minutes</span>
+    <span>· Beginner</span>
+  </div>
+
+  <h1>Active Recall</h1>
+  <p class="tagline">The single most effective study technique known to science — and almost no one uses it correctly.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>What active recall is and why it beats rereading</li>
+      <li>The testing effect — why self-testing builds stronger memories</li>
+      <li>Three practical methods to use active recall starting today</li>
+      <li>A hands-on exercise to practice the technique right now</li>
+    </ul>
+  </div>
+
+  <h2>The passive learning trap</h2>
+
+  <p>Most people learn like this: they read something, feel like they understand it, maybe highlight a few sentences, and move on. Then they wonder why it doesn't stick.</p>
+
+  <p>This is <strong>passive learning</strong>. And it's deceptively comfortable — re-reading familiar material feels productive. Your brain recognizes the words and generates a pleasant feeling of fluency. But familiarity is not the same as memory. You're not building the neural pathways that would let you retrieve and use this knowledge when it matters. <cite>(<a href="https://www.shortform.com/blog/make-it-stick-book/" target="_blank">Make It Stick, Shortform</a>)</cite></p>
+
+  <table class="compare-table">
+    <tr>
+      <th>Passive learning</th>
+      <th>Active recall</th>
+    </tr>
+    <tr>
+      <td>Reading your notes again <span class="tag-bad">low retention</span></td>
+      <td>Closing your notes, asking "what do I remember?" <span class="tag-good">high retention</span></td>
+    </tr>
+    <tr>
+      <td>Watching a video twice <span class="tag-bad">low retention</span></td>
+      <td>Pausing the video and summarising it from memory <span class="tag-good">high retention</span></td>
+    </tr>
+    <tr>
+      <td>Re-reading highlighted text <span class="tag-bad">low retention</span></td>
+      <td>Writing down what you remember before looking <span class="tag-good">high retention</span></td>
+    </tr>
+    <tr>
+      <td>Copying notes from a board <span class="tag-bad">low retention</span></td>
+      <td>Closing the board, recalling what was on it <span class="tag-good">high retention</span></td>
+    </tr>
+  </table>
+
+  <h2>The testing effect</h2>
+
+  <p>The science behind active recall is called the <strong>testing effect</strong> (also called the retrieval practice effect). It's one of the most robust and replicated findings in cognitive psychology.</p>
+
+  <p>The landmark study: In 2006, Roediger and Karpicke gave students a passage to study. One group reread it four times. Another group read it once, then tested themselves three times. A week later, they were tested. The testing group remembered <strong>50% more</strong>. <cite>(<a href="https://recallify.ai/evidence-for-active-recall-and-spaced-repetition/" target="_blank">Recallify — Evidence Review</a>)</cite></p>
+
+  <div class="callout">
+    <strong>Why this works</strong>
+    Every time you retrieve a memory, you don't just passively "access" it — you rebuild it. The act of reconstruction strengthens the neural connections involved. Memories retrieved are harder to forget than memories merely re-exposed.
+  </div>
+
+  <p>The effort matters too. Struggling to remember something — even if you don't fully succeed — produces stronger memories than looking up the answer immediately. The difficulty is the point. <cite>(<a href="https://www.shortform.com/blog/make-it-stick-book/" target="_blank">Make It Stick</a>)</cite></p>
+
+  <h2>Three methods you can use today</h2>
+
+  <div class="methods">
+    <div class="method-card">
+      <h4>1. The Brain Dump</h4>
+      <div class="method-meta">Best for: after reading, after a lesson, after a meeting</div>
+      <p>After learning something, close all your materials and write (or speak aloud) everything you can remember. No peeking. Then check what you missed. This is the simplest and most immediate form of active recall — and it works on anything.</p>
+    </div>
+
+    <div class="method-card">
+      <h4>2. Flashcards (done right)</h4>
+      <div class="method-meta">Best for: facts, definitions, vocabulary, formulas</div>
+      <p>Write a question on one side, the answer on the other. Crucially: see the question, generate the answer from memory <em>before</em> flipping. The generation attempt is what creates the memory. Don't flip immediately when you feel uncertain — struggle first.</p>
+    </div>
+
+    <div class="method-card">
+      <h4>3. The Feynman Technique</h4>
+      <div class="method-meta">Best for: concepts, processes, anything you need to deeply understand</div>
+      <p>After learning something, explain it in simple language as if teaching a 12-year-old. The gaps in your explanation reveal the gaps in your understanding. Where your explanation breaks down — that's exactly what you need to study more. <cite>(<a href="https://www.scotthyoung.com/blog/ultralearning/" target="_blank">Scott H. Young — Ultralearning</a>)</cite></p>
+    </div>
+  </div>
+
+  <div class="callout purple">
+    <strong>The rule</strong>
+    Every time you finish learning something — a video, a chapter, a lesson — your first action should be to close the material and try to recall what you learned before looking again. Not after. Before.
+  </div>
+
+  <h2>Connecting back to Lesson 1</h2>
+
+  <p>Remember the forgetting curve from <a href="0001-the-forgetting-curve.html">Lesson 1</a>? Active recall is the mechanism that resets it. Each retrieval attempt flattens the curve — your brain receives the signal: "This information is needed. Keep it."</p>
+
+  <p>This is why spaced repetition (which we'll cover in the next lesson) uses active recall as its testing method. It's not just about when you review — it's about how. Testing yourself, not rereading, is what makes the reviews count.</p>
+
+  <!-- Interactive Exercise -->
+  <div class="exercise-section">
+    <span class="exercise-badge">Live Exercise</span>
+    <h3>Practice active recall right now</h3>
+    <p>You've just read about active recall. Now we're going to use it. Read the concept below, then close your eyes for 30 seconds, and write what you remember — without scrolling up.</p>
+
+    <div class="concept-reveal">
+      <strong>The concept you just learned:</strong> The testing effect — retrieving information from memory (even imperfectly) produces stronger, more durable memories than rereading the same material. A 2006 study by Roediger and Karpicke found that one self-test produced 50% better recall after a week than three rereads.
+    </div>
+
+    <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">Now write everything you can remember about <em>why</em> active recall works — without looking above. Even partial answers count.</p>
+    <textarea class="recall-area" placeholder="Write your recall here... What was the study? What did it find? Why does retrieving create stronger memories?"></textarea>
+
+    <button class="reveal-btn" onclick="revealAnswer()">See the key points →</button>
+
+    <div class="answer-reveal" id="answer-box">
+      <h4>Key points to check yourself against</h4>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+        <li>✓ <strong>Testing effect / retrieval practice effect</strong> — testing yourself builds stronger memories than rereading</li>
+        <li>✓ <strong>Roediger &amp; Karpicke (2006)</strong> — one test = 50% better recall than three rereads after 1 week</li>
+        <li>✓ <strong>Why it works</strong> — retrieval reconstructs the memory, strengthening neural connections</li>
+        <li>✓ <strong>Effort matters</strong> — struggling to recall (even failing) produces better results than looking up immediately</li>
+      </ul>
+    </div>
+
+    <div class="self-grade" id="grade-row">
+      <p>How did you do?</p>
+      <button class="grade-btn green" onclick="grade('great')">Got most of it</button>
+      <button class="grade-btn yellow" onclick="grade('partial')">Got some of it</button>
+      <button class="grade-btn red" onclick="grade('missed')">Missed a lot</button>
+    </div>
+
+    <div class="grade-feedback" id="grade-feedback"></div>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Confused about anything? Try these questions to go deeper: <em>"Can you give me a Feynman explanation of the testing effect?"</em> or <em>"What should I do if I can't remember anything during a brain dump?"</em> Your teacher can adjust the pace, give more examples, or explain any concept differently.</p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0001-the-forgetting-curve.html" class="nav-btn">← Lesson 1: The Forgetting Curve</a>
+    <a href="0003-building-your-learning-habit.html" class="nav-btn primary">Next: Building Your Learning Habit →</a>
+  </div>
+
+</div>
+
+<script>
+  function revealAnswer() {
+    document.getElementById('answer-box').classList.add('show');
+    document.getElementById('grade-row').classList.add('show');
+    document.querySelector('.reveal-btn').style.display = 'none';
+  }
+
+  function grade(level) {
+    const fb = document.getElementById('grade-feedback');
+    document.querySelectorAll('.grade-btn').forEach(b => b.disabled = true);
+    fb.classList.add('show');
+
+    if (level === 'great') {
+      fb.style.background = '#f0fdf4';
+      fb.style.border = '1px solid #bbf7d0';
+      fb.style.color = '#14532d';
+      fb.textContent = "Excellent. You've just done active recall — and you've made this lesson stick. When you revisit this tomorrow, you'll remember more than if you'd just reread it.";
+    } else if (level === 'partial') {
+      fb.style.background = '#fffbeb';
+      fb.style.border = '1px solid #fde68a';
+      fb.style.color = '#92400e';
+      fb.textContent = "That's normal — and expected. The gaps you noticed are exactly what to review. Go back and re-read just those sections, then try recalling again. The second attempt will be stronger.";
+    } else {
+      fb.style.background = '#fef2f2';
+      fb.style.border = '1px solid #fecaca';
+      fb.style.color = '#7f1d1d';
+      fb.textContent = "Don't worry — that struggle was valuable. Your brain just tried hard, which is the first step. Re-read the lesson, then close it and try the brain dump again. Second attempts usually look very different.";
+    }
+  }
+</script>
+</body>
+</html>

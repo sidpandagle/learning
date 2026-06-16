@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glossary — Building Systems for Continuous Learning</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-border: #bfdbfe;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px;
+    }
+
+    .page { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .ref-badge {
+      background: #f3f4f6; border: 1px solid var(--border); color: var(--text-muted);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 24px;
+    }
+
+    h1 { font-size: 1.8rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 40px; }
+
+    /* Search */
+    .search-wrapper { position: relative; margin-bottom: 32px; }
+    .search-input {
+      width: 100%; font-family: inherit; font-size: 0.95rem;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 11px 14px 11px 38px; background: var(--surface);
+      color: var(--text); outline: none; transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); font-size: 1rem; pointer-events: none;
+    }
+
+    /* Letter nav */
+    .letter-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 32px; }
+    .letter-btn {
+      width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--surface); font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; color: var(--text-muted); transition: all 0.12s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .letter-btn:hover, .letter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* Terms */
+    .letter-section { margin-bottom: 40px; }
+    .letter-heading {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--accent); border-bottom: 2px solid var(--accent-border);
+      padding-bottom: 6px; margin-bottom: 16px;
+    }
+
+    .term { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .term:last-child { border-bottom: none; }
+    .term dt {
+      font-weight: 700; font-size: 1rem; margin-bottom: 4px;
+      display: flex; align-items: baseline; gap: 8px;
+    }
+    .term-tag {
+      font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      background: var(--accent-light); color: var(--accent); padding: 2px 7px;
+      border-radius: 4px; flex-shrink: 0;
+    }
+    .term dd { color: var(--text); font-size: 0.9rem; line-height: 1.6; }
+    .term .see { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .term .see a { color: var(--accent); text-decoration: none; }
+    .term .see a:hover { text-decoration: underline; }
+
+    .no-results { display: none; text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.95rem; }
+    .no-results.show { display: block; }
+
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .back-link { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 32px; display: inline-block; text-decoration: none; }
+    .back-link:hover { color: var(--accent); }
+
+    @media print {
+      .search-wrapper, .letter-nav, .back-link { display: none; }
+      .term { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <a href="../lessons/0001-the-forgetting-curve.html" class="back-link">← Back to lessons</a>
+
+  <span class="ref-badge">Reference</span>
+  <h1>Glossary</h1>
+  <p class="subtitle">Key terms for Building Systems for Continuous Learning — updated as new lessons are added.</p>
+
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" type="text" id="search" placeholder="Search terms..." oninput="filterTerms()">
+  </div>
+
+  <div class="letter-nav" id="letter-nav"></div>
+
+  <div id="terms-container">
+
+    <div class="letter-section" id="section-A">
+      <div class="letter-heading">A</div>
+      <dl>
+        <div class="term">
+          <dt>Active Recall <span class="term-tag">Core Technique</span></dt>
+          <dd>A learning method where you retrieve information from memory without looking at the source material. The act of retrieval — even when imperfect — strengthens the memory and produces significantly better retention than rereading. Also called retrieval practice.</dd>
+          <div class="see">→ <a href="../lessons/0002-active-recall.html">Lesson 2: Active Recall</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-B">
+      <div class="letter-heading">B</div>
+      <dl>
+        <div class="term">
+          <dt>Brain Dump <span class="term-tag">Technique</span></dt>
+          <dd>A form of active recall where, immediately after learning, you close all materials and write (or speak aloud) everything you can remember. No peeking. The gaps in your recall reveal exactly what needs more attention.</dd>
+          <div class="see">→ <a href="../lessons/0002-active-recall.html">Lesson 2: Active Recall</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-C">
+      <div class="letter-heading">C</div>
+      <dl>
+        <div class="term">
+          <dt>Cue <span class="term-tag">Habit</span></dt>
+          <dd>In the habit loop, the cue is the trigger that starts the behaviour. A strong learning cue is something specific and consistent — a time, a place, or an action you already perform (see: habit stacking).</dd>
+          <div class="see">→ <a href="../lessons/0003-building-your-learning-habit.html">Lesson 3: Building Your Learning Habit</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-E">
+      <div class="letter-heading">E</div>
+      <dl>
+        <div class="term">
+          <dt>Ebbinghaus, Hermann <span class="term-tag">Person</span></dt>
+          <dd>German psychologist (1850–1909) who conducted the first systematic experiments on human memory, discovering the forgetting curve and the spacing effect. His work is the empirical foundation of modern learning science.</dd>
+          <div class="see">→ <a href="../lessons/0001-the-forgetting-curve.html">Lesson 1: The Forgetting Curve</a></div>
+        </div>
+        <div class="term">
+          <dt>Elaboration <span class="term-tag">Technique</span></dt>
+          <dd>The practice of explaining and describing ideas in rich detail, connecting new knowledge to existing mental frameworks. One of the key strategies in Make It Stick for deepening understanding beyond surface recall.</dd>
+        </div>
+        <div class="term">
+          <dt>Effortful Learning <span class="term-tag">Principle</span></dt>
+          <dd>The counterintuitive finding that learning which feels difficult or slow produces stronger, more durable memories than learning that feels easy. Struggle signals that the brain is building new connections. Also called desirable difficulty.</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-F">
+      <div class="letter-heading">F</div>
+      <dl>
+        <div class="term">
+          <dt>Feynman Technique <span class="term-tag">Technique</span></dt>
+          <dd>A four-step active recall method: (1) choose a concept, (2) explain it in simple language as if teaching a child, (3) identify where your explanation breaks down, (4) return to the source to fill those gaps. Named after physicist Richard Feynman.</dd>
+          <div class="see">→ <a href="../lessons/0002-active-recall.html">Lesson 2: Active Recall</a></div>
+        </div>
+        <div class="term">
+          <dt>Flashcard <span class="term-tag">Tool</span></dt>
+          <dd>A question-and-answer card used for active recall practice. Crucially: the value is in generating the answer from memory before flipping — not in recognising the answer after seeing it. Works best for facts, vocabulary, definitions, and formulas.</dd>
+        </div>
+        <div class="term">
+          <dt>Forgetting Curve <span class="term-tag">Core Concept</span></dt>
+          <dd>A mathematical description of how memory decays over time without review, first documented by Ebbinghaus (1885). The curve falls steeply at first — roughly 42% forgotten after 20 minutes — then levels off. The curve can be reset and flattened by review (see: spaced repetition).</dd>
+          <div class="see">→ <a href="../lessons/0001-the-forgetting-curve.html">Lesson 1: The Forgetting Curve</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-H">
+      <div class="letter-heading">H</div>
+      <dl>
+        <div class="term">
+          <dt>Habit Loop <span class="term-tag">Concept</span></dt>
+          <dd>The three-stage neurological cycle that drives habitual behaviour: cue → routine → reward. To build a learning habit, you need a reliable cue, a defined routine, and a reinforcing reward. Breaking this loop is why most learning habits fail.</dd>
+          <div class="see">→ <a href="../lessons/0003-building-your-learning-habit.html">Lesson 3: Building Your Learning Habit</a></div>
+        </div>
+        <div class="term">
+          <dt>Habit Stacking <span class="term-tag">Technique</span></dt>
+          <dd>Attaching a new behaviour to an existing habit, using the formula: "After I [existing habit], I will [new behaviour]." Provides a built-in cue and reduces the activation energy required to start. More reliable than trying to remember a new habit in isolation.</dd>
+          <div class="see">→ <a href="../lessons/0003-building-your-learning-habit.html">Lesson 3: Building Your Learning Habit</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-I">
+      <div class="letter-heading">I</div>
+      <dl>
+        <div class="term">
+          <dt>Interleaving <span class="term-tag">Technique</span></dt>
+          <dd>The practice of mixing different topics or problem types within a single study session, rather than studying one topic until mastered (blocked practice). Feels harder and slower, but produces superior long-term retention and transfer of learning.</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-M">
+      <div class="letter-heading">M</div>
+      <dl>
+        <div class="term">
+          <dt>Minimum Viable Session (MVS) <span class="term-tag">Concept</span></dt>
+          <dd>The smallest version of a learning session that still counts — designed so it's almost impossible to skip. For example: "just 5 flashcards" or "2 pages." The purpose is to prevent the habit from collapsing on hard days. Once you start a minimum session, you usually continue longer.</dd>
+          <div class="see">→ <a href="../lessons/0003-building-your-learning-habit.html">Lesson 3: Building Your Learning Habit</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-P">
+      <div class="letter-heading">P</div>
+      <dl>
+        <div class="term">
+          <dt>Passive Learning <span class="term-tag">Anti-pattern</span></dt>
+          <dd>Learning by re-exposure rather than retrieval: rereading notes, rewatching videos, highlighting text. Creates a false sense of mastery (fluency illusion) without building the retrieval pathways needed for recall. Should be minimised in favour of active recall.</dd>
+        </div>
+        <div class="term">
+          <dt>PKM (Personal Knowledge Management) <span class="term-tag">System</span></dt>
+          <dd>A personal system for capturing, organising, and retrieving knowledge over time. Common tools include Obsidian, Notion, and Roam Research. PKM is a higher-order skill — best introduced after the core learning techniques (active recall, spaced repetition) are established.</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-R">
+      <div class="letter-heading">R</div>
+      <dl>
+        <div class="term">
+          <dt>Retrieval Practice Effect <span class="term-tag">Research Finding</span></dt>
+          <dd>See: Testing Effect.</dd>
+        </div>
+        <div class="term">
+          <dt>Reward <span class="term-tag">Habit</span></dt>
+          <dd>In the habit loop, the reward is what reinforces the behaviour and tells the brain to repeat it. For learning habits, rewards should be immediate and pleasurable — something you actually enjoy doing right after your session.</dd>
+          <div class="see">→ <a href="../lessons/0003-building-your-learning-habit.html">Lesson 3: Building Your Learning Habit</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-S">
+      <div class="letter-heading">S</div>
+      <dl>
+        <div class="term">
+          <dt>Spacing Effect <span class="term-tag">Core Concept</span></dt>
+          <dd>The finding that learning spread across multiple sessions — with gaps in between — produces better long-term retention than massed practice (cramming). The gap allows forgetting to begin, and the review then strengthens the memory more than if you'd reviewed immediately.</dd>
+        </div>
+        <div class="term">
+          <dt>Spaced Repetition <span class="term-tag">Core Technique</span></dt>
+          <dd>A systematic review schedule that exploits the spacing effect: you review material at increasing intervals (e.g., 1 day → 3 days → 1 week → 2 weeks → 1 month). Each successful review extends the interval. Software like Anki automates this scheduling. Combats the forgetting curve directly.</dd>
+          <div class="see">→ <a href="../lessons/0001-the-forgetting-curve.html">Lesson 1: The Forgetting Curve</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-T">
+      <div class="letter-heading">T</div>
+      <dl>
+        <div class="term">
+          <dt>Testing Effect <span class="term-tag">Research Finding</span></dt>
+          <dd>The robust finding that testing yourself (active recall) produces significantly better long-term retention than rereading the same material. Demonstrated in Roediger &amp; Karpicke (2006): one self-test produced 50% better recall after one week compared to three rereads. Also called the retrieval practice effect.</dd>
+          <div class="see">→ <a href="../lessons/0002-active-recall.html">Lesson 2: Active Recall</a></div>
+        </div>
+      </dl>
+    </div>
+
+    <div class="letter-section" id="section-Z">
+      <div class="letter-heading">Z</div>
+      <dl>
+        <div class="term">
+          <dt>Zone of Proximal Development <span class="term-tag">Pedagogy</span></dt>
+          <dd>The sweet spot for learning: material that is challenging enough to require effort, but not so difficult that it causes confusion or discouragement. Staying in this zone — "just enough challenge" — maximises the rate of skill and knowledge acquisition.</dd>
+        </div>
+        <div class="term">
+          <dt>Zettelkasten <span class="term-tag">System</span></dt>
+          <dd>A note-taking system (German: "slip box") where ideas are captured as atomic notes and linked to related notes. Developed by sociologist Niklas Luhmann. Popular in PKM communities for building a "second brain" that generates new insights through linked connections.</dd>
+        </div>
+      </dl>
+    </div>
+
+  </div>
+
+  <div class="no-results" id="no-results">No terms match your search.</div>
+
+</div>
+
+<script>
+  // Build letter nav
+  const letters = ['A','B','C','E','F','H','I','M','P','R','S','T','Z'];
+  const nav = document.getElementById('letter-nav');
+  letters.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'letter-btn';
+    btn.textContent = l;
+    btn.onclick = () => {
+      const sec = document.getElementById('section-' + l);
+      if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    nav.appendChild(btn);
+  });
+
+  function filterTerms() {
+    const q = document.getElementById('search').value.toLowerCase().trim();
+    const sections = document.querySelectorAll('.letter-section');
+    let anyVisible = false;
+
+    sections.forEach(sec => {
+      const terms = sec.querySelectorAll('.term');
+      let sectionVisible = false;
+      terms.forEach(t => {
+        const text = t.textContent.toLowerCase();
+        const match = !q || text.includes(q);
+        t.style.display = match ? '' : 'none';
+        if (match) sectionVisible = true;
+      });
+      sec.style.display = sectionVisible ? '' : 'none';
+      if (sectionVisible) anyVisible = true;
+    });
+
+    document.getElementById('no-results').classList.toggle('show', !anyVisible && q.length > 0);
+  }
+</script>
+</body>
+</html>
