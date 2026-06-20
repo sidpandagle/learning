@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4 — Spaced Repetition</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-border: #bfdbfe;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --purple: #7c3aed;
+      --purple-light: #faf5ff;
+      --green: #059669;
+      --green-light: #ecfdf5;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px; font-size: 13px; color: var(--text-muted);
+    }
+    .lesson-number {
+      background: var(--accent); color: white; font-weight: 700;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box {
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 48px;
+    }
+    .learn-box h3 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px;
+    }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 {
+      font-size: 1.3rem; font-weight: 700; margin-top: 48px;
+      margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border);
+    }
+
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-light);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem;
+    }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout.green { border-left-color: var(--green); background: var(--green-light); }
+    .callout.warning { border-left-color: var(--warning); background: var(--warning-light); }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    /* Interval timeline */
+    .interval-timeline {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px; margin: 24px 0; overflow-x: auto;
+    }
+    .interval-timeline h4 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 20px;
+    }
+    .timeline-row {
+      display: flex; align-items: center; gap: 0; margin-bottom: 12px; min-width: 480px;
+    }
+    .timeline-label {
+      width: 90px; flex-shrink: 0; font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+    }
+    .timeline-bar-wrap { flex: 1; display: flex; align-items: center; gap: 8px; }
+    .timeline-bar {
+      height: 28px; border-radius: 6px; display: flex; align-items: center;
+      padding: 0 10px; font-size: 0.75rem; font-weight: 700; color: white; white-space: nowrap;
+    }
+    .bar-blue { background: var(--accent); }
+    .bar-green { background: var(--green); }
+    .bar-purple { background: var(--purple); }
+
+    /* Card anatomy */
+    .card-compare {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;
+    }
+    @media (max-width: 540px) { .card-compare { grid-template-columns: 1fr; } }
+    .card-bad, .card-good {
+      border-radius: 10px; padding: 18px 20px; font-size: 0.9rem;
+    }
+    .card-bad { background: var(--danger-light); border: 1.5px solid #fca5a5; }
+    .card-good { background: var(--success-light); border: 1.5px solid #86efac; }
+    .card-label {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 10px;
+    }
+    .card-bad .card-label { color: var(--danger); }
+    .card-good .card-label { color: var(--success); }
+    .card-q { font-weight: 600; margin-bottom: 6px; }
+    .card-a { color: var(--text-muted); font-style: italic; }
+    .card-why { font-size: 0.78rem; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); color: var(--text-muted); }
+
+    /* Interactive flashcard demo */
+    .flashcard-demo {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .demo-badge {
+      background: var(--accent); color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 16px;
+    }
+    .flashcard-demo h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .flashcard-demo > p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .card-face {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 12px; min-height: 120px; padding: 24px;
+      display: flex; flex-direction: column; justify-content: center;
+      text-align: center; margin-bottom: 16px; cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .card-face:hover { border-color: var(--accent); }
+    .card-face .card-front-q { font-size: 1.05rem; font-weight: 600; }
+    .card-face .card-back-a {
+      font-size: 1rem; color: var(--success); font-weight: 600; margin-top: 12px;
+      display: none;
+    }
+    .card-face .flip-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 12px; }
+    .card-face.flipped .flip-hint { display: none; }
+    .card-face.flipped .card-back-a { display: block; }
+
+    .rating-row {
+      display: none; gap: 10px; margin-top: 8px;
+    }
+    .rating-row.show { display: flex; }
+    .rate-btn {
+      flex: 1; padding: 10px; border-radius: 8px; border: 1.5px solid var(--border);
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; background: var(--surface);
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .rate-again { color: var(--danger); }
+    .rate-again:hover { background: var(--danger-light); border-color: var(--danger); }
+    .rate-hard { color: var(--warning); }
+    .rate-hard:hover { background: var(--warning-light); border-color: var(--warning); }
+    .rate-good { color: var(--success); }
+    .rate-good:hover { background: var(--success-light); border-color: var(--success); }
+    .rate-easy { color: var(--accent); }
+    .rate-easy:hover { background: var(--accent-light); border-color: var(--accent); }
+
+    .next-review-msg {
+      display: none; margin-top: 16px; padding: 12px 16px;
+      border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-align: center;
+    }
+    .next-review-msg.show { display: block; }
+    .next-again { background: var(--danger-light); color: var(--danger); }
+    .next-hard { background: var(--warning-light); color: var(--warning); }
+    .next-good { background: var(--success-light); color: var(--success); }
+    .next-easy { background: var(--accent-light); color: var(--accent); }
+
+    .next-card-btn {
+      display: none; width: 100%; margin-top: 12px; padding: 10px;
+      border-radius: 8px; border: 1.5px solid var(--border);
+      font-size: 0.875rem; font-weight: 600; cursor: pointer; background: var(--surface);
+    }
+    .next-card-btn.show { display: block; }
+    .next-card-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .card-counter { font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-bottom: 12px; }
+
+    /* Builder */
+    .builder-section {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .builder-badge {
+      background: var(--green); color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 16px;
+    }
+    .builder-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .builder-section > p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .form-field { margin-bottom: 20px; }
+    .form-field label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 6px; }
+    .form-field .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+    .form-field input, .form-field select, .form-field textarea {
+      width: 100%; font-family: inherit; font-size: 0.9rem;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px;
+      color: var(--text); background: var(--bg); outline: none;
+      transition: border-color 0.15s; resize: vertical;
+    }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--accent); }
+
+    .generate-btn {
+      background: var(--accent); color: white; border: none;
+      border-radius: 8px; padding: 12px 24px; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; width: 100%; transition: background 0.15s;
+    }
+    .generate-btn:hover { background: #1d4ed8; }
+
+    .card-output {
+      display: none; margin-top: 20px; background: var(--accent-light);
+      border: 1px solid var(--accent-border); border-radius: 10px; padding: 20px;
+    }
+    .card-output.show { display: block; }
+    .card-output h4 { font-weight: 700; margin-bottom: 12px; font-size: 0.95rem; }
+    .card-output .generated-card {
+      background: white; border: 1.5px solid var(--accent-border);
+      border-radius: 8px; padding: 16px; margin-bottom: 10px;
+    }
+    .generated-card .gc-label {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px;
+    }
+    .generated-card .gc-text { font-size: 0.9rem; }
+    .card-tip { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }
+
+    /* Nav */
+    .lesson-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none;
+      border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #1d4ed8; border-color: #1d4ed8; color: white; }
+
+    .teacher-box {
+      background: #fdf4ff; border: 1px solid #e9d5ff;
+      border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem;
+    }
+    .teacher-box h3 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--purple); margin-bottom: 8px;
+    }
+
+    @media print {
+      .flashcard-demo, .builder-section, .lesson-nav, .teacher-box { display: none; }
+      body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 4</span>
+    <span>⏱ ~20 minutes</span>
+    <span>· Beginner</span>
+  </div>
+
+  <h1>Spaced Repetition</h1>
+  <p class="tagline">You now know <em>why</em> you forget (Lesson 1) and <em>how</em> to retrieve (Lesson 2). This lesson gives you the <em>when</em> — a scheduling system that makes your review time five times more efficient.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>What spaced repetition is and why the timing of review matters</li>
+      <li>How a spaced repetition system (SRS) schedules your reviews automatically</li>
+      <li>The rules for writing cards that actually work — and the mistakes to avoid</li>
+      <li>How to start: the manual option and the Anki option</li>
+    </ul>
+  </div>
+
+  <h2>The problem with random review</h2>
+
+  <p>In <a href="0001-the-forgetting-curve.html">Lesson 1</a> you learned that memory decays on a curve — and that each successful review resets that curve, letting it decay more slowly next time. In <a href="0002-active-recall.html">Lesson 2</a> you learned to use active recall rather than rereading.</p>
+
+  <p>But there's still a timing problem. If you review too soon after learning something (when you still remember it clearly), you waste effort — the memory was never at risk of being lost. If you review too late (after you've already forgotten), the review feels like relearning from scratch, which is slow.</p>
+
+  <p>The optimal moment to review is just before you forget. Review there, and you get the maximum memory boost with the minimum effort. <cite>(<a href="https://recallify.ai/evidence-for-active-recall-and-spaced-repetition/" target="_blank">Recallify — Evidence for Active Recall and Spaced Repetition</a>)</cite></p>
+
+  <h2>How spaced repetition works</h2>
+
+  <p>Spaced repetition is a system that reviews each piece of knowledge at increasing intervals — timed to hit just before it would be forgotten.</p>
+
+  <div class="interval-timeline">
+    <h4>Example: learning a new concept</h4>
+    <div class="timeline-row">
+      <div class="timeline-label">Day 1</div>
+      <div class="timeline-bar-wrap">
+        <div class="timeline-bar bar-blue" style="width: 48px;">Learn</div>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label">Day 2</div>
+      <div class="timeline-bar-wrap">
+        <div class="timeline-bar bar-green" style="width: 80px;">Review #1</div>
+        <span style="font-size:0.78rem;color:var(--text-muted);">→ interval resets to ~4 days</span>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label">Day 6</div>
+      <div class="timeline-bar-wrap">
+        <div class="timeline-bar bar-green" style="width: 80px;">Review #2</div>
+        <span style="font-size:0.78rem;color:var(--text-muted);">→ interval grows to ~10 days</span>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label">Day 16</div>
+      <div class="timeline-bar-wrap">
+        <div class="timeline-bar bar-green" style="width: 80px;">Review #3</div>
+        <span style="font-size:0.78rem;color:var(--text-muted);">→ interval grows to ~3 weeks</span>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="timeline-label">Day 37</div>
+      <div class="timeline-bar-wrap">
+        <div class="timeline-bar bar-purple" style="width: 80px;">Review #4</div>
+        <span style="font-size:0.78rem;color:var(--text-muted);">→ interval now ~2 months</span>
+      </div>
+    </div>
+  </div>
+
+  <p>Each time you successfully recall something, the system extends the interval. Items you find hard get reviewed more often. Items you find easy get pushed further into the future. The result: you spend your time exactly where it's needed.</p>
+
+  <div class="callout green">
+    <strong>The research result</strong>
+    Studies consistently show spaced repetition produces roughly the same long-term retention as massed practice (cramming) — but in 40–60% less total study time. The same outcome, dramatically less effort. <cite>(<a href="https://files.eric.ed.gov/fulltext/EJ1241511.pdf" target="_blank">ERIC — Spaced Repetition in STEM</a>)</cite>
+  </div>
+
+  <h2>What goes on a flashcard — and what doesn't</h2>
+
+  <p>Spaced repetition lives or dies on card quality. A poorly written card wastes reviews. A well-written card makes learning fast and durable.</p>
+
+  <p>The core rule: <strong>one question, one answer, one idea.</strong> If a card covers two facts, you can't separate what you know from what you don't — so the system can't schedule it accurately.</p>
+
+  <div class="card-compare">
+    <div class="card-bad">
+      <div class="card-label">Bad card</div>
+      <div class="card-q">Q: What is spaced repetition and how does it work and why is it better than cramming?</div>
+      <div class="card-a">A: It's a review system that spaces out reviews over increasing intervals, exploiting the spacing effect, and studies show it produces the same retention with 40–60% less time...</div>
+      <div class="card-why">Too broad. One card, three concepts. If you forget one part, you can't score it honestly.</div>
+    </div>
+    <div class="card-good">
+      <div class="card-label">Good card</div>
+      <div class="card-q">Q: What is the spacing effect?</div>
+      <div class="card-a">A: Reviewing the same material spread across multiple sessions produces stronger long-term retention than reviewing it all at once.</div>
+      <div class="card-why">One idea. Short answer. Easy to judge right or wrong. Fast to review.</div>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <strong>The most common mistake</strong>
+    Don't copy text from a book onto a card. Rewrite it in your own words first. If you can't explain it without looking, you don't understand it well enough to make a card for it yet — go back and learn it properly, then make the card.
+  </div>
+
+  <p>A few more card rules that pay off immediately:</p>
+
+  <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; padding-left: 0; margin-bottom: 24px;">
+    <li style="display: flex; gap: 10px;"><span style="color: var(--success); font-weight: 700; flex-shrink: 0;">✓</span> <span><strong>Make it personal.</strong> "What does spaced repetition mean for me?" beats "Define spaced repetition." Your brain retains things that feel relevant.</span></li>
+    <li style="display: flex; gap: 10px;"><span style="color: var(--success); font-weight: 700; flex-shrink: 0;">✓</span> <span><strong>Use cloze deletions for facts.</strong> "The spacing effect shows reviews spread over time produce [___] retention than cramming." Forces active recall without needing a full Q/A format.</span></li>
+    <li style="display: flex; gap: 10px;"><span style="color: var(--success); font-weight: 700; flex-shrink: 0;">✓</span> <span><strong>Keep answers short.</strong> If your answer is more than two sentences, split the card.</span></li>
+    <li style="display: flex; gap: 10px;"><span style="color: var(--danger); font-weight: 700; flex-shrink: 0;">✗</span> <span><strong>Don't add cards for things you already know well.</strong> Cards are expensive — they eat future review time. Only add cards for things you genuinely need to retain.</span></li>
+  </ul>
+
+  <!-- Interactive demo -->
+  <div class="flashcard-demo">
+    <span class="demo-badge">Try It</span>
+    <h3>Experience a spaced repetition session</h3>
+    <p>Below are three cards from this lesson. Click each card to reveal the answer, then rate how well you recalled it. The rating determines how far in the future this card would be scheduled.</p>
+
+    <div class="card-counter" id="card-counter">Card 1 of 3</div>
+
+    <div class="card-face" id="card-face" onclick="flipCard()">
+      <div class="card-front-q" id="card-q">What is the core rule for writing a good flashcard?</div>
+      <div class="card-back-a" id="card-a">One question, one answer, one idea. If a card covers two facts, the system can't schedule it accurately.</div>
+      <div class="flip-hint">Click to reveal answer</div>
+    </div>
+
+    <div class="rating-row" id="rating-row">
+      <button class="rate-btn rate-again" onclick="rateCard('again')">Again<br><small>Forgot</small></button>
+      <button class="rate-btn rate-hard" onclick="rateCard('hard')">Hard<br><small>Barely recalled</small></button>
+      <button class="rate-btn rate-good" onclick="rateCard('good')">Good<br><small>Recalled correctly</small></button>
+      <button class="rate-btn rate-easy" onclick="rateCard('easy')">Easy<br><small>Effortless</small></button>
+    </div>
+
+    <div class="next-review-msg" id="next-review-msg"></div>
+    <button class="next-card-btn" id="next-card-btn" onclick="nextCard()">Next card →</button>
+  </div>
+
+  <h2>Two ways to start</h2>
+
+  <p>You don't need an app to use spaced repetition. There are two practical options depending on how you want to start.</p>
+
+  <div style="display: flex; flex-direction: column; gap: 16px; margin: 24px 0;">
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 6px;">Option A — Paper (zero friction to start)</div>
+      <p style="margin-bottom: 10px;">Write questions on one side of index cards, answers on the other. Sort your deck into three piles: Review today, Review tomorrow, Review next week. Each correct recall moves a card to a later pile. Each wrong recall moves it back to "today."</p>
+      <p style="margin-bottom: 0; font-size: 0.875rem; color: var(--text-muted);">Good if you want to try spaced repetition before committing to an app.</p>
+    </div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;">
+      <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 6px;">Option B — Anki (free, algorithm-driven)</div>
+      <p style="margin-bottom: 10px;">Anki is the most widely used SRS tool. It runs the SM-2 algorithm behind the scenes — you just rate your recall after each card, and it handles all the scheduling. Available on desktop (free) and mobile. You can add images, audio, and formatting.</p>
+      <p style="margin-bottom: 0; font-size: 0.875rem; color: var(--text-muted);">Best long-term option. Steeper setup, but you'll stop thinking about the scheduling entirely.</p>
+    </div>
+  </div>
+
+  <div class="callout purple">
+    <strong>Recommendation</strong>
+    Start with paper for one week. Make 10–15 cards on something you're actually trying to learn. Run one review session per day using the three-pile method. After a week you'll understand exactly what Anki automates — and you'll know if you want it.
+  </div>
+
+  <!-- Card builder -->
+  <div class="builder-section">
+    <span class="builder-badge">Practice</span>
+    <h3>Write your first three cards</h3>
+    <p>Pick one concept you already know (from these lessons or anywhere else). Write one good flashcard for it below. The form checks your card against the key rules.</p>
+
+    <div class="form-field">
+      <label>The concept you want to remember</label>
+      <div class="hint">Keep it small — one fact, one definition, one rule</div>
+      <input type="text" id="concept" placeholder="e.g. The spacing effect">
+    </div>
+
+    <div class="form-field">
+      <label>Your question (front of card)</label>
+      <div class="hint">Write it as if you're testing yourself cold, weeks from now</div>
+      <input type="text" id="question" placeholder="e.g. What does the spacing effect say about memory?">
+    </div>
+
+    <div class="form-field">
+      <label>Your answer (back of card)</label>
+      <div class="hint">Keep it to 1–2 sentences. Your own words — not copied.</div>
+      <textarea id="answer" rows="2" placeholder="e.g. Reviewing material across spaced sessions produces stronger long-term retention than reviewing it all at once."></textarea>
+    </div>
+
+    <button class="generate-btn" onclick="checkCard()">Check my card →</button>
+
+    <div class="card-output" id="card-result">
+      <h4>Your card</h4>
+      <div class="generated-card">
+        <div class="gc-label">Front</div>
+        <div class="gc-text" id="result-q"></div>
+      </div>
+      <div class="generated-card">
+        <div class="gc-label">Back</div>
+        <div class="gc-text" id="result-a"></div>
+      </div>
+      <p class="card-tip" id="card-tip"></p>
+    </div>
+  </div>
+
+  <h2>Fitting spaced repetition into your habit</h2>
+
+  <p>In <a href="0003-building-your-learning-habit.html">Lesson 3</a> you built a habit stack using a cue → routine → reward formula. Spaced repetition is the review method that slots into that routine.</p>
+
+  <p>A practical daily flow: 5–10 minutes of card review in the morning (your SRS session), then one new learning session whenever it fits your day (reading, video, course). The morning review handles retention. The learning session handles acquisition. Together, nothing falls through the cracks.</p>
+
+  <div class="callout green">
+    <strong>This week's action</strong>
+    Make 10 cards on a topic you're actively learning. Use paper or Anki. Review them once a day for 5 days. Notice which cards you keep getting wrong — those are the concepts you don't actually understand yet. That's valuable signal: go back and learn those concepts more deeply before adding more cards.
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Good questions to continue with: <em>"I made cards but they feel too easy — am I doing something wrong?"</em> or <em>"How do I organise cards across multiple subjects?"</em> or <em>"I keep writing cards that are too long — can you help me split them?"</em> Your teacher adapts to what you're actually running into.</p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0003-building-your-learning-habit.html" class="nav-btn">← Lesson 3: Learning Habit</a>
+    <a href="0005-knowledge-management.html" class="nav-btn primary">Lesson 5: Knowledge Management →</a>
+  </div>
+
+</div>
+
+<script>
+  const cards = [
+    {
+      q: "What is the core rule for writing a good flashcard?",
+      a: "One question, one answer, one idea. If a card covers two facts, the system can't schedule it accurately."
+    },
+    {
+      q: "When is the optimal moment to review a piece of knowledge?",
+      a: "Just before you would forget it — early enough that the memory is still accessible, but late enough that the effort of retrieval strengthens the trace."
+    },
+    {
+      q: "What happens to a card's review interval each time you recall it successfully?",
+      a: "The interval grows — the card gets pushed further into the future. Items you find easy are reviewed less often; items you find hard are reviewed more often."
+    }
+  ];
+
+  let currentCard = 0;
+  let flipped = false;
+
+  const intervals = {
+    again: "Review again in ~10 minutes — this card needs more practice.",
+    hard:  "Next review in ~1 day — recalled but with difficulty.",
+    good:  "Next review in ~4 days — strong recall, interval extended.",
+    easy:  "Next review in ~10 days — effortless recall, long interval set."
+  };
+  const msgClass = { again: 'next-again', hard: 'next-hard', good: 'next-good', easy: 'next-easy' };
+
+  function updateCounter() {
+    document.getElementById('card-counter').textContent = `Card ${currentCard + 1} of ${cards.length}`;
+  }
+
+  function flipCard() {
+    if (flipped) return;
+    flipped = true;
+    const face = document.getElementById('card-face');
+    face.classList.add('flipped');
+    document.getElementById('rating-row').classList.add('show');
+  }
+
+  function rateCard(rating) {
+    document.getElementById('rating-row').classList.remove('show');
+    const msg = document.getElementById('next-review-msg');
+    msg.textContent = intervals[rating];
+    msg.className = 'next-review-msg show ' + msgClass[rating];
+    const btn = document.getElementById('next-card-btn');
+    if (currentCard < cards.length - 1) {
+      btn.textContent = 'Next card →';
+      btn.classList.add('show');
+    } else {
+      btn.textContent = 'Session complete — that\'s what Anki feels like.';
+      btn.classList.add('show');
+      btn.onclick = null;
+      btn.style.cursor = 'default';
+    }
+  }
+
+  function nextCard() {
+    currentCard++;
+    if (currentCard >= cards.length) return;
+    flipped = false;
+    const face = document.getElementById('card-face');
+    face.classList.remove('flipped');
+    document.getElementById('card-q').textContent = cards[currentCard].q;
+    document.getElementById('card-a').textContent = cards[currentCard].a;
+    document.getElementById('next-review-msg').classList.remove('show');
+    document.getElementById('next-card-btn').classList.remove('show');
+    updateCounter();
+  }
+
+  function checkCard() {
+    const q = document.getElementById('question').value.trim();
+    const a = document.getElementById('answer').value.trim();
+    if (!q || !a) return;
+
+    document.getElementById('result-q').textContent = q;
+    document.getElementById('result-a').textContent = a;
+
+    let tip = '';
+    const wordCountA = a.split(/\s+/).length;
+    const hasMultipleQ = (q.match(/\?/g) || []).length > 1 || q.toLowerCase().includes(' and ');
+
+    if (hasMultipleQ) {
+      tip = 'Tip: Your question might cover more than one idea (look for "and" or multiple question marks). Try splitting it into two cards.';
+    } else if (wordCountA > 40) {
+      tip = 'Tip: Your answer is quite long (' + wordCountA + ' words). Consider trimming it to the single most important point — shorter answers are easier to recall and rate.';
+    } else if (wordCountA < 5) {
+      tip = 'Tip: Very short answer — make sure it\'s complete enough that future-you will understand it without context.';
+    } else {
+      tip = 'Looks good. One idea, your own words, short answer. That\'s a solid card.';
+    }
+
+    document.getElementById('card-tip').textContent = tip;
+    document.getElementById('card-result').classList.add('show');
+  }
+</script>
+</body>
+</html>

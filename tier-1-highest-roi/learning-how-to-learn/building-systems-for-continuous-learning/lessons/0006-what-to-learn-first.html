@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 6 — What to Learn First</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-border: #bfdbfe;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --purple: #7c3aed;
+      --purple-light: #faf5ff;
+      --green: #059669;
+      --green-light: #ecfdf5;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px; font-size: 13px; color: var(--text-muted);
+    }
+    .lesson-number {
+      background: var(--accent); color: white; font-weight: 700;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .lesson-final {
+      background: var(--green); color: white; font-weight: 700;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box {
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 48px;
+    }
+    .learn-box h3 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px;
+    }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 {
+      font-size: 1.3rem; font-weight: 700; margin-top: 48px;
+      margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border);
+    }
+
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-light);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem;
+    }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout.green { border-left-color: var(--green); background: var(--green-light); }
+    .callout.warning { border-left-color: var(--warning); background: var(--warning-light); }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    /* 2x2 matrix */
+    .matrix-wrap { margin: 28px 0; }
+    .matrix-wrap h4 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px;
+    }
+    .matrix {
+      display: grid; grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr; gap: 2px;
+      border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden;
+    }
+    .matrix-axis-y {
+      writing-mode: vertical-rl; text-orientation: mixed;
+      transform: rotate(180deg); font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 8px;
+    }
+    .matrix-inner { display: flex; gap: 8px; }
+    .cell {
+      padding: 18px 16px; font-size: 0.875rem; background: var(--surface);
+    }
+    .cell-tl { background: var(--success-light); }
+    .cell-tr { background: var(--warning-light); }
+    .cell-bl { background: var(--accent-light); }
+    .cell-br { background: #f9fafb; }
+    .cell-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 6px;
+    }
+    .cell-tl .cell-label { color: var(--success); }
+    .cell-tr .cell-label { color: var(--warning); }
+    .cell-bl .cell-label { color: var(--accent); }
+    .cell-br .cell-label { color: var(--text-muted); }
+    .cell p { font-size: 0.82rem; margin-bottom: 0; color: var(--text-muted); }
+    .matrix-axis-x {
+      grid-column: 1 / -1; text-align: center;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); padding: 8px 0 0;
+      display: flex; justify-content: space-between; padding: 8px 16px 0;
+    }
+
+    /* Three-question filter */
+    .filter-steps {
+      display: flex; flex-direction: column; gap: 12px; margin: 24px 0;
+    }
+    .filter-step {
+      display: flex; gap: 16px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; padding: 18px;
+      align-items: flex-start;
+    }
+    .filter-q {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+      color: white; font-weight: 800; font-size: 0.85rem; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+    }
+    .filter-content h4 { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .filter-content p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0; }
+
+    /* Priority sorter */
+    .sorter {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .sorter-badge {
+      background: var(--accent); color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 16px;
+    }
+    .sorter h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .sorter > p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .form-field { margin-bottom: 20px; }
+    .form-field label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 6px; }
+    .form-field .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+    .form-field input, .form-field select {
+      width: 100%; font-family: inherit; font-size: 0.9rem;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px;
+      color: var(--text); background: var(--bg); outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-field input:focus, .form-field select:focus { border-color: var(--accent); }
+
+    .score-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;
+    }
+    .score-field label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 6px; }
+    .score-field .hint { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; }
+    .score-field select {
+      width: 100%; font-family: inherit; font-size: 0.875rem;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 10px;
+      color: var(--text); background: var(--bg); outline: none;
+    }
+
+    .add-btn {
+      background: transparent; color: var(--accent); border: 1.5px solid var(--accent-border);
+      border-radius: 8px; padding: 10px 20px; font-size: 0.875rem;
+      font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 16px;
+      transition: background 0.12s;
+    }
+    .add-btn:hover { background: var(--accent-light); }
+
+    .generate-btn {
+      background: var(--accent); color: white; border: none;
+      border-radius: 8px; padding: 12px 24px; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; width: 100%; transition: background 0.15s;
+    }
+    .generate-btn:hover { background: #1d4ed8; }
+
+    .items-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .item-entry {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; font-size: 0.875rem;
+    }
+    .item-name { font-weight: 600; flex: 1; }
+    .item-scores { color: var(--text-muted); font-size: 0.8rem; margin: 0 12px; }
+    .item-remove {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 1rem; padding: 0 4px; line-height: 1;
+    }
+    .item-remove:hover { color: var(--danger); }
+
+    .results-output { display: none; margin-top: 20px; }
+    .results-output.show { display: block; }
+    .result-card {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 16px; border-radius: 10px; margin-bottom: 10px;
+      border: 1.5px solid var(--border); background: var(--surface);
+    }
+    .result-rank {
+      width: 32px; height: 32px; border-radius: 50%;
+      font-weight: 800; font-size: 0.9rem; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; color: white;
+    }
+    .rank-1 { background: var(--success); }
+    .rank-2 { background: var(--accent); }
+    .rank-3 { background: var(--purple); }
+    .rank-other { background: var(--text-muted); }
+    .result-info { flex: 1; }
+    .result-name { font-weight: 700; font-size: 0.95rem; }
+    .result-detail { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .result-score {
+      font-size: 1.1rem; font-weight: 800; color: var(--accent);
+    }
+
+    /* System complete summary */
+    .system-summary {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .summary-badge {
+      background: var(--green); color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 16px;
+    }
+    .system-summary h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
+    .system-row {
+      display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start;
+    }
+    .system-num {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--accent-light);
+      border: 1.5px solid var(--accent-border); color: var(--accent);
+      font-weight: 800; font-size: 0.8rem; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+    }
+    .system-text strong { font-size: 0.95rem; }
+    .system-text p { font-size: 0.85rem; color: var(--text-muted); margin: 2px 0 0; }
+
+    /* Nav */
+    .lesson-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none;
+      border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .teacher-box {
+      background: #fdf4ff; border: 1px solid #e9d5ff;
+      border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem;
+    }
+    .teacher-box h3 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--purple); margin-bottom: 8px;
+    }
+
+    @media (max-width: 540px) {
+      .score-row { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      .sorter, .lesson-nav, .teacher-box { display: none; }
+      body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 6</span>
+    <span class="lesson-final">Final Lesson</span>
+    <span>⏱ ~20 minutes</span>
+    <span>· Beginner</span>
+  </div>
+
+  <h1>What to Learn First</h1>
+  <p class="tagline">You now have a complete system for <em>how</em> to learn. The last question is the one most people skip: of everything you could learn, what should you actually spend your time on?</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Why "learning everything" is a trap — and what to do instead</li>
+      <li>How to evaluate any learning topic by effort vs. payoff</li>
+      <li>The concept of high-leverage knowledge — skills that unlock other skills</li>
+      <li>A simple three-question filter to cut your list down fast</li>
+      <li>An interactive tool to rank your current learning candidates</li>
+    </ul>
+  </div>
+
+  <h2>The paradox of unlimited options</h2>
+
+  <p>Before you built this system, the problem was learning too little. Now there's a different risk: learning the wrong things — spending your careful, well-structured sessions on topics that don't actually move you forward.</p>
+
+  <p>There is always more to learn than time allows. Every subject branches into sub-subjects. Every skill reveals prerequisites you didn't know you were missing. Without a prioritisation method, motivated learners often drift — picking the most interesting topic at the moment rather than the most valuable one over time.</p>
+
+  <p>The goal of this lesson is a simple framework to answer: <em>given everything I could learn, what should I work on next?</em></p>
+
+  <h2>Not all knowledge has the same value</h2>
+
+  <p>Some things you learn are used once. Some are used every day. Some unlock dozens of other things. Some are interesting but isolated.</p>
+
+  <p>Think of knowledge as having two dimensions: <strong>how broadly it applies</strong> (does it help in one situation or many?) and <strong>how long it stays useful</strong> (is it still true in five years?). The most valuable things to learn score high on both.</p>
+
+  <div class="matrix-wrap">
+    <h4>The value matrix</h4>
+    <div class="matrix">
+      <div class="cell cell-tl">
+        <div class="cell-label">Learn first</div>
+        <strong>Broadly applicable + durable</strong>
+        <p>Fundamentals, mental models, core skills in your field, learning-to-learn itself. High leverage — each hour compounds.</p>
+      </div>
+      <div class="cell cell-tr">
+        <div class="cell-label">Learn when needed</div>
+        <strong>Narrowly applicable + durable</strong>
+        <p>Deep specialist knowledge. Valuable if it's your domain; wasteful otherwise. Learn it when the problem demands it.</p>
+      </div>
+      <div class="cell cell-bl">
+        <div class="cell-label">Worth the time</div>
+        <strong>Broadly applicable + fades</strong>
+        <p>Current tools, popular frameworks, timely techniques. Useful now but likely obsolete. Learn what you need, don't over-invest.</p>
+      </div>
+      <div class="cell cell-br">
+        <div class="cell-label">Skip or defer</div>
+        <strong>Narrowly applicable + fades</strong>
+        <p>Trivia, hyper-specific syntax for a tool you rarely use, trending topics you have no use for. Learn only if you enjoy it.</p>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; padding: 8px 4px 0; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">
+      <span>← Broadly applicable</span>
+      <span>Narrowly applicable →</span>
+    </div>
+  </div>
+
+  <h2>High-leverage knowledge</h2>
+
+  <p>Some things you learn make everything else easier to learn. These are called <strong>high-leverage</strong> topics — knowledge that acts as a multiplier on future learning.</p>
+
+  <p>Examples of high-leverage knowledge:</p>
+
+  <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+    <li style="display: flex; gap: 10px;">
+      <span style="color: var(--success); font-weight: 700; flex-shrink: 0;">↑</span>
+      <span><strong>How memory and learning work</strong> — what you've been studying in this course. Applies to every subject you ever study.</span>
+    </li>
+    <li style="display: flex; gap: 10px;">
+      <span style="color: var(--success); font-weight: 700; flex-shrink: 0;">↑</span>
+      <span><strong>First principles in your field</strong> — the foundational laws or concepts from which everything else in a domain is derived.</span>
+    </li>
+    <li style="display: flex; gap: 10px;">
+      <span style="color: var(--success); font-weight: 700; flex-shrink: 0;">↑</span>
+      <span><strong>Core communication skills</strong> — writing, explaining clearly, asking good questions. Used in every context for life.</span>
+    </li>
+    <li style="display: flex; gap: 10px;">
+      <span style="color: var(--success); font-weight: 700; flex-shrink: 0;">↑</span>
+      <span><strong>Mathematics and statistics fundamentals</strong> — unlocks reasoning in science, economics, technology, and data.</span>
+    </li>
+    <li style="display: flex; gap: 10px;">
+      <span style="color: var(--success); font-weight: 700; flex-shrink: 0;">↑</span>
+      <span><strong>Mental models from multiple disciplines</strong> — frameworks for thinking that apply across domains (probability, incentives, systems thinking).</span>
+    </li>
+  </ul>
+
+  <div class="callout green">
+    <strong>The compounding principle</strong>
+    High-leverage knowledge compounds. If you understand how memory works, every future study session is more effective. If you understand the first principles of your field, every new concept in that field clicks faster. Invest in foundations before polish. <cite>(<a href="https://www.scotthyoung.com/blog/ultralearning/" target="_blank">Scott H. Young — Ultralearning</a>)</cite>
+  </div>
+
+  <h2>The three-question filter</h2>
+
+  <p>When you have a list of things you want to learn and need to decide what to do first, run each item through these three questions in order. Any item that fails a question moves down the list.</p>
+
+  <div class="filter-steps">
+    <div class="filter-step">
+      <div class="filter-q">1</div>
+      <div class="filter-content">
+        <h4>Will I actually use this?</h4>
+        <p>Not "could I use this someday" — but "will I use this in the next 3 months?" Learning is wasted if it's never applied. Things with no near-term application decay fast even with spaced repetition. If the answer is no, defer it until you have a concrete use case.</p>
+      </div>
+    </div>
+    <div class="filter-step">
+      <div class="filter-q">2</div>
+      <div class="filter-content">
+        <h4>Does knowing this unlock other things I want to learn?</h4>
+        <p>Prerequisites compound. If learning X means Y and Z become easier, learn X first. If learning X is a dead end that connects to nothing else, it might still be worth it — but it's not a priority over something that unlocks multiple paths.</p>
+      </div>
+    </div>
+    <div class="filter-step">
+      <div class="filter-q">3</div>
+      <div class="filter-content">
+        <h4>Am I the right person to learn this, and is now the right time?</h4>
+        <p>Some knowledge is better learned from experience than study. Some topics need a trigger — a real problem — to stick. If you could learn this better by doing a project than by reading, do the project. If there's no active context to absorb it, the timing is probably wrong.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warning">
+    <strong>The "interesting" trap</strong>
+    Interesting is not the same as useful. The brain is naturally drawn to novel, stimulating topics — this is why people spend hours learning about things they never apply. Interesting is a good signal for engagement, but it's not a substitute for the three-question filter. Run interesting topics through the filter too.
+  </div>
+
+  <h2>How to handle a long list</h2>
+
+  <p>If you have ten things you want to learn, the goal isn't to pick one and abandon the rest — it's to <strong>sequence</strong> them. Some things will naturally come before others (prerequisites). Some will become relevant only after you've started working on something specific.</p>
+
+  <p>A simple approach that works:</p>
+
+  <ol style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+    <li><strong>Write the full list</strong> — everything you want to learn, no filtering yet.</li>
+    <li><strong>Score each item</strong> on three dimensions: how applicable (1–3), how durable (1–3), and how much it unlocks (1–3). Add them up.</li>
+    <li><strong>Work on the top scorer first.</strong> Keep the rest of the list somewhere visible so the brain stops worrying about losing them.</li>
+    <li><strong>Reassess every 4–6 weeks</strong> — your situation changes, and so does what's valuable to learn next.</li>
+  </ol>
+
+  <!-- Priority sorter -->
+  <div class="sorter">
+    <span class="sorter-badge">Try It</span>
+    <h3>Rank your learning candidates</h3>
+    <p>Add up to 5 topics you're considering learning. Score each one on the three dimensions. The tool ranks them by total score.</p>
+
+    <div class="form-field">
+      <label>Topic name</label>
+      <div class="hint">Keep it short — one subject or skill</div>
+      <input type="text" id="topic-input" placeholder="e.g. Python basics">
+    </div>
+
+    <div class="score-row">
+      <div class="score-field">
+        <label>Applicability</label>
+        <div class="hint">How broadly will I use this?</div>
+        <select id="score-apply">
+          <option value="1">1 — Very specific</option>
+          <option value="2" selected>2 — Moderate</option>
+          <option value="3">3 — Applies everywhere</option>
+        </select>
+      </div>
+      <div class="score-field">
+        <label>Durability</label>
+        <div class="hint">How long will this stay useful?</div>
+        <select id="score-durable">
+          <option value="1">1 — Fades in &lt;1 year</option>
+          <option value="2" selected>2 — Useful for years</option>
+          <option value="3">3 — Foundational, timeless</option>
+        </select>
+      </div>
+      <div class="score-field">
+        <label>Leverage</label>
+        <div class="hint">Does knowing this unlock other skills?</div>
+        <select id="score-leverage">
+          <option value="1">1 — Dead end</option>
+          <option value="2" selected>2 — Opens some doors</option>
+          <option value="3">3 — Major multiplier</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="add-btn" onclick="addTopic()">+ Add this topic</button>
+
+    <div class="items-list" id="items-list"></div>
+
+    <button class="generate-btn" id="rank-btn" onclick="rankTopics()" style="display:none;">Rank my topics →</button>
+
+    <div class="results-output" id="results-output">
+      <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:14px;">Your ranked learning list</h4>
+      <div id="ranked-list"></div>
+      <p style="font-size:0.82rem; color:var(--text-muted); margin-top:14px;">Start with #1. Keep the rest of this list — you'll return to it.</p>
+    </div>
+  </div>
+
+  <!-- System complete -->
+  <div class="system-summary">
+    <span class="summary-badge">Your complete system</span>
+    <h3>Everything you now have</h3>
+    <div class="system-row">
+      <div class="system-num">1</div>
+      <div class="system-text">
+        <strong>The Forgetting Curve</strong>
+        <p>Memory decays without review. You know why passive re-reading fails and why deliberate review is essential.</p>
+      </div>
+    </div>
+    <div class="system-row">
+      <div class="system-num">2</div>
+      <div class="system-text">
+        <strong>Active Recall</strong>
+        <p>Self-testing beats re-reading by a large margin. You know how to review in a way that actually strengthens memory.</p>
+      </div>
+    </div>
+    <div class="system-row">
+      <div class="system-num">3</div>
+      <div class="system-text">
+        <strong>The Learning Habit</strong>
+        <p>Motivation is unreliable. You have a habit stack and a minimum viable session that keeps the system running even on bad days.</p>
+      </div>
+    </div>
+    <div class="system-row">
+      <div class="system-num">4</div>
+      <div class="system-text">
+        <strong>Spaced Repetition</strong>
+        <p>Reviewing at optimal intervals makes retention efficient. You know how to write good cards and how to start — paper or Anki.</p>
+      </div>
+    </div>
+    <div class="system-row">
+      <div class="system-num">5</div>
+      <div class="system-text">
+        <strong>Knowledge Management</strong>
+        <p>Capture → Process → Connect. You know how to turn raw notes into atomic, linked ideas that compound over time.</p>
+      </div>
+    </div>
+    <div class="system-row">
+      <div class="system-num">6</div>
+      <div class="system-text">
+        <strong>Prioritisation</strong>
+        <p>Not everything is worth learning equally. You have a framework for choosing high-leverage, durable, applicable knowledge first.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>What comes next</h2>
+
+  <p>This is the end of the foundational curriculum — but it's the beginning of the practice. The system only works if you use it. The next step is not another lesson. It's running the system on something real.</p>
+
+  <p>Pick one subject you actually want to learn. Apply the prioritisation framework to confirm it's the right choice. Set up your habit stack. Start making cards. Take atomic notes. Review them. Do that for four weeks, and you'll have more evidence about how you learn than any lesson could give you.</p>
+
+  <div class="callout green">
+    <strong>Your final action</strong>
+    Write down three things you want to learn. Score each one using the three dimensions from this lesson. Commit to starting the top scorer this week, using the system you've built across all six lessons. That's it — the system is yours now.
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>You've completed the core curriculum. Good questions to continue the conversation: <em>"I've been running the system for a few weeks — here's what's working and what isn't."</em> Or: <em>"I want to go deeper on [specific technique] — where do I start?"</em> Or simply: <em>"I tried everything and here's what actually stuck."</em> Your experience running the system is the most valuable input for what to explore next.</p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0005-knowledge-management.html" class="nav-btn">← Lesson 5: Knowledge Management</a>
+    <span style="font-size: 0.85rem; color: var(--text-muted); text-align: right;">Core curriculum complete</span>
+  </div>
+
+</div>
+
+<script>
+  const topics = [];
+
+  function addTopic() {
+    const name = document.getElementById('topic-input').value.trim();
+    if (!name || topics.length >= 5) return;
+
+    const apply = parseInt(document.getElementById('score-apply').value);
+    const durable = parseInt(document.getElementById('score-durable').value);
+    const leverage = parseInt(document.getElementById('score-leverage').value);
+    const total = apply + durable + leverage;
+
+    topics.push({ name, apply, durable, leverage, total });
+    document.getElementById('topic-input').value = '';
+
+    renderItems();
+    document.getElementById('rank-btn').style.display = topics.length >= 2 ? 'block' : 'none';
+    document.getElementById('results-output').classList.remove('show');
+  }
+
+  function removeTopic(i) {
+    topics.splice(i, 1);
+    renderItems();
+    document.getElementById('rank-btn').style.display = topics.length >= 2 ? 'block' : 'none';
+    document.getElementById('results-output').classList.remove('show');
+  }
+
+  function renderItems() {
+    const list = document.getElementById('items-list');
+    list.innerHTML = topics.map((t, i) => `
+      <div class="item-entry">
+        <span class="item-name">${t.name}</span>
+        <span class="item-scores">Apply ${t.apply} · Durable ${t.durable} · Leverage ${t.leverage}</span>
+        <button class="item-remove" onclick="removeTopic(${i})">×</button>
+      </div>
+    `).join('');
+  }
+
+  function rankTopics() {
+    const sorted = [...topics].sort((a, b) => b.total - a.total);
+    const rankClasses = ['rank-1', 'rank-2', 'rank-3', 'rank-other', 'rank-other'];
+    const labels = {
+      9: 'Foundational, broadly useful, major multiplier — learn this first.',
+      8: 'Very high value — strong case for prioritising this.',
+      7: 'High value — worth a spot near the top of your list.',
+      6: 'Moderate value — worth learning, but after higher-scorers.',
+      5: 'Selective value — consider whether the timing is right.',
+      4: 'Lower priority — revisit when it becomes more applicable.',
+      3: 'Defer — low applicability, durability, and leverage right now.'
+    };
+
+    document.getElementById('ranked-list').innerHTML = sorted.map((t, i) => `
+      <div class="result-card">
+        <div class="result-rank ${rankClasses[i]}">${i + 1}</div>
+        <div class="result-info">
+          <div class="result-name">${t.name}</div>
+          <div class="result-detail">${labels[t.total] || 'Score: ' + t.total + '/9'}</div>
+        </div>
+        <div class="result-score">${t.total}/9</div>
+      </div>
+    `).join('');
+
+    document.getElementById('results-output').classList.add('show');
+  }
+</script>
+</body>
+</html>

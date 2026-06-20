@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 5 — Knowledge Management</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --accent-border: #bfdbfe;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --purple: #7c3aed;
+      --purple-light: #faf5ff;
+      --green: #059669;
+      --green-light: #ecfdf5;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px; font-size: 13px; color: var(--text-muted);
+    }
+    .lesson-number {
+      background: var(--accent); color: white; font-weight: 700;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box {
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 48px;
+    }
+    .learn-box h3 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px;
+    }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 {
+      font-size: 1.3rem; font-weight: 700; margin-top: 48px;
+      margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border);
+    }
+
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-light);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem;
+    }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout.green { border-left-color: var(--green); background: var(--green-light); }
+    .callout.warning { border-left-color: var(--warning); background: var(--warning-light); }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    /* The three-phase flow */
+    .phase-flow {
+      display: flex; flex-direction: column; gap: 0; margin: 28px 0;
+    }
+    .phase {
+      display: flex; gap: 20px; padding: 20px; background: var(--surface);
+      border: 1px solid var(--border); align-items: flex-start;
+    }
+    .phase:first-child { border-radius: 12px 12px 0 0; }
+    .phase:last-child { border-radius: 0 0 12px 12px; }
+    .phase + .phase { border-top: none; }
+    .phase-num {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--accent);
+      color: white; font-weight: 800; font-size: 0.9rem; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
+    }
+    .phase-content h4 { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .phase-content p { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0; }
+    .phase-num.green-num { background: var(--green); }
+    .phase-num.purple-num { background: var(--purple); }
+
+    /* Note anatomy */
+    .note-example {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; margin: 24px 0; overflow: hidden;
+    }
+    .note-header {
+      background: #f9fafb; padding: 10px 16px; border-bottom: 1px solid var(--border);
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); display: flex; gap: 12px;
+    }
+    .note-tag { color: var(--accent); }
+    .note-body { padding: 20px; font-size: 0.9rem; line-height: 1.8; }
+    .note-body strong { color: var(--text); }
+    .note-link { color: var(--purple); text-decoration: underline; text-underline-offset: 3px; cursor: default; }
+    .note-meta { padding: 10px 16px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-muted); background: #f9fafb; }
+
+    /* Comparison grid */
+    .tool-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0;
+    }
+    @media (max-width: 540px) { .tool-grid { grid-template-columns: 1fr; } }
+    .tool-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 18px;
+    }
+    .tool-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .tool-tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px;
+      border-radius: 12px; margin-bottom: 10px;
+    }
+    .tag-free { background: var(--success-light); color: var(--success); }
+    .tag-freemium { background: var(--warning-light); color: var(--warning); }
+    .tool-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* Interactive note writer */
+    .note-writer {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .writer-badge {
+      background: var(--green); color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 16px;
+    }
+    .note-writer h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .note-writer > p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .form-field { margin-bottom: 20px; }
+    .form-field label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 6px; }
+    .form-field .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+    .form-field input, .form-field textarea {
+      width: 100%; font-family: inherit; font-size: 0.9rem;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px;
+      color: var(--text); background: var(--bg); outline: none;
+      transition: border-color 0.15s; resize: vertical;
+    }
+    .form-field input:focus, .form-field textarea:focus { border-color: var(--accent); }
+
+    .generate-btn {
+      background: var(--accent); color: white; border: none;
+      border-radius: 8px; padding: 12px 24px; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; width: 100%; transition: background 0.15s;
+    }
+    .generate-btn:hover { background: #1d4ed8; }
+
+    .note-output {
+      display: none; margin-top: 20px;
+    }
+    .note-output.show { display: block; }
+    .output-note {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .output-note-header {
+      background: #f9fafb; padding: 10px 16px; border-bottom: 1px solid var(--border);
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted);
+    }
+    .output-note-body { padding: 20px; font-size: 0.9rem; line-height: 1.8; }
+    .output-feedback {
+      margin-top: 14px; padding: 12px 14px; border-radius: 8px;
+      font-size: 0.85rem; background: var(--success-light);
+      border: 1px solid #86efac; color: var(--success);
+    }
+
+    /* Nav */
+    .lesson-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none;
+      border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #1d4ed8; border-color: #1d4ed8; color: white; }
+
+    .teacher-box {
+      background: #fdf4ff; border: 1px solid #e9d5ff;
+      border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem;
+    }
+    .teacher-box h3 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--purple); margin-bottom: 8px;
+    }
+
+    @media print {
+      .note-writer, .lesson-nav, .teacher-box { display: none; }
+      body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 5</span>
+    <span>⏱ ~20 minutes</span>
+    <span>· Beginner</span>
+  </div>
+
+  <h1>Knowledge Management</h1>
+  <p class="tagline">Flashcards are great for isolated facts. But most learning involves ideas, connections, and context — things that don't fit on a card. This lesson is about how to capture, organise, and actually use what you learn.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Why most notes get taken and never used — and how to break that pattern</li>
+      <li>The three-phase workflow: Capture → Process → Connect</li>
+      <li>What an "atomic note" is and why it beats long summaries</li>
+      <li>The simplest version of a knowledge system you can start today</li>
+      <li>Which tools actually work — and what to ignore</li>
+    </ul>
+  </div>
+
+  <h2>The graveyard of taken notes</h2>
+
+  <p>Most people's notes look like this: a document full of bullet points copied from a video or book, an app full of highlights from articles, a notebook full of scribbles from meetings. They took the notes. They never opened them again.</p>
+
+  <p>This is the most common knowledge management failure mode: <strong>collecting without processing.</strong> The act of taking a note feels productive. But the note has no effect on what you actually know or remember unless you do something with it.</p>
+
+  <p>The goal of a knowledge system is not to store information — it's to change how you think. Notes are only valuable when they're revisited, connected to other ideas, and eventually used. A system that doesn't support that is just a graveyard of good intentions. <cite>(<a href="https://ingestai.io/blog/personal-knowledge-management-system" target="_blank">ingestai.io — Personal Knowledge Management</a>)</cite></p>
+
+  <h2>The three-phase workflow</h2>
+
+  <p>A knowledge system that actually works has three distinct phases. Most people only do the first one.</p>
+
+  <div class="phase-flow">
+    <div class="phase">
+      <div class="phase-num">1</div>
+      <div class="phase-content">
+        <h4>Capture — get it out of your head quickly</h4>
+        <p>When you encounter something worth keeping, write it down fast — in whatever form is fastest. A rough sentence, a highlighted excerpt, a photo of a whiteboard. Don't try to make it pretty. The goal is not to lose it. You'll clean it up later.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num green-num">2</div>
+      <div class="phase-content">
+        <h4>Process — rewrite it in your own words</h4>
+        <p>At a regular interval (daily or weekly), go through your captures. For each one, ask: do I actually want to keep this? If yes, rewrite it in your own words as a single clear idea. This is where understanding is built. If you can't rewrite it without looking, you don't understand it yet.</p>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-num purple-num">3</div>
+      <div class="phase-content">
+        <h4>Connect — link it to what you already know</h4>
+        <p>The most powerful step. After you've written a clear note, ask: what does this remind me of? What other notes does this relate to? Add a link or reference. Over time your notes stop being a list and start being a map — and that map is where the real thinking happens.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout green">
+    <strong>Why this matters</strong>
+    The process step is where most learning systems fail. Capture is easy and feels productive. Processing is slow and requires real thinking — but it's the step that actually moves ideas into long-term memory. Skipping it means you're just maintaining an expensive bookmarking system.
+  </div>
+
+  <h2>Atomic notes: the fundamental unit</h2>
+
+  <p>The most important design decision in any note-taking system is this: <strong>one note, one idea.</strong> These are called atomic notes — notes that can't be meaningfully split further.</p>
+
+  <p>Why? Because when notes are atomic, you can link them to each other precisely. When notes are large (a 3-page summary of a book), they become too coarse to connect. You end up linking whole books to whole books, which tells you nothing useful. When notes are atomic, you can link exactly the concepts that relate to each other.</p>
+
+  <div class="note-example">
+    <div class="note-header">
+      <span>Processed note — good example</span>
+      <span class="note-tag">#learning #memory</span>
+    </div>
+    <div class="note-body">
+      <strong>The optimal moment to review is just before forgetting</strong><br><br>
+      Reviewing too soon (when you still remember clearly) wastes effort — the memory wasn't at risk. Reviewing too late (after you've forgotten) means you're relearning, not reinforcing.<br><br>
+      The spacing effect exploits this: each successful retrieval extends the interval before the next review. This is what spaced repetition systems automate.<br><br>
+      See also: <span class="note-link">[[Forgetting curve — memory decays exponentially]]</span> · <span class="note-link">[[Active recall strengthens the retrieval pathway]]</span>
+    </div>
+    <div class="note-meta">Source: Lesson 4 — Spaced Repetition · 2026-06-19</div>
+  </div>
+
+  <p>Notice what makes this note work: it captures one idea, it's written in the author's own words, it includes context (why it matters), and it links to two related concepts. That's the full pattern.</p>
+
+  <div class="callout warning">
+    <strong>The highlight trap</strong>
+    Highlighting or copying text from a source is not a note — it's a placeholder. The words in the book are the author's thinking. A note should contain your thinking about what the author said. If you can't say it in your own words, you've captured it but not learned it.
+  </div>
+
+  <h2>The simplest system that works</h2>
+
+  <p>You don't need a complex app to start. The minimum viable knowledge system has three parts:</p>
+
+  <ol style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px;">
+    <li>
+      <strong>An inbox</strong> — a single place to dump captures quickly. One note on your phone, one text file, one paper notebook. Whatever you'll actually use in the moment. The only rule: one place, not ten.
+    </li>
+    <li>
+      <strong>A processing session</strong> — 15–20 minutes, once or twice a week, to turn inbox captures into processed atomic notes.
+    </li>
+    <li>
+      <strong>A place for your notes</strong> — a folder, a second notebook, a simple app. The notes live here permanently. When you add a new note, glance at what's already there and add a link if something connects.
+    </li>
+  </ol>
+
+  <p>That's it. No tags. No elaborate folder hierarchies. No colour-coded systems. Start here, and add complexity only when a real problem demands it — not before. <cite>(<a href="https://ingestai.io/blog/personal-knowledge-management-system" target="_blank">ingestai.io</a>)</cite></p>
+
+  <h2>Tools worth knowing</h2>
+
+  <p>The best tool is the one you'll actually use. Pick based on how you prefer to work, not based on what's popular in productivity communities.</p>
+
+  <div class="tool-grid">
+    <div class="tool-card">
+      <div class="tool-name">Obsidian</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Local markdown files with bidirectional links. Best for people who want full control, don't mind a setup phase, and plan to build a linked note system over time. The graph view makes connections visible.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Notion</div>
+      <span class="tool-tag tag-freemium">Freemium</span>
+      <div class="tool-desc">Flexible, works on all devices, easy to start. Good for a first system. The linking feature works but is less central than Obsidian. Risk: spending more time organising than thinking.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Apple Notes / Keep</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Zero setup, always available. Good for the capture phase. Weak at connecting notes. Use these as your inbox, not your permanent store.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Paper notebook</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Underrated. Writing by hand forces you to summarise (you can't transcribe fast enough). No linking, but the act of writing is itself processing. Strong for capture and first-pass processing.</div>
+    </div>
+  </div>
+
+  <div class="callout purple">
+    <strong>Recommendation</strong>
+    Start with whatever you already have — your phone's notes app as inbox, a notebook or simple folder for processed notes. Run the three-phase workflow for two weeks before choosing a dedicated tool. By then you'll know exactly what you actually need.
+  </div>
+
+  <!-- Interactive note writer -->
+  <div class="note-writer">
+    <span class="writer-badge">Practice</span>
+    <h3>Write your first atomic note</h3>
+    <p>Pick one idea from these lessons that stood out to you. Write it up as an atomic note — your own words, one idea, with a "see also" link to something you already know.</p>
+
+    <div class="form-field">
+      <label>The idea (your note title)</label>
+      <div class="hint">Keep it short — a phrase that captures the core claim</div>
+      <input type="text" id="note-title" placeholder="e.g. Optimal review happens just before forgetting">
+    </div>
+
+    <div class="form-field">
+      <label>The note body — in your own words</label>
+      <div class="hint">2–5 sentences. Explain it as if to someone unfamiliar. Don't copy — rephrase.</div>
+      <textarea id="note-body" rows="4" placeholder="e.g. Memory decays over time, but reviewing at the right moment strengthens the trace and resets the decay curve..."></textarea>
+    </div>
+
+    <div class="form-field">
+      <label>See also — what does this connect to?</label>
+      <div class="hint">Name one other idea, lesson, or thing you already know that relates to this</div>
+      <input type="text" id="note-link" placeholder="e.g. The forgetting curve — Lesson 1">
+    </div>
+
+    <button class="generate-btn" onclick="buildNote()">Format as a note →</button>
+
+    <div class="note-output" id="note-output">
+      <div class="output-note">
+        <div class="output-note-header">Your atomic note</div>
+        <div class="output-note-body" id="note-display"></div>
+      </div>
+      <div class="output-feedback" id="note-feedback"></div>
+    </div>
+  </div>
+
+  <h2>How knowledge management fits your system</h2>
+
+  <p>You now have all four components of a complete learning system:</p>
+
+  <ol style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+    <li><strong>Understanding memory</strong> — the forgetting curve tells you why review is essential (Lesson 1)</li>
+    <li><strong>Active recall</strong> — the most effective review method (Lesson 2)</li>
+    <li><strong>Daily habit</strong> — the structure that makes learning happen consistently (Lesson 3)</li>
+    <li><strong>Spaced repetition</strong> — efficient scheduling for facts and cards (Lesson 4)</li>
+    <li><strong>Knowledge management</strong> — capturing, processing, and connecting ideas so they compound over time (this lesson)</li>
+  </ol>
+
+  <p>These work together. Spaced repetition handles facts. Knowledge management handles understanding and ideas. The habit holds both of them. This is a complete system — not a single technique, but a set of practices that reinforce each other.</p>
+
+  <div class="callout green">
+    <strong>This week's action</strong>
+    For five days: capture anything interesting into a single inbox (phone notes, paper — one place). At the end of the week, spend 20 minutes processing your captures — rewrite each interesting one as an atomic note in your own words. Link at least two of them to each other. That's your first processing session.
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Good questions to continue with: <em>"I have too many notes and don't know how to find anything — what should I do?"</em> or <em>"Should I take notes while reading or after?"</em> or <em>"How do I decide what's worth keeping vs. discarding?"</em> or <em>"What comes after this — how do I decide what to learn next?"</em> The next lesson covers exactly that last question.</p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0004-spaced-repetition.html" class="nav-btn">← Lesson 4: Spaced Repetition</a>
+    <a href="0006-what-to-learn-first.html" class="nav-btn primary">Lesson 6: What to Learn First →</a>
+  </div>
+
+</div>
+
+<script>
+  function buildNote() {
+    const title = document.getElementById('note-title').value.trim();
+    const body = document.getElementById('note-body').value.trim();
+    const link = document.getElementById('note-link').value.trim();
+
+    if (!title || !body) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const linkText = link ? `\n\nSee also: [[${link}]]` : '';
+
+    document.getElementById('note-display').innerHTML =
+      `<strong>${title}</strong><br><br>${body.replace(/\n/g, '<br>')}${linkText ? '<br><br><span style="color: var(--purple);">' + linkText.trim() + '</span>' : ''}`;
+
+    let feedback = '';
+    const wordCount = body.split(/\s+/).length;
+    const hasSeeAlso = !!link;
+    const isOwnWords = !body.toLowerCase().includes('according to') && !body.toLowerCase().includes('quote');
+
+    if (wordCount > 120) {
+      feedback = 'Your note is quite long (' + wordCount + ' words). Consider whether it contains two separate ideas that could be split into two atomic notes.';
+    } else if (!hasSeeAlso) {
+      feedback = 'Good note. For maximum value, try to add a "See also" connection — even if it\'s informal ("reminds me of how habits work"). Links are what make a knowledge system more than a list.';
+    } else {
+      feedback = 'Solid atomic note. One clear idea, your own words, and a link to something related. That\'s exactly the pattern. Add this to your notes folder and you\'ve taken your first real step in building a knowledge system.';
+    }
+
+    document.getElementById('note-feedback').textContent = feedback;
+    document.getElementById('note-output').classList.add('show');
+  }
+</script>
+</body>
+</html>
