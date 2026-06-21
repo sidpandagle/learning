@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4: Iterating Effectively</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    p { margin-bottom: 16px; }
+
+    .callout { border-radius: 10px; padding: 20px 24px; margin: 28px 0; }
+    .callout.fact { background: var(--accent-light); border-left: 3px solid var(--accent); }
+    .callout.warning { background: var(--warn-light); border-left: 3px solid var(--warn); }
+    .callout.insight { background: #f5f3ff; border-left: 3px solid #7c3aed; }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    /* Iteration log */
+    .iter-log {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 28px 0;
+    }
+    .iter-log-header {
+      padding: 10px 18px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .iter-log-header.bad { background: #fff1f2; color: #dc2626; }
+    .iter-log-header.good { background: var(--success-light); color: var(--success); }
+    .iter-turn {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .iter-turn:last-child { border-bottom: none; }
+    .iter-who {
+      width: 60px;
+      flex-shrink: 0;
+      padding: 12px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      border-right: 1px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .iter-text {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .iter-text.problem { color: #dc2626; }
+    .iter-annotation {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-style: italic;
+    }
+    .iter-annotation.bad { color: #dc2626; }
+    .iter-annotation.good { color: var(--success); }
+
+    /* Diagnostic checklist */
+    .diag-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 24px 0;
+    }
+    .diag-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .diag-q {
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+    .diag-q strong { color: var(--accent); }
+
+    /* Quiz */
+    .quiz-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .quiz-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .quiz-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
+    .quiz-question { margin-bottom: 28px; display: none; }
+    .quiz-question.active { display: block; }
+    .q-text { font-weight: 600; margin-bottom: 16px; line-height: 1.4; }
+    .q-context { font-size: 0.88rem; color: var(--muted); background: var(--bg); padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; line-height: 1.5; }
+    .q-progress { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: all 0.15s;
+      color: var(--ink);
+      font-family: inherit;
+    }
+    .option-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.selected { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+
+    .quiz-result { display: none; }
+    .result-type {
+      text-align: center;
+      padding: 28px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .result-type .icon { font-size: 3rem; margin-bottom: 12px; }
+    .result-type h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+    .result-type p { font-size: 0.95rem; color: var(--muted); max-width: 380px; margin: 0 auto; }
+
+    .result-vague { background: #fff1f2; }
+    .result-scope { background: #fffbeb; }
+    .result-tool { background: #f0f9ff; }
+    .result-abandon { background: #f0fdf4; }
+
+    .practice-box {
+      background: var(--ink);
+      color: white;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-top: 20px;
+    }
+    .practice-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 10px; }
+    .practice-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+    .footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .quiz-section { display: none; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 4</span>
+    <span>Using AI Effectively</span>
+    <span>&middot;</span>
+    <span>~12 minutes</span>
+  </div>
+
+  <h1>Iterating Effectively</h1>
+  <p class="subtitle">How to get from a mediocre first output to a great final result in two steps, not ten.</p>
+
+  <h2>Why iteration spirals</h2>
+
+  <p>The most common failure mode in AI work isn't a bad first output. It's what happens after: the user types "make it better," or "that's not quite right," or "try again." The AI produces something slightly different. The user tries again. Ten rounds later they're further from what they wanted than when they started.</p>
+
+  <p>This spiral happens because vague feedback produces vague improvement. The model has no way to know <em>what specifically</em> is wrong — so it varies the output in whatever direction feels most probable. Without a clear diagnosis, each iteration is a random walk.</p>
+
+  <div class="callout warning">
+    <strong>The spiral pattern</strong>
+    Vague feedback → vague change → different problem → more vague feedback → more vague change → frustration → giving up or accepting mediocre output.
+  </div>
+
+  <h2>The two-step iteration model</h2>
+
+  <p>Good iteration has two distinct steps — and most people skip the first one.</p>
+
+  <p><strong>Step 1: Diagnose what's wrong, specifically.</strong> Before typing a follow-up, identify the actual problem. Is the tone wrong? Is it too long? Does it miss the point? Are specific facts incorrect? Is the structure right but the depth wrong? Name it precisely before you type anything.</p>
+
+  <p><strong>Step 2: Give surgical correction.</strong> Feedback that maps directly onto the diagnosis. Not "make it more professional" — instead "replace the conversational tone with formal business English, keep the structure the same." Not "it's too long" — instead "cut the second paragraph entirely and reduce the third to two sentences."</p>
+
+  <div class="callout fact">
+    <strong>The one-thing-at-a-time rule</strong>
+    Change one thing per iteration. If you change tone, format, and content simultaneously, you can't tell what worked. When the next output is better, you don't know why — so you can't repeat it. When it's worse, you don't know what caused it. One variable at a time turns iterations into learnable experiments.
+  </div>
+
+  <h2>The diagnostic questions</h2>
+
+  <p>When an output misses, run through this list before responding:</p>
+
+  <div class="diag-list">
+    <div class="diag-item">
+      <div class="diag-q"><strong>Tone:</strong> Is the voice wrong — too formal, too casual, too generic, wrong register for the audience?</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-q"><strong>Scope:</strong> Is it too broad (touched everything shallowly) or too narrow (missed the key points I needed)?</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-q"><strong>Format:</strong> Is the structure wrong — bullets when I needed prose, paragraphs when I needed a list?</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-q"><strong>Depth:</strong> Is it too surface-level, or did it over-explain things I already know?</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-q"><strong>Facts:</strong> Are specific claims wrong, missing, or unverified?</div>
+    </div>
+    <div class="diag-item">
+      <div class="diag-q"><strong>Missing element:</strong> Did it answer the wrong question, or answer the right question but omit something critical?</div>
+    </div>
+  </div>
+
+  <h2>Bad iteration vs good iteration</h2>
+
+  <div class="iter-log">
+    <div class="iter-log-header bad">Bad iteration chain — 5 rounds, still off</div>
+    <div class="iter-turn">
+      <div class="iter-who">You</div>
+      <div class="iter-text">Write a product update email for our customers.</div>
+    </div>
+    <div class="iter-turn">
+      <div class="iter-who">AI</div>
+      <div class="iter-text">Dear Valued Customer, We are excited to share some updates about our product journey... [generic 300-word email]</div>
+    </div>
+    <div class="iter-turn">
+      <div class="iter-who">You</div>
+      <div class="iter-text problem">That's too long and too formal.</div>
+      <div class="iter-annotation bad">Diagnoses two problems at once. No surgical fix specified.</div>
+    </div>
+    <div class="iter-turn">
+      <div class="iter-who">AI</div>
+      <div class="iter-text">Hi there! Here's a quick update on what's new with us... [casual 200-word email, still misses the point]</div>
+    </div>
+    <div class="iter-turn">
+      <div class="iter-who">You</div>
+      <div class="iter-text problem">It's better but I need to mention the downtime last week.</div>
+      <div class="iter-annotation bad">New requirement introduced mid-iteration. Resets the task.</div>
+    </div>
+  </div>
+
+  <div class="iter-log" style="margin-top:16px;">
+    <div class="iter-log-header good">Good iteration chain — 2 rounds, done</div>
+    <div class="iter-turn">
+      <div class="iter-who">You</div>
+      <div class="iter-text">Write a customer update email about our new dashboard feature. Audience: existing paying customers. Tone: friendly but professional. Length: under 120 words. No marketing language. End with a clear next step.</div>
+    </div>
+    <div class="iter-turn">
+      <div class="iter-who">AI</div>
+      <div class="iter-text">Hi [Name], We've just shipped a redesigned dashboard... [focused 110-word email]</div>
+    </div>
+    <div class="iter-turn">
+      <div class="iter-who">You</div>
+      <div class="iter-text">Good. One fix: the opening sentence is generic. Rewrite just the first two sentences to lead with the benefit ("you can now see X in one place") not the feature ("we shipped Y").</div>
+      <div class="iter-annotation good">Diagnoses one specific thing. Tells the model exactly what to change and why.</div>
+    </div>
+    <div class="iter-turn">
+      <div class="iter-who">AI</div>
+      <div class="iter-text">Hi [Name], Your most important metrics are now in one place... [same email, improved opening]</div>
+    </div>
+  </div>
+
+  <h2>When to abandon and restart</h2>
+
+  <p>Not every output deserves another iteration. Sometimes the first output is so far off that iterating is slower than starting fresh. The 80% threshold: if the output is less than 80% of the way there, consider restarting with a better initial prompt rather than trying to patch it.</p>
+
+  <p>Signs it's time to restart:</p>
+  <ul style="padding-left:20px; line-height:2; margin-bottom:16px;">
+    <li>You've iterated more than three times and it keeps missing in different ways</li>
+    <li>The fundamental structure or approach is wrong (hard to fix with a follow-up)</li>
+    <li>The initial prompt was missing important context that would've changed the whole output</li>
+  </ul>
+
+  <div class="callout insight">
+    <strong>The context reset technique</strong>
+    When starting over, don't just rephrase the same prompt. Start a new conversation entirely. Long conversation threads can confuse the model — earlier turns accumulate context that sometimes works against you. A fresh conversation with a better prompt often outperforms ten rounds of iteration.
+  </div>
+
+  <hr>
+
+  <h2>Spot the iteration mistake</h2>
+  <p>Five broken iteration exchanges below. Identify what went wrong in each.</p>
+
+  <div class="quiz-section">
+    <div class="quiz-title">What's the iteration mistake?</div>
+    <div class="quiz-subtitle">5 exchanges. Name the failure mode in each.</div>
+
+    <div class="quiz-question active" id="q1">
+      <div class="q-progress">Question 1 of 5</div>
+      <div class="q-text">What's wrong with this follow-up?</div>
+      <div class="q-context">AI wrote a 400-word blog post introduction. User responds: "Make it better and more engaging."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q1','vague',this)">Vague feedback — "better and more engaging" gives the model nothing to act on specifically.</button>
+        <button class="option-btn" onclick="answer('q1','scope',this)">Scope creep — adding "engaging" changes the task from the original request.</button>
+        <button class="option-btn" onclick="answer('q1','abandon',this)">Should restart — 400 words is too long to iterate on, needs a fresh approach.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="q-progress">Question 2 of 5</div>
+      <div class="q-text">What's wrong with this iteration chain?</div>
+      <div class="q-context">Round 1: User asks for a 5-point FAQ. Round 2: "Add more detail to each point." Round 3: "Actually make it shorter, it's too long." Round 4: "Can you also add a section on pricing?" Round 5: "The tone feels off now."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q2','scope',this)">Scope creep — requirements changed in every round. The user didn't know what they wanted before starting.</button>
+        <button class="option-btn" onclick="answer('q2','vague',this)">Vague feedback — none of the follow-ups are specific enough about what to fix.</button>
+        <button class="option-btn" onclick="answer('q2','abandon',this)">Should've abandoned after round 3 — too many contradictions to iterate out of.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="q-progress">Question 3 of 5</div>
+      <div class="q-text">What's the problem here?</div>
+      <div class="q-context">AI writes a technical explainer. User responds: "The tone is wrong AND the structure doesn't work AND you've missed the main use case AND it's too long."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q3','vague',this)">Four problems named at once — the model can't prioritise and will make partial fixes to all of them, satisfying none.</button>
+        <button class="option-btn" onclick="answer('q3','scope',this)">Scope creep — adding "main use case" changes the original scope of the request.</button>
+        <button class="option-btn" onclick="answer('q3','abandon',this)">This output is beyond repair — should restart entirely with a better prompt.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="q-progress">Question 4 of 5</div>
+      <div class="q-text">What went wrong here?</div>
+      <div class="q-context">After 6 rounds of iteration on a proposal, the user says: "This is still not what I need. I guess AI just can't write good proposals."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q4','abandon',this)">Should've restarted after round 3 and written a better initial prompt — iterating past the point of diminishing returns wasted time and led to a wrong conclusion.</button>
+        <button class="option-btn" onclick="answer('q4','vague',this)">Vague feedback throughout — 6 rounds of vague iteration will always fail regardless of AI capability.</button>
+        <button class="option-btn" onclick="answer('q4','tool',this)">Wrong tool — proposals are too high-stakes for AI, should be written manually from scratch.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="q-progress">Question 5 of 5</div>
+      <div class="q-text">What's the mistake?</div>
+      <div class="q-context">User asks AI to write an email. Gets a decent draft. Responds: "Change the tone to be more formal, remove the third paragraph, add a PS section, change 'Hello' to 'Dear', shorten the second paragraph by half, and make the subject line more specific."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q5','vague',this)">Too many changes at once — the model will make all six changes but may introduce new problems in the process, and you won't know which changes caused issues.</button>
+        <button class="option-btn" onclick="answer('q5','scope',this)">Scope creep — adding a PS section wasn't in the original request and changes the task.</button>
+        <button class="option-btn" onclick="answer('q5','abandon',this)">Should restart with a better initial prompt that included these requirements from the start.</button>
+      </div>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div id="result-vague" class="result-type result-vague" style="display:none">
+        <div class="icon">🌫️</div>
+        <h3>Your failure mode: Vague feedback</h3>
+        <p>You're giving the model something to react to but not enough to act on. The fix is to name the specific problem before you type the follow-up.</p>
+      </div>
+      <div id="result-scope" class="result-type result-scope" style="display:none">
+        <div class="icon">📏</div>
+        <h3>Your failure mode: Scope creep</h3>
+        <p>You're adding requirements mid-stream that change the nature of the task. The fix is to clarify what you need before starting, not during iteration.</p>
+      </div>
+      <div id="result-tool" class="result-type" style="background:#f0f9ff;display:none">
+        <div class="icon">🔧</div>
+        <h3>Your failure mode: Wrong tool</h3>
+        <p>You're occasionally reaching for AI on tasks outside its reliable range. The fix is the Lesson 3 triage — match the task to the quadrant before starting.</p>
+      </div>
+      <div id="result-abandon" class="result-type result-abandon" style="display:none">
+        <div class="icon">🔄</div>
+        <h3>Your failure mode: Over-iterating</h3>
+        <p>You keep refining past the point of diminishing returns instead of restarting. The fix is the 80% threshold — when an output is more than 20% off, a fresh prompt beats ten more rounds.</p>
+      </div>
+
+      <div id="practice-vague" class="practice-box" style="display:none">
+        <h4>Your iteration practice</h4>
+        <p>Before your next follow-up, write the specific problem as a single sentence using one of the six diagnostic dimensions: tone, scope, format, depth, facts, or missing element. Then write your correction in the same sentence. "The tone is too casual for a legal audience — rewrite in formal business English without changing the structure."</p>
+      </div>
+      <div id="practice-scope" class="practice-box" style="display:none">
+        <h4>Your iteration practice</h4>
+        <p>Before starting a significant AI task, spend 2 minutes writing out what "done" looks like — the audience, the format, the must-have elements. This front-loads the clarity work and prevents scope from shifting mid-stream. If you discover a new requirement during iteration, note it separately and address it in a clean final pass.</p>
+      </div>
+      <div id="practice-tool" class="practice-box" style="display:none">
+        <h4>Your iteration practice</h4>
+        <p>When an iteration chain isn't working, pause and ask: "Is this a generation task or a judgment task?" If it's judgment, no amount of iteration will fix it — you need to step in and own the content. Use AI for structure and first pass, then rewrite from your own expertise.</p>
+      </div>
+      <div id="practice-abandon" class="practice-box" style="display:none">
+        <h4>Your iteration practice</h4>
+        <p>Set a personal rule: if you've iterated three times and the output still misses by more than 20%, stop. Open a new conversation. Rewrite the prompt from scratch using what you've learned from the failed attempts. The third-attempt prompt, written with that knowledge, almost always outperforms round four of an existing chain.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>Vague feedback produces vague improvement — iteration spirals start here</li>
+    <li>Good iteration: diagnose specifically first, then give surgical correction second</li>
+    <li>Change one thing at a time so you can tell what worked</li>
+    <li>The 80% threshold: when output is more than 20% off, restart rather than patch</li>
+    <li>Long conversation threads can work against you — a fresh context often beats round ten</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    The final lesson pulls everything together into a personal AI workflow — triggers, templates, and review habits — so reaching for AI becomes a reflex, not a decision.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher — e.g. "Help me diagnose what went wrong in an iteration I'm stuck on" or "Write me a better initial prompt for something I keep iterating."</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://www.oneusefulthing.org" target="_blank">Ethan Mollick — One Useful Thing</a> &middot;
+      <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">Anthropic Prompting Guide</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);"><a href="0003-when-to-use-ai.html">&larr; Previous lesson</a> &middot; Using AI Effectively &middot; Lesson 4 of 5 &middot; <a href="0005-your-ai-workflow.html">Next lesson &rarr;</a></p>
+  </div>
+
+</div>
+
+<script>
+  const scores = { vague: 0, scope: 0, tool: 0, abandon: 0 };
+  const answered = {};
+
+  function answer(qId, type, btn) {
+    const q = document.getElementById(qId);
+    q.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    if (answered[qId]) scores[answered[qId]]--;
+    scores[type]++;
+    answered[qId] = type;
+    setTimeout(() => {
+      const nums = { q1:1, q2:2, q3:3, q4:4, q5:5 };
+      const current = nums[qId];
+      if (current < 5) {
+        q.classList.remove('active');
+        document.getElementById('q' + (current + 1)).classList.add('active');
+      } else {
+        showResult();
+      }
+    }, 350);
+  }
+
+  function showResult() {
+    document.querySelectorAll('.quiz-question').forEach(q => q.classList.remove('active'));
+    const winner = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    document.getElementById('result-' + winner).style.display = 'block';
+    document.getElementById('practice-' + winner).style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

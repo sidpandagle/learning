@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 2: Prompt Architecture</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    p { margin-bottom: 16px; }
+
+    .callout { border-radius: 10px; padding: 20px 24px; margin: 28px 0; }
+    .callout.fact { background: var(--accent-light); border-left: 3px solid var(--accent); }
+    .callout.warning { background: var(--warn-light); border-left: 3px solid var(--warn); }
+    .callout.insight { background: #f5f3ff; border-left: 3px solid #7c3aed; }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    /* RCTF elements */
+    .rctf-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 28px 0;
+    }
+    .rctf-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 18px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .rctf-letter {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .rctf-r .rctf-letter { background: #fef9c3; color: #854d0e; }
+    .rctf-c .rctf-letter { background: var(--accent-light); color: var(--accent); }
+    .rctf-t .rctf-letter { background: #f0fdf4; color: var(--success); }
+    .rctf-f .rctf-letter { background: #f5f3ff; color: #7c3aed; }
+    .rctf-name { font-weight: 700; margin-bottom: 4px; }
+    .rctf-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+    .rctf-example { font-size: 0.85rem; margin-top: 10px; color: var(--ink); font-style: italic; background: var(--bg); padding: 8px 12px; border-radius: 6px; }
+
+    /* Before/After */
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 28px 0;
+    }
+    .ba-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .ba-header {
+      padding: 8px 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .ba-before .ba-header { background: #fff1f2; color: #dc2626; }
+    .ba-after .ba-header { background: var(--success-light); color: var(--success); }
+    .ba-body {
+      padding: 14px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+    .ba-body strong { color: var(--ink); }
+
+    /* Quiz */
+    .quiz-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .quiz-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .quiz-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
+    .quiz-question { margin-bottom: 28px; display: none; }
+    .quiz-question.active { display: block; }
+    .q-text { font-weight: 600; margin-bottom: 16px; line-height: 1.4; }
+    .q-context { font-size: 0.9rem; color: var(--muted); background: var(--bg); padding: 12px 14px; border-radius: 8px; margin-bottom: 14px; font-style: italic; line-height: 1.5; }
+    .q-progress { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: all 0.15s;
+      color: var(--ink);
+      font-family: inherit;
+    }
+    .option-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.selected { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+
+    .quiz-result { display: none; }
+    .result-type {
+      text-align: center;
+      padding: 28px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .result-type .icon { font-size: 3rem; margin-bottom: 12px; }
+    .result-type h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+    .result-type p { font-size: 0.95rem; color: var(--muted); max-width: 380px; margin: 0 auto; }
+
+    .result-role { background: #fef9c3; }
+    .result-context { background: var(--accent-light); }
+    .result-task { background: #f0fdf4; }
+    .result-format { background: #f5f3ff; }
+
+    .practice-box {
+      background: var(--ink);
+      color: white;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-top: 20px;
+    }
+    .practice-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 10px; }
+    .practice-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+    .cite { font-size: 0.8rem; color: var(--muted); }
+    .cite a { color: var(--accent); text-decoration: none; }
+
+    .footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .quiz-section { display: none; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 2</span>
+    <span>Using AI Effectively</span>
+    <span>&middot;</span>
+    <span>~12 minutes</span>
+  </div>
+
+  <h1>Prompt Architecture</h1>
+  <p class="subtitle">The four elements every strong prompt has — and how to build them in the right order.</p>
+
+  <h2>Why most prompts fail before you finish typing them</h2>
+
+  <p>The most common prompting mistake isn't asking the wrong thing. It's asking the right thing in the wrong order — leading with the request and leaving out everything the model needs to do it well.</p>
+
+  <p>Think about how you'd brief the capable intern from Lesson 1. You wouldn't walk up and say "write me an email." You'd say: "You're helping our sales team. We're pitching to mid-market companies. Write a follow-up email to a prospect who went quiet after a demo — keep it short and don't be pushy."</p>
+
+  <p>That's not over-explaining. That's a functional briefing. And it's exactly what a strong prompt looks like.</p>
+
+  <div class="callout fact">
+    <strong>The RCTF framework</strong>
+    Every effective prompt has four components: <strong>Role</strong>, <strong>Context</strong>, <strong>Task</strong>, and <strong>Format</strong>. You don't need all four every time — but knowing which one is missing is how you diagnose a failing prompt.
+  </div>
+
+  <h2>The four elements</h2>
+
+  <div class="rctf-grid">
+    <div class="rctf-item rctf-r">
+      <div class="rctf-letter">R</div>
+      <div>
+        <div class="rctf-name">Role — who should the AI be?</div>
+        <div class="rctf-desc">Setting a role primes the model to respond from a particular perspective, vocabulary, and expertise level. It filters out noise and focuses the response on what that role would actually say.</div>
+        <div class="rctf-example">"You are a senior copywriter who specialises in B2B SaaS." / "Act as a sceptical investor reviewing this pitch." / "You're an expert explainer writing for non-technical readers."</div>
+      </div>
+    </div>
+    <div class="rctf-item rctf-c">
+      <div class="rctf-letter">C</div>
+      <div>
+        <div class="rctf-name">Context — what does the AI need to know?</div>
+        <div class="rctf-desc">The background facts that make the difference between a generic and a useful output. Who is the audience? What's the situation? What has already been tried? What constraints exist? This is the briefing.</div>
+        <div class="rctf-example">"Our audience is operations managers at logistics companies. They're sceptical of new software and have been burned by failed implementations before."</div>
+      </div>
+    </div>
+    <div class="rctf-item rctf-t">
+      <div class="rctf-letter">T</div>
+      <div>
+        <div class="rctf-name">Task — what exactly do you want?</div>
+        <div class="rctf-desc">The specific request — an action verb, a scope, and any constraints. Vague tasks get vague outputs. The task should be specific enough that you'd know the difference between a good result and a bad one.</div>
+        <div class="rctf-example">"Write a 150-word LinkedIn post announcing our product launch. Avoid superlatives. End with a clear call to action."</div>
+      </div>
+    </div>
+    <div class="rctf-item rctf-f">
+      <div class="rctf-letter">F</div>
+      <div>
+        <div class="rctf-name">Format — how should the output look?</div>
+        <div class="rctf-desc">Without a format instruction, the model defaults to whatever structure is most common for that type of request. Explicit format instructions are the fastest way to get exactly what you need, first try.</div>
+        <div class="rctf-example">"Return as a numbered list of 5 items, each with a one-sentence explanation." / "Write in plain paragraphs, no bullet points." / "Use a table with columns: Task, Owner, Due Date."</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Seeing it in action: before and after</h2>
+
+  <p>Here's the same request rebuilt with RCTF:</p>
+
+  <div class="before-after">
+    <div class="ba-card ba-before">
+      <div class="ba-header">Without RCTF</div>
+      <div class="ba-body">Write a summary of this project for stakeholders.</div>
+    </div>
+    <div class="ba-card ba-after">
+      <div class="ba-header">With RCTF</div>
+      <div class="ba-body">
+        <strong>[Role]</strong> You are a project manager writing for senior executives who don't read below the fold.<br><br>
+        <strong>[Context]</strong> We've just completed a 3-month migration to a new data pipeline. It came in on time but 15% over budget. Two major issues were discovered and resolved mid-project.<br><br>
+        <strong>[Task]</strong> Write a project close-out summary that leads with outcomes, acknowledges the budget overage honestly, and explains the key decisions made.<br><br>
+        <strong>[Format]</strong> Three short paragraphs. No bullet points. Under 200 words total.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <strong>You don't always need all four</strong>
+    For simple tasks — "fix the grammar in this paragraph" or "translate this to Spanish" — RCTF is overkill. The framework is a diagnostic tool. When an output is missing the mark, ask: which element was I missing? That's almost always the fix.
+  </div>
+
+  <div class="callout warning">
+    <strong>Order matters</strong>
+    Lead with Role and Context before the Task. The model processes your prompt sequentially — if you start with the request, it begins generating before it has the briefing it needs. Put the context first, task second, format last.
+  </div>
+
+  <hr>
+
+  <h2>Diagnose the missing element</h2>
+  <p>Five weak prompts are shown below. For each one, identify which RCTF element is missing or most underdeveloped.</p>
+
+  <div class="quiz-section">
+    <div class="quiz-title">What's the missing element?</div>
+    <div class="quiz-subtitle">5 prompts. Identify the weakest link in each. You'll get a diagnosis of your most common gap.</div>
+
+    <div class="quiz-question active" id="q1">
+      <div class="q-progress">Question 1 of 5</div>
+      <div class="q-text">What's the biggest weakness in this prompt?</div>
+      <div class="q-context">"Give me ideas for improving employee retention."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q1','context',this)">Missing context — no industry, team size, current situation, or what's already been tried.</button>
+        <button class="option-btn" onclick="answer('q1','format',this)">Missing format — should specify how many ideas and in what structure.</button>
+        <button class="option-btn" onclick="answer('q1','role',this)">Missing role — should specify if the AI should respond as an HR specialist or a CEO.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="q-progress">Question 2 of 5</div>
+      <div class="q-text">What's the biggest weakness in this prompt?</div>
+      <div class="q-context">"You are a fitness coach. Write a workout plan."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q2','context',this)">Missing context — no information about the person's fitness level, goals, equipment, or schedule.</button>
+        <button class="option-btn" onclick="answer('q2','task',this)">Missing task clarity — "workout plan" is too vague; needs duration, days per week, focus area.</button>
+        <button class="option-btn" onclick="answer('q2','format',this)">Missing format — doesn't say whether to use a table, a week-by-week structure, or prose.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="q-progress">Question 3 of 5</div>
+      <div class="q-text">What's the biggest weakness in this prompt?</div>
+      <div class="q-context">"You are a UX designer. Our app's onboarding flow has low completion rates — users drop off at step 3 of 5. We've already tried shortening the copy. Give me recommendations."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q3','format',this)">Missing format — doesn't say how many recommendations or in what form to present them.</button>
+        <button class="option-btn" onclick="answer('q3','task',this)">Missing task clarity — "give me recommendations" is still vague about depth, prioritisation, or constraints.</button>
+        <button class="option-btn" onclick="answer('q3','role',this)">Missing role specificity — "UX designer" is too broad; should specify mobile/web, product stage, etc.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="q-progress">Question 4 of 5</div>
+      <div class="q-text">What's the biggest weakness in this prompt?</div>
+      <div class="q-context">"Write a compelling introduction for my presentation about AI in healthcare."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q4','context',this)">Missing context — no audience info, presentation goal, or what "compelling" means for this situation.</button>
+        <button class="option-btn" onclick="answer('q4','role',this)">Missing role — should specify if the AI is speaking as an expert, a storyteller, or a neutral presenter.</button>
+        <button class="option-btn" onclick="answer('q4','format',this)">Missing format — no indication of length, tone, or whether to start with a story, statistic, or question.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="q-progress">Question 5 of 5</div>
+      <div class="q-text">What's the biggest weakness in this prompt?</div>
+      <div class="q-context">"You are a senior data analyst at a retail company. We're preparing for our Q3 board meeting. Our revenue is up 12% YoY but margin is down 3 points. Analyse this and tell me what's going on."</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q5','format',this)">Missing format — doesn't specify what the output should look like: talking points, a written analysis, a table, etc.</button>
+        <button class="option-btn" onclick="answer('q5','context',this)">Missing context — needs more financial detail: cost breakdown, category data, seasonality factors.</button>
+        <button class="option-btn" onclick="answer('q5','task',this)">Missing task clarity — "tell me what's going on" is too open-ended; should specify which angles to prioritise.</button>
+      </div>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div id="result-role" class="result-type result-role" style="display:none">
+        <div class="icon">🎭</div>
+        <h3>Your gap: Missing Role</h3>
+        <p>You tend to jump straight to task and context but skip setting who the AI should be. Role shapes the vocabulary, perspective, and depth of the response.</p>
+      </div>
+      <div id="result-context" class="result-type result-context" style="display:none">
+        <div class="icon">📋</div>
+        <h3>Your gap: Missing Context</h3>
+        <p>You write clear requests but leave out the briefing — who's involved, what's already been tried, what the constraints are. That's the information that turns generic into useful.</p>
+      </div>
+      <div id="result-task" class="result-type result-task" style="display:none">
+        <div class="icon">🎯</div>
+        <h3>Your gap: Vague Task</h3>
+        <p>You give good background but leave the actual ask too open. "Tell me what's going on" and "give me ideas" are starting points, not tasks. Sharpen the verb and add scope constraints.</p>
+      </div>
+      <div id="result-format" class="result-type result-format" style="display:none">
+        <div class="icon">📐</div>
+        <h3>Your gap: Missing Format</h3>
+        <p>You know what you want but don't specify how you want it delivered. Without format instructions, you get the average output shape — which is often not what you need.</p>
+      </div>
+
+      <div id="practice-role" class="practice-box" style="display:none">
+        <h4>Your micro-practice for the next prompt</h4>
+        <p>Before you write your next prompt, spend 5 seconds deciding: who should be answering this? Add one sentence starting with "You are a..." that captures the relevant expertise and perspective. You'll immediately notice the output changes in depth and vocabulary.</p>
+      </div>
+      <div id="practice-context" class="practice-box" style="display:none">
+        <h4>Your micro-practice for the next prompt</h4>
+        <p>Before submitting your next prompt, ask yourself: "What would a smart new colleague need to know to handle this well?" Write that as two or three sentences before the task. Audience, situation, constraints — put them all in. The model will use all of it.</p>
+      </div>
+      <div id="practice-task" class="practice-box" style="display:none">
+        <h4>Your micro-practice for the next prompt</h4>
+        <p>Rewrite your task as: <em>[action verb] + [specific scope] + [one key constraint].</em> For example: "Write a 200-word email that declines the meeting without closing the door." The combination of verb + scope + constraint makes the task answerable in one shot.</p>
+      </div>
+      <div id="practice-format" class="practice-box" style="display:none">
+        <h4>Your micro-practice for the next prompt</h4>
+        <p>End every prompt with a format instruction, even a simple one. "Return as a bulleted list." "Keep it under 100 words." "Use a table." It takes 3 seconds and saves you an iteration round almost every time.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>Most prompts fail because they lead with the request and skip the briefing</li>
+    <li>RCTF: Role, Context, Task, Format — the four elements of a strong prompt</li>
+    <li>Order matters: context before task, task before format</li>
+    <li>You don't need all four every time — but when an output misses, check which element is missing</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    Knowing how to prompt is one thing. Knowing <em>when</em> to reach for AI is another. Lesson 3 covers the 2×2 triage: which tasks AI genuinely compounds, and which ones it quietly wastes your time on.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher anything — e.g. "Can you show me an RCTF prompt for a task I'm working on?" or "When is the Role element actually needed?"</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://platform.openai.com/docs/guides/prompt-engineering" target="_blank">OpenAI Prompt Engineering Guide</a> &middot;
+      <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">Anthropic Prompting Guide</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);"><a href="0001-the-ai-mental-model.html">&larr; Previous lesson</a> &middot; Using AI Effectively &middot; Lesson 2 of 5 &middot; <a href="0003-when-to-use-ai.html">Next lesson &rarr;</a></p>
+  </div>
+
+</div>
+
+<script>
+  const scores = { role: 0, context: 0, task: 0, format: 0 };
+  const answered = {};
+
+  function answer(qId, type, btn) {
+    const q = document.getElementById(qId);
+    q.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    if (answered[qId]) scores[answered[qId]]--;
+    scores[type]++;
+    answered[qId] = type;
+    setTimeout(() => {
+      const nums = { q1:1, q2:2, q3:3, q4:4, q5:5 };
+      const current = nums[qId];
+      if (current < 5) {
+        q.classList.remove('active');
+        document.getElementById('q' + (current + 1)).classList.add('active');
+      } else {
+        showResult();
+      }
+    }, 350);
+  }
+
+  function showResult() {
+    document.querySelectorAll('.quiz-question').forEach(q => q.classList.remove('active'));
+    const winner = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    document.getElementById('result-' + winner).style.display = 'block';
+    document.getElementById('practice-' + winner).style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

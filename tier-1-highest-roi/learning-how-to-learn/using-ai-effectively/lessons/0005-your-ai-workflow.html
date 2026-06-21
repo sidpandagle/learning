@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 5: Your AI Workflow</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    p { margin-bottom: 16px; }
+
+    .callout { border-radius: 10px; padding: 20px 24px; margin: 28px 0; }
+    .callout.fact { background: var(--accent-light); border-left: 3px solid var(--accent); }
+    .callout.warning { background: var(--warn-light); border-left: 3px solid var(--warn); }
+    .callout.insight { background: #f5f3ff; border-left: 3px solid #7c3aed; }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    /* Workflow loop visual */
+    .workflow-loop {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin: 28px 0;
+    }
+    .workflow-loop-title { font-weight: 700; margin-bottom: 4px; }
+    .workflow-loop-sub { font-size: 0.88rem; color: var(--muted); margin-bottom: 24px; }
+    .wl-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .wl-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .wl-step:last-child { border-bottom: none; }
+    .wl-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .wl-label { font-weight: 700; margin-bottom: 3px; }
+    .wl-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+    .wl-arrow {
+      text-align: center;
+      color: var(--border);
+      font-size: 1.2rem;
+      padding: 2px 0;
+      margin-left: 15px;
+    }
+
+    /* Three layers */
+    .layer-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin: 24px 0;
+    }
+    .layer-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    .layer-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .layer-name { font-weight: 700; margin-bottom: 6px; }
+    .layer-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+    .layer-example { font-size: 0.85rem; margin-top: 10px; color: var(--ink); background: var(--bg); padding: 10px 12px; border-radius: 6px; line-height: 1.5; }
+
+    /* Commitment exercise */
+    .commitment-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .commitment-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .commitment-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
+
+    .trigger-group { margin-bottom: 28px; }
+    .trigger-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .trigger-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--ink);
+      background: var(--bg);
+      margin-bottom: 10px;
+      transition: border-color 0.15s;
+    }
+    .trigger-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .trigger-input::placeholder { color: #9ca3af; }
+
+    .template-group { margin-bottom: 28px; }
+    .template-area {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--ink);
+      background: var(--bg);
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.6;
+      transition: border-color 0.15s;
+    }
+    .template-area:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .template-area::placeholder { color: #9ca3af; }
+
+    .save-btn {
+      background: var(--ink);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .save-btn:hover { opacity: 0.85; }
+    .save-confirm {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: var(--success-light);
+      border: 1px solid #6ee7b7;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: #065f46;
+    }
+
+    /* Course recap */
+    .recap-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 24px 0;
+    }
+    .recap-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .recap-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .recap-lesson { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
+    .recap-takeaway { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+    .footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .commitment-section { display: none; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 5</span>
+    <span>Using AI Effectively</span>
+    <span>&middot;</span>
+    <span>~15 minutes</span>
+  </div>
+
+  <h1>Your AI Workflow</h1>
+  <p class="subtitle">Building AI into your daily work so it's a reflex, not an afterthought.</p>
+
+  <h2>Why most people stay "occasional AI users"</h2>
+
+  <p>Most people who try AI and find it useful don't actually build it into their workflow. They use it occasionally — when they remember, or when a task feels like an obvious AI job. The result is inconsistent value: sometimes transformative, often forgotten.</p>
+
+  <p>The gap between occasional users and people who get consistent value from AI is rarely skill. It's system. Occasional users rely on memory and impulse. Systematic users have three things: <strong>triggers</strong> that prompt them to reach for AI, <strong>templates</strong> that capture their best prompts, and <strong>review habits</strong> that keep their outputs reliable.</p>
+
+  <div class="callout fact">
+    <strong>The three-layer system</strong>
+    Triggers → Templates → Review. Each layer builds on the last. Triggers get you to reach for AI consistently. Templates get you to a useful output fast. Review habits keep quality high.
+  </div>
+
+  <h2>The workflow loop</h2>
+
+  <div class="workflow-loop">
+    <div class="workflow-loop-title">The AI Workflow Loop</div>
+    <div class="workflow-loop-sub">Five steps that repeat for every task where you use AI.</div>
+    <div class="wl-steps">
+      <div class="wl-step">
+        <div class="wl-num">1</div>
+        <div>
+          <div class="wl-label">Trigger — recognise this as an AI task</div>
+          <div class="wl-desc">A recurring task hits your desk. Your trigger list fires and you reach for AI rather than starting from scratch manually.</div>
+        </div>
+      </div>
+      <div class="wl-step">
+        <div class="wl-num">2</div>
+        <div>
+          <div class="wl-label">Prompt — use a template or build one</div>
+          <div class="wl-desc">Pull a saved template and adapt it with the task-specific context. If no template exists, build the prompt from scratch using RCTF.</div>
+        </div>
+      </div>
+      <div class="wl-step">
+        <div class="wl-num">3</div>
+        <div>
+          <div class="wl-label">Output — get the first draft</div>
+          <div class="wl-desc">AI produces the output. You receive it knowing it's a 70–80% draft, not a finished product.</div>
+        </div>
+      </div>
+      <div class="wl-step">
+        <div class="wl-num">4</div>
+        <div>
+          <div class="wl-label">Review — verify, edit, own it</div>
+          <div class="wl-desc">Check facts, reread in the reader's voice, edit to sound like you. The output leaves as yours, not the AI's.</div>
+        </div>
+      </div>
+      <div class="wl-step">
+        <div class="wl-num">5</div>
+        <div>
+          <div class="wl-label">Refine template — save what worked</div>
+          <div class="wl-desc">If the prompt produced a strong output, save or update the template. Each good session compounds your future speed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Layer 1: Triggers</h2>
+
+  <p>A trigger is a condition that reliably tells you "this task is worth handing to AI." Without triggers, you rely on remembering — and memory fails under load, which is exactly when you most need AI's help.</p>
+
+  <p>The best triggers are task-type triggers: recurring categories of work that consistently benefit from AI generation. They look like this:</p>
+
+  <ul style="padding-left:20px; line-height:2.2; margin-bottom:16px;">
+    <li>Every time I need to write a first draft of anything longer than a paragraph</li>
+    <li>Every time I need to summarise something longer than 2 pages</li>
+    <li>Every time I need to brainstorm more than 5 options</li>
+    <li>Every time I need to reformat content from one structure to another</li>
+    <li>Every time I need to explain something technical to a non-technical audience</li>
+  </ul>
+
+  <p>You don't need many triggers — three to five consistent ones are more valuable than a long list you won't remember.</p>
+
+  <h2>Layer 2: Templates</h2>
+
+  <p>A prompt template is a saved prompt with placeholders for the parts that change. You build templates by capturing the prompts that worked well — the ones that produced a useful output in one or two tries.</p>
+
+  <div class="callout insight">
+    <strong>Why templates are 10x leverage</strong>
+    The time investment in a great prompt pays back every time you reuse it. A prompt that took 5 minutes to craft and saves 20 minutes per use breaks even after 15 minutes of total reuse. After ten uses, it's paid back an hour. Save your best prompts.
+  </div>
+
+  <p>A template doesn't need to be elaborate. It just needs to have the RCTF structure filled in for the recurring role and context, with [TASK-SPECIFIC DETAILS] as a placeholder for what changes each time. For example:</p>
+
+  <div class="callout fact" style="font-family: 'Courier New', monospace; font-size: 0.88rem; line-height:1.7;">
+    <strong>Example template: Weekly status update</strong>
+    You are a clear, direct communicator writing to a busy manager who skims emails.<br><br>
+    Context: I'm an [ROLE] at [COMPANY]. My manager cares most about [WHAT THEY CARE ABOUT].<br><br>
+    Write a weekly status update covering: what I completed this week, what's blocked, and what I'm doing next week. Lead with the most important item. Keep it under 150 words. Use plain prose — no bullet points.
+  </div>
+
+  <h2>Layer 3: Review habits</h2>
+
+  <p>Every AI output you send out carries your name. The review layer is what separates AI-assisted work that builds trust from AI-assisted work that damages it.</p>
+
+  <p>Three review checks before any AI output leaves your hands:</p>
+
+  <div class="layer-cards">
+    <div class="layer-card">
+      <div class="layer-num">Check 1</div>
+      <div class="layer-name">Fact-check the specifics</div>
+      <div class="layer-desc">Any number, date, name, citation, or statistic — verify it. These are where hallucinations concentrate. The rest of the output may be fine; the specific claims are the risk.</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">Check 2</div>
+      <div class="layer-name">Reread in the reader's voice</div>
+      <div class="layer-desc">Before sending, read the output as the recipient would. Does the tone land correctly for them? Does it answer their actual question? Does it sound like something a real person would write?</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">Check 3</div>
+      <div class="layer-name">Edit to own it</div>
+      <div class="layer-desc">Make at least one edit — a word change, a sentence restructured, a point reordered. This keeps your judgment active, personalises the output, and ensures you actually read it rather than skim.</div>
+    </div>
+  </div>
+
+  <h2>The weekly AI audit</h2>
+
+  <p>Once a week, spend 5 minutes on three questions:</p>
+
+  <ol style="padding-left:20px; line-height:2.5;">
+    <li><strong>What tasks did AI help with this week?</strong> Reinforce the triggers that worked.</li>
+    <li><strong>What output missed and why?</strong> Identify a prompt to improve or a context to add.</li>
+    <li><strong>What prompt is worth saving as a template?</strong> Capture it before you forget the exact wording.</li>
+  </ol>
+
+  <p>Five minutes. Done weekly. This compounds over months into a personal AI system tailored to exactly how you work.</p>
+
+  <hr>
+
+  <h2>Build your workflow now</h2>
+  <p>Fill this in before you close the lesson. It takes 3 minutes and gives you something to use tomorrow.</p>
+
+  <div class="commitment-section">
+    <div class="commitment-title">Your personal AI workflow starter</div>
+    <div class="commitment-subtitle">Three triggers + one template. The foundation of a system that compounds.</div>
+
+    <div class="trigger-group">
+      <div class="trigger-label">Your 3 recurring tasks where you'll try AI first</div>
+      <input type="text" class="trigger-input" id="trigger1" placeholder="Trigger 1 — e.g. Every time I write a first draft of a document or email" />
+      <input type="text" class="trigger-input" id="trigger2" placeholder="Trigger 2 — e.g. Every time I need to summarise a long piece of content" />
+      <input type="text" class="trigger-input" id="trigger3" placeholder="Trigger 3 — e.g. Every time I need to brainstorm options or approaches" />
+    </div>
+
+    <div class="template-group">
+      <div class="trigger-label">Your first prompt template</div>
+      <textarea class="template-area" id="template1" placeholder="Paste or write a prompt you want to save. Use [BRACKETS] for the parts that will change. Example:&#10;&#10;You are a [ROLE]. My audience is [AUDIENCE].&#10;&#10;Write a [DOCUMENT TYPE] covering [TOPIC]. Keep it under [LENGTH]. Use [FORMAT]."></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveWorkflow()">Save my workflow</button>
+    <div class="save-confirm" id="save-confirm">
+      Saved. Your triggers and template are copied to your clipboard — paste them somewhere you'll see them tomorrow (a notes app, a doc, a sticky note). The system only compounds if you come back to it.
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Course recap: what you've learned</h2>
+
+  <div class="recap-grid">
+    <div class="recap-item">
+      <div class="recap-num">1</div>
+      <div>
+        <div class="recap-lesson">The AI Mental Model</div>
+        <div class="recap-takeaway">AI is a prediction engine. The context window is its entire world. Use the capable intern model to set the right expectations and briefing instincts.</div>
+      </div>
+    </div>
+    <div class="recap-item">
+      <div class="recap-num">2</div>
+      <div>
+        <div class="recap-lesson">Prompt Architecture</div>
+        <div class="recap-takeaway">RCTF: Role, Context, Task, Format. Put context before the request. When an output misses, identify which element was missing — that's almost always the fix.</div>
+      </div>
+    </div>
+    <div class="recap-item">
+      <div class="recap-num">3</div>
+      <div>
+        <div class="recap-lesson">When to Use AI</div>
+        <div class="recap-takeaway">AI wins on generation tasks; struggles on judgment tasks. The 2×2 triage keeps you in the right quadrant: delegate freely, use with review, assist your judgment, or skip.</div>
+      </div>
+    </div>
+    <div class="recap-item">
+      <div class="recap-num">4</div>
+      <div>
+        <div class="recap-lesson">Iterating Effectively</div>
+        <div class="recap-takeaway">Diagnose first, correct surgically, change one thing at a time. The 80% threshold: if output is more than 20% off, restart with a better prompt rather than iterate.</div>
+      </div>
+    </div>
+    <div class="recap-item">
+      <div class="recap-num">5</div>
+      <div>
+        <div class="recap-lesson">Your AI Workflow</div>
+        <div class="recap-takeaway">Triggers → Templates → Review. The weekly audit compounds your system. Consistent value comes from habit, not from individual sessions.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout insight" style="margin-top:40px;">
+    <strong>What's next</strong>
+    The five lessons are the foundation. The compounding happens in practice. In your next session, bring a real task you're working on and ask your teacher to help you apply RCTF, triage it on the matrix, or build a template for it. That's how the framework becomes instinct.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher — e.g. "Help me build a template for [task]" or "Which quadrant does [task] fall in?" or "Review my prompt for [task] and tell me what's missing."</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://www.oneusefulthing.org" target="_blank">Ethan Mollick — One Useful Thing</a> &middot;
+      <a href="https://platform.openai.com/docs/guides/prompt-engineering" target="_blank">OpenAI Prompt Engineering Guide</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);"><a href="0004-iterating-effectively.html">&larr; Previous lesson</a> &middot; Using AI Effectively &middot; Lesson 5 of 5 &middot; <a href="../../../../../index.html">Back to dashboard &rarr;</a></p>
+  </div>
+
+</div>
+
+<script>
+  function saveWorkflow() {
+    const t1 = document.getElementById('trigger1').value || '(not filled)';
+    const t2 = document.getElementById('trigger2').value || '(not filled)';
+    const t3 = document.getElementById('trigger3').value || '(not filled)';
+    const tmpl = document.getElementById('template1').value || '(not filled)';
+
+    const text = `MY AI WORKFLOW\n\nTriggers:\n1. ${t1}\n2. ${t2}\n3. ${t3}\n\nTemplate 1:\n${tmpl}`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
+
+    const confirm = document.getElementById('save-confirm');
+    confirm.style.display = 'block';
+    confirm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+</body>
+</html>

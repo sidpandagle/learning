@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 3: When to Use AI (and When Not To)</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .subtitle { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; line-height: 1.5; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 48px 0 16px; letter-spacing: -0.01em; }
+    p { margin-bottom: 16px; }
+
+    .callout { border-radius: 10px; padding: 20px 24px; margin: 28px 0; }
+    .callout.fact { background: var(--accent-light); border-left: 3px solid var(--accent); }
+    .callout.warning { background: var(--warn-light); border-left: 3px solid var(--warn); }
+    .callout.insight { background: #f5f3ff; border-left: 3px solid #7c3aed; }
+    .callout strong { display: block; margin-bottom: 6px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+
+    /* 2x2 matrix */
+    .matrix-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      margin: 28px 0;
+    }
+    .matrix-title { font-weight: 700; margin-bottom: 4px; }
+    .matrix-sub { font-size: 0.88rem; color: var(--muted); margin-bottom: 20px; }
+    .matrix {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 0;
+    }
+    .matrix-axis-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      padding: 4px 0 10px;
+    }
+    .matrix-axis-label.left {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      padding: 0 10px 0 0;
+      grid-row: 2;
+      grid-column: 1;
+      text-align: center;
+    }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .matrix-cell {
+      border-radius: 10px;
+      padding: 18px;
+      min-height: 120px;
+    }
+    .cell-delegate { background: #dcfce7; }
+    .cell-review { background: #dbeafe; }
+    .cell-assist { background: #fef9c3; }
+    .cell-skip { background: #fee2e2; }
+    .cell-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .cell-delegate .cell-label { color: #166534; }
+    .cell-review .cell-label { color: #1e40af; }
+    .cell-assist .cell-label { color: #854d0e; }
+    .cell-skip .cell-label { color: #991b1b; }
+    .cell-desc { font-size: 0.85rem; line-height: 1.5; }
+    .cell-examples { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+    .matrix-col-labels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .col-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Quiz */
+    .quiz-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .quiz-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .quiz-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
+    .quiz-question { margin-bottom: 28px; display: none; }
+    .quiz-question.active { display: block; }
+    .q-text { font-weight: 600; margin-bottom: 16px; line-height: 1.4; }
+    .q-progress { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: all 0.15s;
+      color: var(--ink);
+      font-family: inherit;
+    }
+    .option-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.selected { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+
+    .quiz-result { display: none; }
+    .result-type {
+      text-align: center;
+      padding: 28px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .result-type .icon { font-size: 3rem; margin-bottom: 12px; }
+    .result-type h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+    .result-type p { font-size: 0.95rem; color: var(--muted); max-width: 380px; margin: 0 auto; }
+
+    .result-overreliant { background: #fff1f2; }
+    .result-underreliant { background: #fffbeb; }
+    .result-calibrated { background: #f0fdf4; }
+
+    .practice-box {
+      background: var(--ink);
+      color: white;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-top: 20px;
+    }
+    .practice-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 10px; }
+    .practice-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+    .footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .quiz-section { display: none; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 3</span>
+    <span>Using AI Effectively</span>
+    <span>&middot;</span>
+    <span>~12 minutes</span>
+  </div>
+
+  <h1>When to Use AI (and When Not To)</h1>
+  <p class="subtitle">The tasks where AI compounds your output — and the ones where it quietly wastes your time.</p>
+
+  <h2>AI is a force multiplier — but only on the right tasks</h2>
+
+  <p>People who get the most from AI don't use it for everything. They use it strategically — on a specific class of tasks where AI consistently adds value, and they skip it or use it carefully on tasks where it creates more problems than it solves.</p>
+
+  <p>The distinction is simple: AI is excellent at <em>generation</em> and poor at <em>judgment</em>. When your bottleneck is producing a first draft, exploring options, or transforming existing content — AI compounds your output. When your bottleneck is judgment, verification, or sensitive human interaction — AI either can't help or actively misleads you.</p>
+
+  <div class="callout fact">
+    <strong>The core distinction</strong>
+    AI bottleneck = generation. You bottleneck = judgment. When you need generation, reach for AI. When you need judgment, stay in the driver's seat and use AI as a thinking partner at most.
+  </div>
+
+  <h2>The AI sweet spot: generation tasks</h2>
+
+  <p>These are tasks where the bottleneck is producing something — and where the quality bar is "good enough to work with," not "perfect on the first try."</p>
+
+  <ul style="padding-left:20px; line-height:2.2; margin-bottom:16px;">
+    <li><strong>First drafts</strong> — emails, reports, proposals, documentation</li>
+    <li><strong>Brainstorming</strong> — ideas, angles, objections, alternatives</li>
+    <li><strong>Summarising</strong> — long documents, meeting notes, research</li>
+    <li><strong>Reformatting</strong> — prose to bullets, data to narrative, formal to casual</li>
+    <li><strong>Explaining</strong> — complex topics simplified for a specific audience</li>
+    <li><strong>Editing and rewriting</strong> — restructuring, tightening, changing tone</li>
+    <li><strong>Research starting points</strong> — landscape scans, question generation, initial frameworks</li>
+  </ul>
+
+  <p>In all of these, AI gets you to 70–80% quality in seconds. You then spend your time on the final 20% — the judgment, the polish, the nuance that actually requires your expertise.</p>
+
+  <h2>The AI danger zone: judgment tasks</h2>
+
+  <p>These are tasks where accuracy, trust, or consequences are high — and where AI's confidence is decoupled from its reliability.</p>
+
+  <ul style="padding-left:20px; line-height:2.2; margin-bottom:16px;">
+    <li><strong>Fact verification</strong> — checking specific claims, dates, citations, statistics</li>
+    <li><strong>Final decisions</strong> — hiring, strategy calls, legal or financial choices</li>
+    <li><strong>Emotional conversations</strong> — difficult feedback, sensitive negotiations, personal conflicts</li>
+    <li><strong>Legal, medical, or compliance advice</strong> — AI is not a licensed professional</li>
+    <li><strong>Real-time information</strong> — AI's training has a cutoff and it can't browse unless explicitly given tools</li>
+  </ul>
+
+  <div class="callout warning">
+    <strong>The hallucination problem — revisited</strong>
+    AI models produce false information with genuine confidence. This is harmless in a brainstorm. It's a serious problem in a client-facing document. The danger zone tasks are where a confident hallucination causes real damage. Always verify before trusting AI on consequential specifics.
+  </div>
+
+  <h2>The 2×2 triage</h2>
+
+  <p>Use this matrix to quickly categorise any task. The two axes: how much AI can help (generation vs judgment bottleneck) and how high the stakes are (low-stakes drafts vs high-stakes decisions).</p>
+
+  <div class="matrix-wrap">
+    <div class="matrix-title">AI Task Triage Matrix</div>
+    <div class="matrix-sub">Where does this task fall?</div>
+    <div class="matrix-col-labels">
+      <div class="col-label">Low stakes</div>
+      <div class="col-label">High stakes</div>
+    </div>
+    <div class="matrix-grid">
+      <div class="matrix-cell cell-delegate">
+        <div class="cell-label">Delegate freely</div>
+        <div class="cell-desc">Generation bottleneck + low stakes. Let AI do the heavy lifting. Review briefly.</div>
+        <div class="cell-examples">Internal draft emails, brainstorming lists, reformatting content, first-pass summaries</div>
+      </div>
+      <div class="matrix-cell cell-review">
+        <div class="cell-label">Use with review</div>
+        <div class="cell-desc">Generation bottleneck + high stakes. AI drafts, you verify every claim and polish carefully before use.</div>
+        <div class="cell-examples">Client proposals, press releases, external reports, customer-facing content</div>
+      </div>
+      <div class="matrix-cell cell-assist">
+        <div class="cell-label">Assist your judgment</div>
+        <div class="cell-desc">Judgment bottleneck + low stakes. Use AI as a thinking partner — generate options, stress-test your reasoning.</div>
+        <div class="cell-examples">Team decisions, personal plans, exploratory research, evaluating trade-offs</div>
+      </div>
+      <div class="matrix-cell cell-skip">
+        <div class="cell-label">Skip or be careful</div>
+        <div class="cell-desc">Judgment bottleneck + high stakes. Your expertise and accountability are required. AI can inform, not decide.</div>
+        <div class="cell-examples">Final hiring decisions, legal/financial advice, sensitive HR conversations, medical guidance</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <strong>Most everyday tasks fall in the top row</strong>
+    The majority of work tasks — drafting, summarising, reformatting, explaining — are generation tasks with moderate stakes. This is AI's strongest territory. If you're underusing AI, it's often because you're only trying it on the bottom-right quadrant.
+  </div>
+
+  <hr>
+
+  <h2>Where does this task go?</h2>
+  <p>Five tasks below. Classify each one into the 2×2 — or pick the closest match. You'll see whether you tend toward over-reliance or under-reliance.</p>
+
+  <div class="quiz-section">
+    <div class="quiz-title">Triage these tasks</div>
+    <div class="quiz-subtitle">5 tasks. Place each in the right quadrant. Honest instincts only.</div>
+
+    <div class="quiz-question active" id="q1">
+      <div class="q-progress">Question 1 of 5</div>
+      <div class="q-text">You need to summarise a 20-page industry report into 5 key takeaways for your team's Slack channel. What's the right approach?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q1','calibrated',this)">Delegate to AI freely — low stakes, generation task. Skim the output before posting.</button>
+        <button class="option-btn" onclick="answer('q1','underreliant',this)">Do it manually — summarising requires deep comprehension that AI might miss.</button>
+        <button class="option-btn" onclick="answer('q1','overreliant',this)">Let AI handle it and post directly — AI summaries are reliable enough for internal comms.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="q-progress">Question 2 of 5</div>
+      <div class="q-text">You're deciding whether to hire a candidate after three interviews. You ask AI to review their interview notes and recommend yes or no. What's the problem?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q2','calibrated',this)">This is the skip/careful quadrant — AI can help structure your thinking but the decision requires your judgment and accountability.</button>
+        <button class="option-btn" onclick="answer('q2','overreliant',this)">There's no problem — AI is good at pattern recognition and can make this call from the notes.</button>
+        <button class="option-btn" onclick="answer('q2','underreliant',this)">This is fine as long as you treat it as one input among many.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="q-progress">Question 3 of 5</div>
+      <div class="q-text">You're preparing a client proposal and ask AI to generate the pricing section, including market benchmarks and competitor comparisons. Before sending it, you:</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q3','calibrated',this)">Verify every number against real data — this is "use with review" territory. AI draft, human verified.</button>
+        <button class="option-btn" onclick="answer('q3','overreliant',this)">Send after a quick read — AI's benchmarks are drawn from broad training data and should be accurate enough.</button>
+        <button class="option-btn" onclick="answer('q3','underreliant',this)">Throw out the pricing section and write it from scratch — AI can't handle financial specifics.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="q-progress">Question 4 of 5</div>
+      <div class="q-text">You're about to give a difficult piece of feedback to a team member about their performance. You:</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q4','calibrated',this)">Use AI to help you draft the key points and structure — but deliver it in your own words after adapting the draft to the specific person.</button>
+        <button class="option-btn" onclick="answer('q4','overreliant',this)">Ask AI to write the feedback script and follow it closely — it knows how to frame constructive feedback.</button>
+        <button class="option-btn" onclick="answer('q4','underreliant',this)">Don't involve AI at all — this is a human interaction and AI has no place in it.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="q-progress">Question 5 of 5</div>
+      <div class="q-text">You need to generate 20 potential blog post ideas for next quarter. Which approach gets you the best outcome fastest?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q5','calibrated',this)">Give AI your audience, tone, and goals, then generate 30 ideas. Filter down to the best 20. Total time: 10 minutes.</button>
+        <button class="option-btn" onclick="answer('q5','underreliant',this)">Brainstorm manually first, then use AI to add to your list — AI ideas tend to be too generic without your seed list.</button>
+        <button class="option-btn" onclick="answer('q5','overreliant',this)">Ask AI for 20 ideas and use them as-is. AI is a trained writer and knows what performs.</button>
+      </div>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div id="result-overreliant" class="result-type result-overreliant" style="display:none">
+        <div class="icon">⚠️</div>
+        <h3>Your reflex: Over-reliant</h3>
+        <p>You're reaching for AI in high-stakes or judgment-heavy situations without enough verification. The risk is confident errors slipping through unchecked.</p>
+      </div>
+      <div id="result-underreliant" class="result-type result-underreliant" style="display:none">
+        <div class="icon">🐢</div>
+        <h3>Your reflex: Under-reliant</h3>
+        <p>You're leaving value on the table by not reaching for AI on generation tasks where it would save significant time. The cost is doing manually what AI could draft in seconds.</p>
+      </div>
+      <div id="result-calibrated" class="result-type result-calibrated" style="display:none">
+        <div class="icon">🎯</div>
+        <h3>Your reflex: Well-calibrated</h3>
+        <p>You have a good instinct for when AI adds value and when it doesn't. The refinement is making this instinct more automatic, especially for edge cases.</p>
+      </div>
+
+      <div id="practice-overreliant" class="practice-box" style="display:none">
+        <h4>Your calibration practice</h4>
+        <p>For the next week, before using any AI output, ask: "If this is wrong, what happens?" If the answer is "something consequential," verify before using. Build a checklist habit for high-stakes outputs: every specific claim, date, and number gets confirmed from a primary source.</p>
+      </div>
+      <div id="practice-underreliant" class="practice-box" style="display:none">
+        <h4>Your calibration practice</h4>
+        <p>For the next week, any time you start a writing or drafting task, try AI first for 5 minutes before doing it yourself. You're not committing to using the output — just testing whether it gets you 70% of the way there faster than starting from scratch. Track your results.</p>
+      </div>
+      <div id="practice-calibrated" class="practice-box" style="display:none">
+        <h4>Your refinement practice</h4>
+        <p>Your instincts are sound. The next level is speed — making the triage automatic. Take the 2×2 matrix and mentally categorise the next 10 tasks that cross your desk. After two weeks, the classification will happen in under 2 seconds without thinking about it.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>AI is strong at generation (drafting, brainstorming, summarising) and weak at judgment (decisions, verification, sensitive interactions)</li>
+    <li>The 2×2 triage: generation/judgment × low-stakes/high-stakes → four quadrants with different approaches</li>
+    <li>Most everyday work tasks fall in the top row — this is where AI compounds your output most reliably</li>
+    <li>The danger zone is high-stakes + judgment: AI can assist your thinking but can't own the outcome</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    You know how to prompt and when to reach for AI. Lesson 4 tackles what to do when the first output isn't good enough — how to iterate without spiralling into ten rounds of frustrating back-and-forth.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher — e.g. "Where does X task I do regularly fall in the matrix?" or "How do I use AI on a judgment task without over-relying on it?"</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://www.oneusefulthing.org/p/how-to-use-ai-to-do-stuff-an-opinionated" target="_blank">Ethan Mollick — How to Use AI to Do Stuff</a> &middot;
+      <a href="https://www.oneusefulthing.org/p/the-80-problem" target="_blank">Ethan Mollick — The 80% Problem</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);"><a href="0002-prompt-architecture.html">&larr; Previous lesson</a> &middot; Using AI Effectively &middot; Lesson 3 of 5 &middot; <a href="0004-iterating-effectively.html">Next lesson &rarr;</a></p>
+  </div>
+
+</div>
+
+<script>
+  const scores = { overreliant: 0, underreliant: 0, calibrated: 0 };
+  const answered = {};
+
+  function answer(qId, type, btn) {
+    const q = document.getElementById(qId);
+    q.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    if (answered[qId]) scores[answered[qId]]--;
+    scores[type]++;
+    answered[qId] = type;
+    setTimeout(() => {
+      const nums = { q1:1, q2:2, q3:3, q4:4, q5:5 };
+      const current = nums[qId];
+      if (current < 5) {
+        q.classList.remove('active');
+        document.getElementById('q' + (current + 1)).classList.add('active');
+      } else {
+        showResult();
+      }
+    }, 350);
+  }
+
+  function showResult() {
+    document.querySelectorAll('.quiz-question').forEach(q => q.classList.remove('active'));
+    const winner = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    document.getElementById('result-' + winner).style.display = 'block';
+    document.getElementById('practice-' + winner).style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

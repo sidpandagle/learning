@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1: The AI Mental Model</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --warn: #d97706;
+      --warn-light: #fffbeb;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --border: #e5e7eb;
+      --bg: #fafaf9;
+      --card: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    .lesson-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lesson-meta .pill {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 48px 0 16px;
+      letter-spacing: -0.01em;
+    }
+
+    p { margin-bottom: 16px; }
+
+    .callout {
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+    .callout.fact {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+    }
+    .callout.warning {
+      background: var(--warn-light);
+      border-left: 3px solid var(--warn);
+    }
+    .callout.insight {
+      background: #f5f3ff;
+      border-left: 3px solid #7c3aed;
+    }
+    .callout strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    /* Model cards grid */
+    .model-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 28px 0;
+    }
+    .model-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .model-card.wrong {
+      border-top: 3px solid #ef4444;
+    }
+    .model-card.right {
+      border-top: 3px solid var(--success);
+      grid-column: 1 / -1;
+    }
+    .model-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .model-name { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
+    .model-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+    .model-why-it-fails {
+      font-size: 0.82rem;
+      color: #ef4444;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+    .model-why-it-works {
+      font-size: 0.82rem;
+      color: var(--success);
+      margin-top: 8px;
+      font-weight: 600;
+    }
+    .wrong-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #ef4444;
+      margin-bottom: 14px;
+    }
+    .right-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--success);
+      margin-bottom: 14px;
+    }
+
+    /* Context window visual */
+    .context-window {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin: 32px 0;
+    }
+    .context-window-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .context-window-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .cw-box {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--muted);
+      position: relative;
+    }
+    .cw-label {
+      position: absolute;
+      top: -10px;
+      left: 14px;
+      background: var(--card);
+      padding: 0 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* Quiz */
+    .quiz-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .quiz-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .quiz-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
+    .quiz-question { margin-bottom: 28px; display: none; }
+    .quiz-question.active { display: block; }
+    .q-text { font-weight: 600; margin-bottom: 16px; line-height: 1.4; }
+    .q-progress { font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      transition: all 0.15s;
+      color: var(--ink);
+      font-family: inherit;
+    }
+    .option-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option-btn.selected { border-color: var(--accent); background: var(--accent-light); font-weight: 600; }
+
+    .quiz-result { display: none; }
+    .result-type {
+      text-align: center;
+      padding: 28px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+    }
+    .result-type .icon { font-size: 3rem; margin-bottom: 12px; }
+    .result-type h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+    .result-type p { font-size: 0.95rem; color: var(--muted); max-width: 380px; margin: 0 auto; }
+
+    .result-search { background: #fff1f2; }
+    .result-assistant { background: #fffbeb; }
+    .result-oracle { background: #f0f9ff; }
+
+    .practice-box {
+      background: var(--ink);
+      color: white;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-top: 20px;
+    }
+    .practice-box h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.5; margin-bottom: 10px; }
+    .practice-box p { color: rgba(255,255,255,0.85); margin: 0; line-height: 1.6; font-size: 0.95rem; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+    .cite { font-size: 0.8rem; color: var(--muted); }
+    .cite a { color: var(--accent); text-decoration: none; }
+    .cite a:hover { text-decoration: underline; }
+
+    .footer {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    @media print { .quiz-section { display: none; } .page { padding: 24px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="pill">Lesson 1</span>
+    <span>Using AI Effectively</span>
+    <span>&middot;</span>
+    <span>~10 minutes</span>
+  </div>
+
+  <h1>The AI Mental Model</h1>
+  <p class="subtitle">Why AI outputs feel random — and the one shift that makes prompting click.</p>
+
+  <h2>The reason prompts fail isn't what you think</h2>
+
+  <p>Most people assume that when AI produces a bad output, the fix is to try different words. So they rephrase, retry, and repeat — and the outputs keep missing. The real problem isn't the words. It's the mental model.</p>
+
+  <p>The mental model you're using when you write a prompt determines everything: what you include, what you leave out, and what you expect in return. Get the model wrong and no amount of rephrasing will fix it.</p>
+
+  <div class="callout fact">
+    <strong>The core fact</strong>
+    AI language models are prediction engines. Given a sequence of text, they predict the most statistically likely continuation. They are not searching a database. They are not reasoning like a human. They are completing a pattern based entirely on what's in the context window right now.
+  </div>
+
+  <h2>The context window is the AI's entire world</h2>
+
+  <p>Every AI conversation starts from zero. The model has no memory of your last conversation, no knowledge of your role, your preferences, or what "good" looks like for your situation. Its entire world is the text currently in its context window — your prompt, the conversation history, and nothing else.</p>
+
+  <div class="context-window">
+    <div class="context-window-title">What the AI actually sees</div>
+    <div class="context-window-sub">Everything inside the dashed box. Nothing outside it.</div>
+    <div class="cw-box">
+      <span class="cw-label">Context Window</span>
+      Your prompt &nbsp;·&nbsp; Any examples you provided &nbsp;·&nbsp; The conversation so far<br><br>
+      <span style="color:#ef4444;">✗ Your name, job, or role — unless you told it</span><br>
+      <span style="color:#ef4444;">✗ What "good" looks like for you — unless you described it</span><br>
+      <span style="color:#ef4444;">✗ The previous conversation you had yesterday</span><br>
+      <span style="color:#ef4444;">✗ Any private knowledge you haven't shared</span>
+    </div>
+  </div>
+
+  <p>This is not a limitation to work around. It's the fundamental architecture — and once you internalize it, prompting gets dramatically simpler. The question becomes: <em>have I put everything the model needs into the window?</em></p>
+
+  <h2>Three mental models that keep failing people</h2>
+
+  <p>Most people reach for AI with one of three intuitive mental models. All three are wrong in the same way: they assume the AI already knows things it can't know.</p>
+
+  <div class="wrong-label">Wrong models</div>
+  <div class="model-grid">
+    <div class="model-card wrong">
+      <div class="model-icon">🔍</div>
+      <div class="model-name">The Search Engine</div>
+      <div class="model-desc">Type a topic or question and expect a ranked list of relevant facts. Works for Google; breaks for AI.</div>
+      <div class="model-why-it-fails">Fails because: AI generates plausible text, not verified results. Queries without context get generic answers.</div>
+    </div>
+    <div class="model-card wrong">
+      <div class="model-icon">🧠</div>
+      <div class="model-name">The Smart Assistant</div>
+      <div class="model-desc">Treat AI like a person who understands you — your context, your tone, your unstated preferences.</div>
+      <div class="model-why-it-fails">Fails because: The AI only knows what's in the window. "Make this better" with no criteria is unanswerable.</div>
+    </div>
+    <div class="model-card wrong">
+      <div class="model-icon">🔮</div>
+      <div class="model-name">The Magic Oracle</div>
+      <div class="model-desc">Believe the AI has deep, reliable knowledge on everything and trust its outputs as ground truth.</div>
+      <div class="model-why-it-fails">Fails because: AI confidently produces plausible-sounding errors. Confidence is not accuracy.</div>
+    </div>
+  </div>
+
+  <div class="right-label">The right model</div>
+  <div class="model-grid">
+    <div class="model-card right">
+      <div class="model-icon">👤</div>
+      <div class="model-name">The Capable Intern</div>
+      <div class="model-desc">A highly capable person who just joined today. Smart, fast, and willing — but they only know what you tell them in this conversation. They'll do exactly what you ask, so you need to ask precisely. They don't know your preferences unless you share them. They'll produce confident-sounding work even when uncertain, so you need to review it.</div>
+      <div class="model-why-it-works">Works because: It sets the right expectations and makes clear what you need to provide.</div>
+    </div>
+  </div>
+
+  <div class="callout insight">
+    <strong>The practical shift</strong>
+    Stop asking "why doesn't AI understand me?" and start asking "what would I need to tell a smart new colleague to get this result?" That question makes every bad prompt instantly diagnosable.
+  </div>
+
+  <h2>What this means for how you prompt</h2>
+
+  <p>The intern model has three immediate implications:</p>
+
+  <p><strong>Give context explicitly.</strong> Don't assume the AI knows your role, your audience, or your goal. State them. "I'm a product manager writing to engineers who don't care about business metrics" is not over-explaining — it's the briefing a capable person needs.</p>
+
+  <p><strong>Be specific about format.</strong> The AI will produce whatever seems most statistically likely for a request like yours. If you want three bullet points, say so. If you want a formal tone, say so. Unstated preferences get averaged across everyone who has ever made a similar request.</p>
+
+  <p><strong>Verify, don't trust blindly.</strong> The capable intern is confident even when wrong. Check facts, especially specific claims, dates, numbers, and citations. The AI is a first-draft machine, not a fact oracle.</p>
+
+  <div class="callout warning">
+    <strong>The hallucination problem</strong>
+    AI models sometimes produce false information with full confidence — wrong names, made-up citations, invented statistics. This isn't a bug or dishonesty. It's what happens when a prediction engine fills a gap with the most plausible-sounding continuation. The solution is the intern model: smart people make mistakes, and you review their work.
+  </div>
+
+  <hr>
+
+  <h2>Self-assessment: Which mental model do you use?</h2>
+  <p>Read each scenario and pick the option that sounds most like how you'd naturally react. You'll get a diagnosis of your dominant mismodel.</p>
+
+  <div class="quiz-section">
+    <div class="quiz-title">What's your default AI mental model?</div>
+    <div class="quiz-subtitle">5 scenarios. Pick the most honest answer — even if none is perfect.</div>
+
+    <div class="quiz-question active" id="q1">
+      <div class="q-progress">Question 1 of 5</div>
+      <div class="q-text">You ask AI "what are good marketing strategies for a SaaS product?" and get a generic list of ten things you already knew. Your reaction?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q1','search',this)">I'm frustrated — I gave it a clear topic and it should've returned more specific, relevant results.</button>
+        <button class="option-btn" onclick="answer('q1','assistant',this)">I'm confused — I thought it would tailor the advice to what it knows about me.</button>
+        <button class="option-btn" onclick="answer('q1','oracle',this)">I'm surprised — I expected a definitive answer based on deep marketing knowledge.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="q-progress">Question 2 of 5</div>
+      <div class="q-text">You ask AI to write a cold email and it produces something very average. Your first instinct is to:</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q2','assistant',this)">Try again with slightly different words and hope it figures out what I want.</button>
+        <button class="option-btn" onclick="answer('q2','oracle',this)">Trust it and send it — AI should know what a good cold email looks like.</button>
+        <button class="option-btn" onclick="answer('q2','search',this)">Search for a better prompt online that's known to produce good emails.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="q-progress">Question 3 of 5</div>
+      <div class="q-text">AI gives you a statistic you don't recognise — "73% of customers abandon checkout due to X." You:</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q3','oracle',this)">Use it. AI is pulling from a vast knowledge base — it's probably right.</button>
+        <button class="option-btn" onclick="answer('q3','search',this)">Add it to my notes — it feels like something you'd find in a study.</button>
+        <button class="option-btn" onclick="answer('q3','assistant',this)">Feel uneasy but include it since the AI sounded confident.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="q-progress">Question 4 of 5</div>
+      <div class="q-text">You want AI to help with a complex task specific to your industry. You:</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q4','oracle',this)">Ask directly — it should have deep enough knowledge to handle domain-specific work.</button>
+        <button class="option-btn" onclick="answer('q4','assistant',this)">Describe the task briefly and expect it to ask clarifying questions if needed.</button>
+        <button class="option-btn" onclick="answer('q4','search',this)">Type a keyword-heavy request to help it surface the right information.</button>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="q-progress">Question 5 of 5</div>
+      <div class="q-text">After a frustrating AI session, which thought feels most familiar?</div>
+      <div class="options">
+        <button class="option-btn" onclick="answer('q5','search',this)">"I need to find the right search terms / keywords to get what I want."</button>
+        <button class="option-btn" onclick="answer('q5','assistant',this)">"It should understand what I mean without me having to over-explain everything."</button>
+        <button class="option-btn" onclick="answer('q5','oracle',this)">"I'm not sure I can trust what it's saying — it seems confident but I can't verify it."</button>
+      </div>
+    </div>
+
+    <div class="quiz-result" id="quiz-result">
+      <div id="result-search" class="result-type result-search" style="display:none">
+        <div class="icon">🔍</div>
+        <h3>Your model: The Search Engine</h3>
+        <p>You're treating prompts like search queries — keywords in, answers out. The fix is to add context and specificity. AI rewards a briefing, not a query.</p>
+      </div>
+      <div id="result-assistant" class="result-type result-assistant" style="display:none">
+        <div class="icon">🧠</div>
+        <h3>Your model: The Smart Assistant</h3>
+        <p>You're expecting the AI to read between the lines and adapt to your unstated preferences. It can't — it only knows what you tell it. The fix is to make your context explicit.</p>
+      </div>
+      <div id="result-oracle" class="result-type result-oracle" style="display:none">
+        <div class="icon">🔮</div>
+        <h3>Your model: The Magic Oracle</h3>
+        <p>You're over-trusting AI's confidence. It sounds authoritative but can be wrong. The fix is to verify specific claims, especially facts, statistics, and citations.</p>
+      </div>
+
+      <div id="practice-search" class="practice-box" style="display:none">
+        <h4>Your shift for the next AI session</h4>
+        <p>Before your next request, add one sentence of context that no search engine would need. Example: instead of "marketing strategies for SaaS," try "I'm the head of growth at a B2B SaaS company with 50 customers. We have no marketing team. Give me 5 low-effort acquisition channels I can test this month." That extra context is what turns a generic list into something useful.</p>
+      </div>
+      <div id="practice-assistant" class="practice-box" style="display:none">
+        <h4>Your shift for the next AI session</h4>
+        <p>Next time you're about to ask AI for something, first write one sentence explaining who you are and one sentence explaining what "good" looks like. Think of it as briefing a new colleague who's genuinely trying to help but has no context about you yet. The AI will meet you exactly where you place the bar.</p>
+      </div>
+      <div id="practice-oracle" class="practice-box" style="display:none">
+        <h4>Your shift for the next AI session</h4>
+        <p>Any time AI gives you a specific fact (a statistic, a name, a citation, a date), flag it mentally as "plausible but unverified." Before using it anywhere consequential, spend 30 seconds confirming it with a search. Build this as a reflex, not an exception — the capable intern is smart but not infallible.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>What you've learned</h2>
+  <ul style="padding-left:20px; line-height:2;">
+    <li>AI is a prediction engine, not a thinking one — it continues patterns based on what's in the context window</li>
+    <li>The context window is the AI's entire world — it knows nothing outside it</li>
+    <li>Search engine, smart assistant, and magic oracle are all wrong mental models for the same reason: they assume the AI knows things it can't know</li>
+    <li>The right model is the capable intern: smart, fast, but needs an explicit briefing and needs to be reviewed</li>
+  </ul>
+
+  <div class="callout insight" style="margin-top:32px;">
+    <strong>Next lesson preview</strong>
+    Lesson 2 will give you a concrete structure for building prompts that work. You'll learn the four elements every strong prompt has — and the order to write them in. It turns prompting from guesswork into a repeatable skill.
+  </div>
+
+  <div class="footer">
+    <p><strong>Questions?</strong> Ask your teacher anything about this lesson — e.g. "What's a context window exactly?" or "Give me an example of the intern model in action."</p>
+    <p style="margin-top:12px;">
+      Sources:
+      <a href="https://simonwillison.net/2023/Aug/3/weird-world-of-llms/" target="_blank">Simon Willison — Weird World of LLMs</a> &middot;
+      <a href="https://www.oneusefulthing.org" target="_blank">Ethan Mollick — One Useful Thing</a>
+    </p>
+    <p style="margin-top:12px; color: var(--border);">Using AI Effectively &middot; Lesson 1 of 5 &middot; <a href="0002-prompt-architecture.html">Next lesson &rarr;</a></p>
+  </div>
+
+</div>
+
+<script>
+  const scores = { search: 0, assistant: 0, oracle: 0 };
+  const answered = {};
+
+  function answer(qId, type, btn) {
+    const q = document.getElementById(qId);
+    q.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    if (answered[qId]) scores[answered[qId]]--;
+    scores[type]++;
+    answered[qId] = type;
+    setTimeout(() => {
+      const nums = { q1:1, q2:2, q3:3, q4:4, q5:5 };
+      const current = nums[qId];
+      if (current < 5) {
+        q.classList.remove('active');
+        document.getElementById('q' + (current + 1)).classList.add('active');
+      } else {
+        showResult();
+      }
+    }, 350);
+  }
+
+  function showResult() {
+    document.querySelectorAll('.quiz-question').forEach(q => q.classList.remove('active'));
+    const winner = Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+    const result = document.getElementById('quiz-result');
+    result.style.display = 'block';
+    document.getElementById('result-' + winner).style.display = 'block';
+    document.getElementById('practice-' + winner).style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>

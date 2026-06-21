@@ -19,6 +19,12 @@
       --tier1: #7c3aed;
       --tier1-light: #f5f3ff;
       --tier1-border: #ddd6fe;
+      --tier2: #d97706;
+      --tier2-light: #fffbeb;
+      --tier2-border: #fde68a;
+      --tier3: #059669;
+      --tier3-light: #ecfdf5;
+      --tier3-border: #a7f3d0;
     }
 
     body {
@@ -214,6 +220,52 @@
       color: var(--text-muted);
       border-top: 1px solid var(--border);
     }
+
+    .tier-badge.tier2 {
+      background: var(--tier2-light);
+      color: var(--tier2);
+      border-color: var(--tier2-border);
+    }
+
+    .tier-badge.tier3 {
+      background: var(--tier3-light);
+      color: var(--tier3);
+      border-color: var(--tier3-border);
+    }
+
+    .subcategory {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .subcategory-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0 0.1rem;
+    }
+
+    .course-card.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .soon-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      background: #f3f4f6;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      align-self: center;
+    }
   </style>
 </head>
 <body>
@@ -235,108 +287,380 @@
       <span class="tier-title">Highest ROI — Foundational Skills</span>
     </div>
 
-    <!-- Learning How to Learn -->
-    <div class="course-card">
-      <div class="course-header">
-        <span class="course-icon">🧠</span>
-        <div class="course-meta">
-          <div class="course-name">Building Systems for Continuous Learning</div>
-          <div class="course-desc">Turn curiosity into compounding skill. Learn the science of memory, habit, and deliberate practice.</div>
+    <!-- Sub: Learning How to Learn -->
+    <div class="subcategory">
+      <div class="subcategory-label">Learning How to Learn</div>
+
+      <div class="course-card">
+        <div class="course-header">
+          <span class="course-icon">🧠</span>
+          <div class="course-meta">
+            <div class="course-name">Building Systems for Continuous Learning</div>
+            <div class="course-desc">Turn curiosity into compounding skill. Learn the science of memory, habit, and deliberate practice.</div>
+          </div>
+        </div>
+        <ul class="lesson-list">
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0001-the-forgetting-curve.html">
+              <span class="lesson-num">01</span>
+              <span class="lesson-title">The Forgetting Curve</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0002-active-recall.html">
+              <span class="lesson-num">02</span>
+              <span class="lesson-title">Active Recall</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0003-building-your-learning-habit.html">
+              <span class="lesson-num">03</span>
+              <span class="lesson-title">Building Your Learning Habit</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0004-spaced-repetition.html">
+              <span class="lesson-num">04</span>
+              <span class="lesson-title">Spaced Repetition</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0005-knowledge-management.html">
+              <span class="lesson-num">05</span>
+              <span class="lesson-title">Knowledge Management</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0006-what-to-learn-first.html">
+              <span class="lesson-num">06</span>
+              <span class="lesson-title">What to Learn First</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+        </ul>
+        <a class="ref-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/reference/glossary.html">📖 Glossary →</a>
+      </div>
+
+      <div class="course-card disabled">
+        <div class="course-header">
+          <span class="course-icon">📝</span>
+          <div class="course-meta">
+            <div class="course-name">Effective Note-Taking</div>
+            <div class="course-desc">Capture ideas so they stick. Build a personal knowledge system that grows with you.</div>
+          </div>
+          <span class="soon-badge">Soon</span>
         </div>
       </div>
-      <ul class="lesson-list">
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0001-the-forgetting-curve.html">
-            <span class="lesson-num">01</span>
-            <span class="lesson-title">The Forgetting Curve</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0002-active-recall.html">
-            <span class="lesson-num">02</span>
-            <span class="lesson-title">Active Recall</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0003-building-your-learning-habit.html">
-            <span class="lesson-num">03</span>
-            <span class="lesson-title">Building Your Learning Habit</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0004-spaced-repetition.html">
-            <span class="lesson-num">04</span>
-            <span class="lesson-title">Spaced Repetition</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0005-knowledge-management.html">
-            <span class="lesson-num">05</span>
-            <span class="lesson-title">Knowledge Management</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/lessons/0006-what-to-learn-first.html">
-            <span class="lesson-num">06</span>
-            <span class="lesson-title">What to Learn First</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-      </ul>
-      <a class="ref-link" href="tier-1-highest-roi/learning-how-to-learn/building-systems-for-continuous-learning/reference/glossary.html">📖 Glossary →</a>
+
+      <div class="course-card disabled">
+        <div class="course-header">
+          <span class="course-icon">📚</span>
+          <div class="course-meta">
+            <div class="course-name">Reading Comprehension</div>
+            <div class="course-desc">Read faster and retain more. Strategies for deep understanding across books, articles, and docs.</div>
+          </div>
+          <span class="soon-badge">Soon</span>
+        </div>
+      </div>
+
+      <div class="course-card disabled">
+        <div class="course-header">
+          <span class="course-icon">🔍</span>
+          <div class="course-meta">
+            <div class="course-name">Research Skills</div>
+            <div class="course-desc">Find what you need, fast. Learn to evaluate sources, synthesize information, and avoid rabbit holes.</div>
+          </div>
+          <span class="soon-badge">Soon</span>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-header">
+          <span class="course-icon">🤖</span>
+          <div class="course-meta">
+            <div class="course-name">Using AI Effectively</div>
+            <div class="course-desc">Prompt smarter, not harder. Leverage AI tools as a force multiplier for learning and work.</div>
+          </div>
+        </div>
+        <ul class="lesson-list">
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/using-ai-effectively/lessons/0001-the-ai-mental-model.html">
+              <span class="lesson-num">01</span>
+              <span class="lesson-title">The AI Mental Model</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/using-ai-effectively/lessons/0002-prompt-architecture.html">
+              <span class="lesson-num">02</span>
+              <span class="lesson-title">Prompt Architecture</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/using-ai-effectively/lessons/0003-when-to-use-ai.html">
+              <span class="lesson-num">03</span>
+              <span class="lesson-title">When to Use AI (and When Not To)</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/using-ai-effectively/lessons/0004-iterating-effectively.html">
+              <span class="lesson-num">04</span>
+              <span class="lesson-title">Iterating Effectively</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/learning-how-to-learn/using-ai-effectively/lessons/0005-your-ai-workflow.html">
+              <span class="lesson-num">05</span>
+              <span class="lesson-title">Your AI Workflow</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 
-    <!-- Communication / Active Listening -->
-    <div class="course-card">
-      <div class="course-header">
-        <span class="course-icon">👂</span>
-        <div class="course-meta">
-          <div class="course-name">Active Listening</div>
-          <div class="course-desc">Hear the real message behind the words. Stop missing what people are actually communicating in meetings.</div>
+    <!-- Sub: Communication -->
+    <div class="subcategory">
+      <div class="subcategory-label">Communication</div>
+
+      <div class="course-card">
+        <div class="course-header">
+          <span class="course-icon">👂</span>
+          <div class="course-meta">
+            <div class="course-name">Active Listening</div>
+            <div class="course-desc">Hear the real message behind the words. Stop missing what people are actually communicating in meetings.</div>
+          </div>
+        </div>
+        <ul class="lesson-list">
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0001-the-listening-gap.html">
+              <span class="lesson-num">01</span>
+              <span class="lesson-title">The Listening Gap</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0002-reflective-listening.html">
+              <span class="lesson-num">02</span>
+              <span class="lesson-title">Reflective Listening</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0003-asking-the-right-question.html">
+              <span class="lesson-num">03</span>
+              <span class="lesson-title">Asking the Right Question</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0004-re-engaging-when-you-zone-out.html">
+              <span class="lesson-num">04</span>
+              <span class="lesson-title">Re-engaging When You Zone Out</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+          <li>
+            <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0005-putting-it-all-together.html">
+              <span class="lesson-num">05</span>
+              <span class="lesson-title">Putting It All Together</span>
+              <span class="lesson-arrow">→</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="course-card disabled">
+        <div class="course-header">
+          <span class="course-icon">🤝</span>
+          <div class="course-meta">
+            <div class="course-name">Negotiation</div>
+            <div class="course-desc">Get more of what you want without burning bridges. Principled negotiation for everyday situations.</div>
+          </div>
+          <span class="soon-badge">Soon</span>
         </div>
       </div>
-      <ul class="lesson-list">
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0001-the-listening-gap.html">
-            <span class="lesson-num">01</span>
-            <span class="lesson-title">The Listening Gap</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0002-reflective-listening.html">
-            <span class="lesson-num">02</span>
-            <span class="lesson-title">Reflective Listening</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0003-asking-the-right-question.html">
-            <span class="lesson-num">03</span>
-            <span class="lesson-title">Asking the Right Question</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0004-re-engaging-when-you-zone-out.html">
-            <span class="lesson-num">04</span>
-            <span class="lesson-title">Re-engaging When You Zone Out</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a class="lesson-link" href="tier-1-highest-roi/communication/active-listening/lessons/0005-putting-it-all-together.html">
-            <span class="lesson-num">05</span>
-            <span class="lesson-title">Putting It All Together</span>
-            <span class="lesson-arrow">→</span>
-          </a>
-        </li>
-      </ul>
+
+      <div class="course-card disabled">
+        <div class="course-header">
+          <span class="course-icon">🎤</span>
+          <div class="course-meta">
+            <div class="course-name">Public Speaking</div>
+            <div class="course-desc">Command a room with confidence. Structure, delivery, and presence for any audience size.</div>
+          </div>
+          <span class="soon-badge">Soon</span>
+        </div>
+      </div>
+
+      <div class="course-card disabled">
+        <div class="course-header">
+          <span class="course-icon">📖</span>
+          <div class="course-meta">
+            <div class="course-name">Storytelling</div>
+            <div class="course-desc">Make ideas stick through narrative. Use story structure to persuade, inspire, and be remembered.</div>
+          </div>
+          <span class="soon-badge">Soon</span>
+        </div>
+      </div>
+
+      <div class="course-card disabled">
+        <div class="course-header">
+          <span class="course-icon">✍️</span>
+          <div class="course-meta">
+            <div class="course-name">Writing Clearly</div>
+            <div class="course-desc">Say exactly what you mean. Cut the fluff, sharpen your sentences, and write for busy readers.</div>
+          </div>
+          <span class="soon-badge">Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Standalone Tier 1 courses -->
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">💰</span>
+        <div class="course-meta">
+          <div class="course-name">Financial Literacy</div>
+          <div class="course-desc">Understand money so it works for you. Budgeting, investing, and building long-term wealth.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">🎯</span>
+        <div class="course-meta">
+          <div class="course-name">Sales & Persuasion</div>
+          <div class="course-desc">Move people to action. Ethical influence, framing, and the psychology of decision-making.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">💻</span>
+        <div class="course-meta">
+          <div class="course-name">Technology & AI</div>
+          <div class="course-desc">Stay ahead of the curve. Understand how modern tools work and where they're taking the world.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Tier 2 -->
+  <section class="tier">
+    <div class="tier-heading">
+      <span class="tier-badge tier2">Tier 2</span>
+      <span class="tier-title">Career Stack — Professional Edge</span>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">💪</span>
+        <div class="course-meta">
+          <div class="course-name">Health & Discipline</div>
+          <div class="course-desc">Build the physical and mental foundation everything else runs on. Sleep, exercise, and consistency.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">🧭</span>
+        <div class="course-meta">
+          <div class="course-name">Leadership</div>
+          <div class="course-desc">Lead without a title. Influence, delegate, and develop people whether or not you manage them.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">⚙️</span>
+        <div class="course-meta">
+          <div class="course-name">Systems Thinking</div>
+          <div class="course-desc">See the whole, not just the parts. Understand feedback loops, leverage points, and unintended consequences.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">✏️</span>
+        <div class="course-meta">
+          <div class="course-name">Writing</div>
+          <div class="course-desc">Think on paper. Develop a writing practice that clarifies your thinking and builds your reputation.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Tier 3 -->
+  <section class="tier">
+    <div class="tier-heading">
+      <span class="tier-badge tier3">Tier 3</span>
+      <span class="tier-title">Full Stack — Well-Rounded Competence</span>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">📊</span>
+        <div class="course-meta">
+          <div class="course-name">Career & Business</div>
+          <div class="course-desc">Navigate your career with intention. Strategy, positioning, and building value over the long run.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">🧩</span>
+        <div class="course-meta">
+          <div class="course-name">Critical Thinking</div>
+          <div class="course-desc">Reason well under pressure. Identify fallacies, stress-test assumptions, and make better decisions.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">❤️</span>
+        <div class="course-meta">
+          <div class="course-name">Emotional Intelligence</div>
+          <div class="course-desc">Understand yourself and read others. Manage emotions in high-stakes situations and build real trust.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
+    </div>
+
+    <div class="course-card disabled">
+      <div class="course-header">
+        <span class="course-icon">⚡</span>
+        <div class="course-meta">
+          <div class="course-name">Productivity & Execution</div>
+          <div class="course-desc">Do more of what matters. Time management, prioritization, and shipping things that count.</div>
+        </div>
+        <span class="soon-badge">Soon</span>
+      </div>
     </div>
 
   </section>
