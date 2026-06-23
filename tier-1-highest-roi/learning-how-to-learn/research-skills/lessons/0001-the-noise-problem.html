@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1 — The Noise Problem</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #b45309;
+      --accent-light: #fffbeb;
+      --accent-border: #fde68a;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --tag-bg: #f3f4f6;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 13px; color: var(--text-muted); }
+    .lesson-number { background: var(--accent); color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 12px; padding: 20px 24px; margin-bottom: 48px; }
+    .learn-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 { font-size: 1.3rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border); }
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem; }
+    .callout.key { border-left-color: #2563eb; background: #eff6ff; }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    /* SIFT steps */
+    .sift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+    .sift-card { border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    .sift-card-header { padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+    .sift-letter { width: 36px; height: 36px; border-radius: 8px; background: var(--accent); color: white; font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sift-card-header strong { font-size: 0.95rem; }
+    .sift-card-body { padding: 12px 16px; font-size: 0.875rem; color: #374151; border-top: 1px solid var(--border); line-height: 1.6; }
+    .sift-card.highlight .sift-letter { background: #2563eb; }
+    .sift-card.highlight { border-color: #bfdbfe; }
+    .sift-card.highlight .sift-card-header { background: #eff6ff; }
+    .sift-card.highlight .sift-card-body { background: #f8faff; border-color: #bfdbfe; }
+
+    /* Source eval exercise */
+    .source-card {
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 20px 24px; margin: 16px 0;
+    }
+    .source-card .source-url { font-family: monospace; font-size: 0.85rem; color: var(--success); margin-bottom: 8px; }
+    .source-card .source-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+    .source-card .source-snippet { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; }
+    .source-card .source-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; }
+    .signal-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .signal { font-size: 0.75rem; font-weight: 600; padding: 3px 8px; border-radius: 20px; }
+    .signal.red { background: var(--danger-light); color: var(--danger); border: 1px solid #fecaca; }
+    .signal.green { background: var(--success-light); color: var(--success); border: 1px solid #bbf7d0; }
+    .signal.yellow { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+
+    /* Stat row */
+    .stat-row { display: flex; gap: 16px; margin: 24px 0; flex-wrap: wrap; }
+    .stat-card { flex: 1; min-width: 130px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-card .num { font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
+    /* Quiz */
+    .quiz-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 48px 0; }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-badge { background: #16a34a; color: white; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .quiz-header h3 { font-size: 1rem; font-weight: 700; }
+
+    .question { margin-bottom: 28px; }
+    .question p { font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none; }
+    .option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option.correct { border-color: var(--success); background: var(--success-light); }
+    .option.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option.disabled { cursor: default; }
+    .option.disabled:hover { border-color: var(--border); background: transparent; }
+    .option.correct.disabled:hover { border-color: var(--success); background: var(--success-light); }
+    .option.wrong.disabled:hover { border-color: var(--danger); background: var(--danger-light); }
+
+    .option-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    .feedback { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.875rem; line-height: 1.5; }
+    .feedback.correct-fb { background: var(--success-light); color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback.wrong-fb { background: var(--danger-light); color: #7f1d1d; border: 1px solid #fecaca; }
+    .feedback.show { display: block; }
+
+    .quiz-score { display: none; background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; margin-top: 16px; }
+    .quiz-score.show { display: block; }
+    .quiz-score strong { color: var(--accent); }
+
+    .lesson-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; }
+    .nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #92400e; border-color: #92400e; color: white; }
+
+    .teacher-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem; }
+    .teacher-box h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--success); margin-bottom: 8px; }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    @media (max-width: 520px) { .sift-grid { grid-template-columns: 1fr; } }
+    @media print { .quiz-section, .lesson-nav, .teacher-box { display: none; } body { font-size: 14px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 1</span>
+    <span>⏱ ~12 minutes</span>
+    <span>· Research Skills</span>
+  </div>
+
+  <h1>The Noise Problem</h1>
+  <p class="tagline">Why the internet makes bad information easy to find — and the four-step method for cutting through it fast.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Why the internet is structurally designed to surface noise over signal</li>
+      <li>The most common ways unreliable content looks trustworthy</li>
+      <li>The SIFT method — a four-step framework for source evaluation</li>
+      <li>How to investigate a source in under 60 seconds</li>
+    </ul>
+  </div>
+
+  <h2>Why bad information is easy to find</h2>
+
+  <p>It's tempting to think misinformation is a fringe problem — that a quick Google search mostly returns reliable results. But the internet's economics work against you: engagement drives visibility, and outrage, fear, and novelty drive engagement more than accuracy does. <cite>(<a href="https://webliteracy.pressbooks.com/" target="_blank">Web Literacy for Student Fact-Checkers, Mike Caulfield</a>)</cite></p>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="num">6×</div>
+      <div class="label">faster — false news spreads 6× faster on social media than true news <cite>(MIT, 2018)</cite></div>
+    </div>
+    <div class="stat-card">
+      <div class="num">59%</div>
+      <div class="label">of people share articles without reading past the headline <cite>(Columbia/INRIA study)</cite></div>
+    </div>
+  </div>
+
+  <p>The result: the same question can return wildly different answers depending on what you search, who wrote the first result, and when it was published. "Finding information" is easy. Finding <em>reliable</em> information requires a different skill — source evaluation.</p>
+
+  <h2>How unreliable content disguises itself</h2>
+
+  <p>Bad sources rarely look obviously bad. They use confident language, professional formatting, and real-sounding statistics. The most common deception patterns:</p>
+
+  <ul style="padding-left: 24px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; font-size: 0.95rem;">
+    <li><strong>Outdated information presented as current</strong> — a 2014 study cited as if it settles a 2024 question</li>
+    <li><strong>Misleading statistics</strong> — technically true numbers that leave out crucial context</li>
+    <li><strong>Authority borrowing</strong> — a low-credibility site citing a high-credibility institution to seem legitimate</li>
+    <li><strong>Vague sourcing</strong> — "studies show" or "experts say" with no links or names</li>
+    <li><strong>Emotional framing</strong> — language designed to trigger reaction, not inform</li>
+  </ul>
+
+  <p>The first step isn't learning to detect each of these patterns — it's learning to <em>pause before trusting anything</em>. This is the foundation of the SIFT method. <cite>(<a href="https://webliteracy.pressbooks.com/" target="_blank">Caulfield, Web Literacy</a>)</cite></p>
+
+  <h2>The SIFT method</h2>
+
+  <p>SIFT was developed by digital literacy educator Mike Caulfield and is now used by fact-checkers and universities worldwide. It gives you a fast, reliable process for evaluating any source in under two minutes.</p>
+
+  <div class="sift-grid">
+    <div class="sift-card highlight">
+      <div class="sift-card-header">
+        <div class="sift-letter">S</div>
+        <strong>Stop</strong>
+      </div>
+      <div class="sift-card-body">
+        Pause before you react, share, or cite. Ask: "Do I know if this source is reliable?" If not — stop and check. This alone prevents most errors.
+      </div>
+    </div>
+    <div class="sift-card highlight">
+      <div class="sift-card-header">
+        <div class="sift-letter" style="background: #2563eb;">I</div>
+        <strong>Investigate the source</strong>
+      </div>
+      <div class="sift-card-body">
+        Before reading the article in depth — open a new tab and search the source itself. What is this publication? Who runs it? What's their track record?
+      </div>
+    </div>
+    <div class="sift-card">
+      <div class="sift-card-header">
+        <div class="sift-letter">F</div>
+        <strong>Find better coverage</strong>
+      </div>
+      <div class="sift-card-body">
+        Look for the same claim covered by other sources. If something is true and important, multiple independent outlets will have covered it. Lone claims are a red flag.
+      </div>
+    </div>
+    <div class="sift-card">
+      <div class="sift-card-header">
+        <div class="sift-letter">T</div>
+        <strong>Trace claims to origin</strong>
+      </div>
+      <div class="sift-card-body">
+        Follow the source chain. If an article says "a study found X," find the actual study. Often the original says something more nuanced — or different entirely.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout key">
+    <strong>This lesson focuses on S and I only</strong>
+    Stop and Investigate are the two highest-leverage steps — most bad sources fail at the "I" stage. Master these first. Lessons 2 and 3 cover Find and Trace.
+  </div>
+
+  <h2>How to Investigate a source in 60 seconds</h2>
+
+  <p>When you land on an unfamiliar site, don't read the article first. Open a new tab and search: <strong>[site name] + "bias" or "reliability" or "Wikipedia"</strong>.</p>
+
+  <p>What to look for:</p>
+
+  <ul style="padding-left: 24px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; font-size: 0.95rem;">
+    <li><strong>Wikipedia entry</strong> — most major publications have one. Check if it mentions bias, funding, or controversy.</li>
+    <li><strong>Media Bias/Fact Check</strong> — <a href="https://mediabiasfactcheck.com" target="_blank">mediabiasfactcheck.com</a> rates thousands of news sources for reliability and political lean.</li>
+    <li><strong>About page</strong> — does it clearly say who runs this, who funds it, and what their purpose is? Vague "About" pages are a red flag.</li>
+    <li><strong>Author credentials</strong> — is the author named? Can you find them elsewhere? Do they have relevant expertise?</li>
+  </ul>
+
+  <h2>Practice: evaluate these two sources</h2>
+
+  <p>Look at these two example results for the query "does sugar cause hyperactivity in children." Before reading either — what do you notice?</p>
+
+  <div class="source-card">
+    <div class="source-url">healthylivingtoday.net/sugar-kids-hyperactive</div>
+    <div class="source-title">The Truth About Sugar and Your Kids</div>
+    <div class="source-snippet">"Every parent knows it — give a child sugar and they go wild. But Big Food doesn't want you to know the science..."</div>
+    <div class="source-meta">
+      <span>No author listed</span>
+      <span>No publication date</span>
+      <span>No citations</span>
+    </div>
+    <div class="signal-row">
+      <span class="signal red">No author</span>
+      <span class="signal red">Conspiracy framing</span>
+      <span class="signal red">No citations</span>
+      <span class="signal red">Unknown site</span>
+    </div>
+  </div>
+
+  <div class="source-card">
+    <div class="source-url">jamanetwork.com/journals/jama/fullarticle/…</div>
+    <div class="source-title">Sugar consumption does not affect children's behaviour (meta-analysis of 23 RCTs)</div>
+    <div class="source-snippet">A double-blind meta-analysis of 23 randomised controlled trials found no evidence that sugar intake affects children's activity levels or cognitive function.</div>
+    <div class="source-meta">
+      <span>Dr. Mark Wolraich et al.</span>
+      <span>JAMA (peer-reviewed)</span>
+      <span>23 studies reviewed</span>
+    </div>
+    <div class="signal-row">
+      <span class="signal green">Named authors</span>
+      <span class="signal green">Peer-reviewed journal</span>
+      <span class="signal green">Methodology stated</span>
+      <span class="signal yellow">Worth verifying date</span>
+    </div>
+  </div>
+
+  <p>The second source is a real study. The first exhibits every red flag: no author, no date, no citations, emotional framing, and an unfamiliar domain. You don't need to read either to make a first call — the investigation step tells you almost everything.</p>
+
+  <div class="callout">
+    <strong>Your one action from this lesson</strong>
+    Next time you're about to use something you found online, open a new tab first and spend 60 seconds investigating the source. Search the site name + "bias" or look at their About page. That pause is the most powerful research habit you can build.
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <span class="quiz-badge">Self-Check</span>
+      <h3>Test what you just learned</h3>
+    </div>
+
+    <div class="question" id="q1">
+      <p>1. Why does misinformation spread faster than accurate information online?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">A</span> Because people are generally gullible and don't think critically</div>
+        <div class="option" onclick="answer(this,'q1',true)"><span class="option-letter">B</span> Because engagement drives visibility — and emotion-triggering content gets more shares than accurate but neutral content</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">C</span> Because search engines are deliberately biased toward false information</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">D</span> Because false information is always more interesting than true information</div>
+      </div>
+      <div class="feedback correct-fb" id="q1-correct">Exactly. The incentive structure of social media rewards engagement, not accuracy. Outrage and novelty spread faster than nuance. This isn't a moral failing — it's the platform's design.</div>
+      <div class="feedback wrong-fb" id="q1-wrong">The core issue is structural: engagement algorithms amplify content that triggers reactions (outrage, fear, surprise) regardless of accuracy. It's not about gullibility — it's about how the economics of attention work online.</div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. In SIFT, what does the "I" (Investigate) step tell you to do?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">A</span> Read the article carefully and internally check whether it seems logical</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">B</span> Look at the comments section to see what others think</div>
+        <div class="option" onclick="answer(this,'q2',true)"><span class="option-letter">C</span> Open a new tab and look up the source itself — who runs it, their reputation, and whether they're known to be reliable</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">D</span> Investigate the individual claim by searching for counter-arguments</div>
+      </div>
+      <div class="feedback correct-fb" id="q2-correct">Yes. And critically — you do this before reading the article in depth. Once you've read something persuasive, it's cognitively harder to dismiss it even if the source turns out to be unreliable. Investigate first.</div>
+      <div class="feedback wrong-fb" id="q2-wrong">The Investigate step means researching the source itself — in a new tab, before you read the article. You're asking: who is this? Are they known to be reliable? This tells you how much trust to extend before you've even read the content.</div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. An article claims "Scientists find coffee extends lifespan by 10 years." It's on a site called coffeehealthbenefits.com with no author listed. What's the most important first move?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">A</span> Read the article thoroughly to check whether the argument is convincing</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">B</span> Share it with a note saying "needs verification"</div>
+        <div class="option" onclick="answer(this,'q3',true)"><span class="option-letter">C</span> Stop — then investigate "coffeehealthbenefits.com" in a new tab before reading further</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">D</span> Search for the specific study mentioned to see if it exists</div>
+      </div>
+      <div class="feedback correct-fb" id="q3-correct">Correct. The site name alone is a red flag (named after the conclusion it promotes). Before searching for the study, investigate the source. A site dedicated to promoting coffee health benefits has a clear incentive to publish favourable (and potentially distorted) findings.</div>
+      <div class="feedback wrong-fb" id="q3-wrong">The first step is always Stop, then Investigate the source. A domain called "coffeehealthbenefits.com" has a named agenda before you've read a word. Investigate the site itself first — don't let the article's argument reach you before you know whether to trust it.</div>
+    </div>
+
+    <div id="score-box" class="quiz-score"></div>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Anything unclear? Come back to this chat. Good starters: <em>"How do I evaluate a source when I can't find any information about it?"</em> or <em>"What if two credible sources disagree?"</em> or <em>"Can Wikipedia actually be trusted for the Investigate step?"</em></p>
+  </div>
+
+  <div class="lesson-nav">
+    <span style="color: var(--text-muted); font-size: 0.875rem;">You're on Lesson 1</span>
+    <a href="0002-find-and-trace.html" class="nav-btn primary">Next: Find & Trace Claims →</a>
+  </div>
+
+</div>
+<script>
+  let answers = {}, totalQ = 3;
+  function answer(el, qId, isCorrect) {
+    if (answers[qId] !== undefined) return;
+    answers[qId] = isCorrect;
+    el.parentElement.querySelectorAll('.option').forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    document.getElementById(qId + (isCorrect ? '-correct' : '-wrong')).classList.add('show');
+    if (Object.keys(answers).length === totalQ) {
+      const score = Object.values(answers).filter(Boolean).length;
+      const box = document.getElementById('score-box');
+      box.classList.add('show');
+      if (score === totalQ) {
+        box.innerHTML = `<strong>3/3 — Perfect.</strong> You've got the foundation. Move to Lesson 2 to learn the Find and Trace steps — for when Stop + Investigate isn't enough.`;
+      } else if (score >= 2) {
+        box.innerHTML = `<strong>${score}/3 — Good.</strong> Re-read the section you got wrong, then move on.`;
+      } else {
+        box.innerHTML = `<strong>${score}/3 — Review needed.</strong> Go back through the lesson before continuing — these two steps are the core of the whole framework.`;
+      }
+    }
+  }
+</script>
+</body>
+</html>

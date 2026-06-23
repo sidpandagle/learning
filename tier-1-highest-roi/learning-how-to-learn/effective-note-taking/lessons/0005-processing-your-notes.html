@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 5 — Processing Your Notes</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --border: #e5e7eb;
+      --text: #1a1a1a; --text-muted: #6b7280;
+      --accent: #0891b2; --accent-light: #ecfeff; --accent-border: #a5f3fc;
+      --success: #16a34a; --success-light: #f0fdf4;
+      --danger: #dc2626; --danger-light: #fef2f2;
+      --tag-bg: #f3f4f6;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px; }
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 13px; color: var(--text-muted); }
+    .lesson-number { background: var(--accent); color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 12px; padding: 20px 24px; margin-bottom: 48px; }
+    .learn-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 { font-size: 1.3rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border); }
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem; }
+    .callout.key { border-left-color: #7c3aed; background: #faf5ff; }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    /* Three levels */
+    .levels { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 24px 0; }
+    .level { display: grid; grid-template-columns: 100px 1fr; border-bottom: 1px solid var(--border); }
+    .level:last-child { border-bottom: none; }
+    .level-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; gap: 4px; border-right: 1px solid var(--border); background: var(--accent-light); }
+    .level-badge .lv-num { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+    .level-badge .lv-when { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); text-align: center; }
+    .level-body { padding: 14px 18px; }
+    .level-body strong { display: block; margin-bottom: 5px; font-size: 0.95rem; }
+    .level-body ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 0.87rem; color: #374151; }
+    .level-body li::before { content: "→ "; color: var(--accent); }
+
+    /* Before / After note */
+    .note-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .note-col { border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+    .note-col-header { padding: 9px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+    .note-col.before .note-col-header { background: var(--danger-light); color: var(--danger); }
+    .note-col.after .note-col-header { background: var(--success-light); color: var(--success); }
+    .note-col-body { padding: 14px; font-size: 0.84rem; font-family: 'Courier New', monospace; line-height: 1.65; color: #374151; }
+
+    /* Connection card */
+    .connection-example { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin: 20px 0; }
+    .connection-example .ce-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; }
+    .connection-example p { font-size: 0.9rem; color: #374151; margin-bottom: 0; line-height: 1.6; }
+    .connection-example .ce-link { color: var(--accent); font-weight: 600; }
+
+    /* Quiz */
+    .quiz-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 48px 0; }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-badge { background: #7c3aed; color: white; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .quiz-header h3 { font-size: 1rem; font-weight: 700; }
+    .question { margin-bottom: 28px; }
+    .question p { font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none; }
+    .option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option.correct { border-color: var(--success); background: var(--success-light); }
+    .option.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option.disabled { cursor: default; }
+    .option.disabled:hover { border-color: var(--border); background: transparent; }
+    .option.correct.disabled:hover { border-color: var(--success); background: var(--success-light); }
+    .option.wrong.disabled:hover { border-color: var(--danger); background: var(--danger-light); }
+    .option-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .feedback { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.875rem; line-height: 1.5; }
+    .feedback.correct-fb { background: var(--success-light); color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback.wrong-fb { background: var(--danger-light); color: #7f1d1d; border: 1px solid #fecaca; }
+    .feedback.show { display: block; }
+    .quiz-score { display: none; background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; margin-top: 16px; }
+    .quiz-score.show { display: block; }
+    .quiz-score strong { color: var(--accent); }
+
+    .lesson-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; }
+    .nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #0e7490; border-color: #0e7490; color: white; }
+
+    .teacher-box { background: #fdf4ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem; }
+    .teacher-box h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7c3aed; margin-bottom: 8px; }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    @media (max-width: 520px) { .note-compare { grid-template-columns: 1fr; } .level { grid-template-columns: 1fr; } .level-badge { flex-direction: row; justify-content: flex-start; border-right: none; border-bottom: 1px solid var(--border); padding: 10px 14px; } }
+    @media print { .quiz-section, .lesson-nav, .teacher-box { display: none; } body { font-size: 14px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 5</span>
+    <span>⏱ ~10 minutes</span>
+    <span>· Effective Note-Taking</span>
+  </div>
+
+  <h1>Processing Your Notes</h1>
+  <p class="tagline">Raw notes are unfinished work. The step most people skip is where notes actually become useful.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>What "processing" means — and why raw notes aren't enough</li>
+      <li>The three levels of processing and when each happens</li>
+      <li>How to add connections between notes — the habit that makes your notes compound</li>
+      <li>Before and after: what a processed note looks like vs. a raw one</li>
+    </ul>
+  </div>
+
+  <h2>The step nobody does</h2>
+
+  <p>You've captured something. You've taken notes in a meeting, finished a book chapter, watched a lecture. The notes exist. Most people stop here — and this is exactly why most notes end up unused.</p>
+
+  <p>Raw notes are unfinished work. They're captured in receiving mode, often abbreviated and context-dependent. Without processing, they're a snapshot of your attention during capture — not a representation of your understanding. <cite>(<a href="https://fortelabs.com/blog/basboverview/" target="_blank">Tiago Forte, Building a Second Brain</a>)</cite></p>
+
+  <p>Processing is what transforms capture into knowledge. It's shorter than you think — and it's the single most high-leverage step in the entire note-taking workflow.</p>
+
+  <h2>Three levels of processing</h2>
+
+  <div class="levels">
+    <div class="level">
+      <div class="level-badge">
+        <div class="lv-num">1</div>
+        <div class="lv-when">Same day</div>
+      </div>
+      <div class="level-body">
+        <strong>Clean up and complete</strong>
+        <ul>
+          <li>Fill in gaps — complete half-finished thoughts</li>
+          <li>Resolve every "?" you left during capture</li>
+          <li>Expand abbreviations that only make sense right now</li>
+          <li>Delete what turned out to be irrelevant</li>
+        </ul>
+      </div>
+    </div>
+    <div class="level">
+      <div class="level-badge">
+        <div class="lv-num">2</div>
+        <div class="lv-when">Next day</div>
+      </div>
+      <div class="level-body">
+        <strong>Add cues and connections</strong>
+        <ul>
+          <li>Add retrieval cues (Cornell cue column or equivalent)</li>
+          <li>Link to other notes: "→ see: [forgetting curve]"</li>
+          <li>Add your own questions and reactions</li>
+          <li>Highlight the 1–2 ideas that matter most</li>
+        </ul>
+      </div>
+    </div>
+    <div class="level">
+      <div class="level-badge">
+        <div class="lv-num">3</div>
+        <div class="lv-when">Within a week</div>
+      </div>
+      <div class="level-body">
+        <strong>Summarise and integrate</strong>
+        <ul>
+          <li>Write a 2–3 sentence summary from memory</li>
+          <li>Ask: "What does this change about how I think?"</li>
+          <li>Tag or file for retrieval</li>
+          <li>If it's a book: complete the one-page summary</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <p>Level 1 takes 5–10 minutes. Level 2 takes 5 minutes. Level 3 takes 5–10 minutes. The total investment — less than 25 minutes — converts a set of notes from a memory aid into durable, retrievable knowledge.</p>
+
+  <h2>Before and after</h2>
+
+  <p>Here's what the same note looks like before and after processing:</p>
+
+  <div class="note-compare">
+    <div class="note-col before">
+      <div class="note-col-header">Raw (unprocessed)</div>
+      <div class="note-col-body">habit loop - cue → routine → reward<br>? (check: what neurological mechanism)<br>harder 2 break bc reward pathway reinforced<br>ppl think its abt willpower but not<br>env design matters more → ??? example</div>
+    </div>
+    <div class="note-col after">
+      <div class="note-col-header">Processed</div>
+      <div class="note-col-body">Habit = cue → routine → reward loop (Duhigg). Each repetition strengthens the dopamine pathway — this is why habits feel automatic over time, not because of willpower.<br><br>Breaking habits: target the cue or reward, not the routine itself. Environment design is more reliable than intention — removing the cue is easier than resisting it.<br><br>→ Connects to: spaced repetition (repetition builds pathways)<br>? Follow up: which cues are hardest to remove?</div>
+    </div>
+  </div>
+
+  <p>The processed note is longer — but it's coherent, retrievable, and connected to other knowledge. The raw version would be cryptic in a week.</p>
+
+  <h2>Adding connections: the habit that makes notes compound</h2>
+
+  <p>The most powerful part of Level 2 processing is linking notes to each other. Ideas don't exist in isolation — and notes that connect to other notes are far more retrievable and useful than isolated ones.</p>
+
+  <p>After adding cues, scan your other notes and ask: <em>"What else have I learned that connects to this?"</em> Then add a short pointer:</p>
+
+  <div class="connection-example">
+    <div class="ce-label">Example connection</div>
+    <p>Note on habit formation: "...dopamine pathway strengthens with repetition."<br>→ Connection added: <span class="ce-link">See also: spaced repetition (repetition signals brain to keep memory). Same mechanism, different application.</span></p>
+  </div>
+
+  <p>You don't need a complex linking system. A simple "→ see: [note title]" is enough. The goal is to build a web of related ideas, not a perfectly organised archive. <cite>(<a href="https://zettelkasten.de/posts/zettelkasten-improves-thinking-writing-reading/" target="_blank">Zettelkasten.de</a>)</cite></p>
+
+  <div class="callout key">
+    <strong>Why processing beats re-reading</strong>
+    Processing forces retrieval at every step: completing gaps, writing cues, summarising from memory. Each retrieval attempt strengthens the memory. Re-reading does not. This is why a processed note seen once is retained better than a raw note re-read ten times.
+  </div>
+
+  <div class="callout">
+    <strong>Your one action from this lesson</strong>
+    Take your most recent set of notes from any source. Spend 10 minutes on Level 1 processing: fill every gap, resolve every "?", delete what wasn't useful. Tomorrow, do Level 2: add cues and one connection to another note you already have.
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <span class="quiz-badge">Self-Check</span>
+      <h3>Test what you just learned</h3>
+    </div>
+
+    <div class="question" id="q1">
+      <p>1. What is the primary purpose of Level 1 processing (same day)?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">A</span> To add cues and connections that help you retrieve the notes later</div>
+        <div class="option" onclick="answer(this,'q1',true)"><span class="option-letter">B</span> To clean up and complete the raw capture — fill gaps, expand abbreviations, resolve uncertainties while context is still fresh</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">C</span> To write the final summary that consolidates everything you learned</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">D</span> To organise and file the notes into the right folder or category</div>
+      </div>
+      <div class="feedback correct-fb" id="q1-correct">Correct. Level 1 is about making the raw capture coherent and complete — while the session context is still in memory. Everything you resolve now is a gap you won't be able to fill tomorrow.</div>
+      <div class="feedback wrong-fb" id="q1-wrong">Level 1 is about cleaning and completing — filling gaps, resolving "?" marks, and expanding context-dependent abbreviations before that context evaporates. Cues come at Level 2. Summaries come at Level 3.</div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. You're doing Level 2 processing on your notes about pricing psychology. You remember taking notes on cognitive biases last week. What should you do?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">A</span> Keep both notes separate — cross-referencing creates confusion</div>
+        <div class="option" onclick="answer(this,'q2',true)"><span class="option-letter">B</span> Add a pointer in both notes: "→ see: [other note title]" — connections make notes compound</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">C</span> Merge the two notes into one comprehensive document</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">D</span> File both notes in the same folder so they're physically near each other</div>
+      </div>
+      <div class="feedback correct-fb" id="q2-correct">Yes. A simple pointer — "→ see: cognitive biases" — is all it takes. When you revisit either note, the link surfaces related knowledge. That web of connections is what makes a personal note collection more than the sum of its parts.</div>
+      <div class="feedback wrong-fb" id="q2-wrong">Add a pointer in both notes: "→ see: [the other note]." You don't need to merge them — a simple reference is enough. Connected notes surface related ideas at retrieval time, which is when you need them most.</div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. Why does processing notes produce better retention than re-reading them?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">A</span> Because processing takes longer, so more time is spent with the material</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">B</span> Because processed notes are cleaner and easier to read in the future</div>
+        <div class="option" onclick="answer(this,'q3',true)"><span class="option-letter">C</span> Because processing forces retrieval at every step — filling gaps, writing cues, summarising from memory — while re-reading is passive and produces no retrieval</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">D</span> Because writing by hand during processing activates motor memory</div>
+      </div>
+      <div class="feedback correct-fb" id="q3-correct">Exactly. Every step of processing is a retrieval attempt: completing a thought from memory, writing a cue without looking at the notes, summarising from memory. Retrieval strengthens memory. Re-reading does not.</div>
+      <div class="feedback wrong-fb" id="q3-wrong">Processing wins because it forces retrieval — you have to actively produce answers rather than passively receive them. Completing gaps requires recall. Writing cues requires understanding. Summarising requires synthesis. Re-reading requires none of these — which is why it doesn't stick.</div>
+    </div>
+
+    <div id="score-box" class="quiz-score"></div>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Something unclear? Come back to this chat. Good starters: <em>"How do I find connections between notes if I have hundreds of them?"</em> or <em>"What if I don't have time to do all three levels?"</em> or <em>"Is there a minimum — what's the one processing step I absolutely can't skip?"</em></p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0004-note-taking-in-real-time.html" class="nav-btn">← Lesson 4</a>
+    <a href="0006-your-note-taking-system.html" class="nav-btn primary">Next: Your Note-Taking System →</a>
+  </div>
+
+</div>
+<script>
+  let answers = {}, totalQ = 3;
+  function answer(el, qId, isCorrect) {
+    if (answers[qId] !== undefined) return;
+    answers[qId] = isCorrect;
+    el.parentElement.querySelectorAll('.option').forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    document.getElementById(qId + (isCorrect ? '-correct' : '-wrong')).classList.add('show');
+    if (Object.keys(answers).length === totalQ) {
+      const score = Object.values(answers).filter(Boolean).length;
+      const box = document.getElementById('score-box');
+      box.classList.add('show');
+      if (score === totalQ) {
+        box.innerHTML = `<strong>3/3 — Perfect.</strong> You've got the full processing workflow. One more lesson: putting the whole system together so it actually sticks as a habit.`;
+      } else if (score >= 2) {
+        box.innerHTML = `<strong>${score}/3 — Good.</strong> Re-read the section you got wrong, then move on.`;
+      } else {
+        box.innerHTML = `<strong>${score}/3 — Review needed.</strong> The processing levels are the backbone of this whole workspace. Go back through before moving on.`;
+      }
+    }
+  }
+</script>
+</body>
+</html>

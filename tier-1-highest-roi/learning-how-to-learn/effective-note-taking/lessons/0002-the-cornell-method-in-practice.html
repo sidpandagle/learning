@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 2 — The Cornell Method in Practice</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --border: #e5e7eb;
+      --text: #1a1a1a; --text-muted: #6b7280;
+      --accent: #0891b2; --accent-light: #ecfeff; --accent-border: #a5f3fc;
+      --success: #16a34a; --success-light: #f0fdf4;
+      --danger: #dc2626; --danger-light: #fef2f2;
+      --tag-bg: #f3f4f6;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px; }
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 13px; color: var(--text-muted); }
+    .lesson-number { background: var(--accent); color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 12px; padding: 20px 24px; margin-bottom: 48px; }
+    .learn-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 { font-size: 1.3rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border); }
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem; }
+    .callout.key { border-left-color: #7c3aed; background: #faf5ff; }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    /* Cornell template visual */
+    .cornell-template {
+      border: 2px solid var(--border); border-radius: 12px; overflow: hidden;
+      margin: 28px 0; background: var(--surface);
+    }
+    .cornell-top-bar {
+      background: var(--accent); color: white; padding: 8px 16px;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .cornell-body { display: grid; grid-template-columns: 180px 1fr; min-height: 240px; }
+    .cornell-cue-col {
+      border-right: 2px solid var(--border); padding: 16px;
+      background: var(--accent-light);
+    }
+    .cornell-cue-col .zone-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
+    .cornell-cue-col .zone-hint { font-size: 0.82rem; color: #374151; line-height: 1.5; }
+    .cornell-notes-col { padding: 16px; }
+    .cornell-notes-col .zone-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+    .cornell-notes-col .zone-hint { font-size: 0.82rem; color: #374151; line-height: 1.5; }
+    .cornell-summary {
+      border-top: 2px solid var(--border); padding: 14px 16px;
+      background: #fffbeb;
+    }
+    .cornell-summary .zone-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #d97706; margin-bottom: 4px; }
+    .cornell-summary .zone-hint { font-size: 0.82rem; color: #374151; }
+
+    /* Steps */
+    .step-list { display: flex; flex-direction: column; gap: 0; margin: 24px 0; }
+    .step-item { display: grid; grid-template-columns: 48px 1fr; gap: 0; border-bottom: 1px solid var(--border); }
+    .step-item:last-child { border-bottom: none; }
+    .step-num { display: flex; align-items: flex-start; justify-content: center; padding: 16px 0; }
+    .step-circle { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+    .step-body { padding: 14px 0 14px 4px; }
+    .step-body strong { font-size: 0.95rem; display: block; margin-bottom: 4px; }
+    .step-body p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0; line-height: 1.55; }
+
+    /* Worked example */
+    .worked-example { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 28px 0; }
+    .worked-header { background: var(--tag-bg); padding: 10px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .worked-grid { display: grid; grid-template-columns: 160px 1fr; }
+    .worked-cue { border-right: 1px solid var(--border); padding: 14px; background: var(--accent-light); }
+    .worked-cue p { font-size: 0.85rem; color: #0e7490; margin-bottom: 8px; font-weight: 600; }
+    .worked-cue p:last-child { margin-bottom: 0; }
+    .worked-note { padding: 14px; }
+    .worked-note p { font-size: 0.85rem; color: #374151; margin-bottom: 8px; line-height: 1.55; }
+    .worked-note p:last-child { margin-bottom: 0; }
+    .worked-summary { border-top: 1px solid var(--border); padding: 12px 16px; background: #fffbeb; font-size: 0.85rem; color: #374151; }
+    .worked-summary span { font-weight: 700; color: #d97706; }
+
+    /* Quiz */
+    .quiz-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 48px 0; }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-badge { background: #7c3aed; color: white; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .quiz-header h3 { font-size: 1rem; font-weight: 700; }
+    .question { margin-bottom: 28px; }
+    .question p { font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none; }
+    .option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option.correct { border-color: var(--success); background: var(--success-light); }
+    .option.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option.disabled { cursor: default; }
+    .option.disabled:hover { border-color: var(--border); background: transparent; }
+    .option.correct.disabled:hover { border-color: var(--success); background: var(--success-light); }
+    .option.wrong.disabled:hover { border-color: var(--danger); background: var(--danger-light); }
+    .option-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .feedback { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.875rem; line-height: 1.5; }
+    .feedback.correct-fb { background: var(--success-light); color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback.wrong-fb { background: var(--danger-light); color: #7f1d1d; border: 1px solid #fecaca; }
+    .feedback.show { display: block; }
+    .quiz-score { display: none; background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; margin-top: 16px; }
+    .quiz-score.show { display: block; }
+    .quiz-score strong { color: var(--accent); }
+
+    .lesson-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; }
+    .nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #0e7490; border-color: #0e7490; color: white; }
+
+    .teacher-box { background: #fdf4ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem; }
+    .teacher-box h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7c3aed; margin-bottom: 8px; }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    @media (max-width: 560px) { .cornell-body { grid-template-columns: 1fr; } .cornell-cue-col { border-right: none; border-bottom: 2px solid var(--border); } .worked-grid { grid-template-columns: 1fr; } .worked-cue { border-right: none; border-bottom: 1px solid var(--border); } }
+    @media print { .quiz-section, .lesson-nav, .teacher-box { display: none; } body { font-size: 14px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 2</span>
+    <span>⏱ ~12 minutes</span>
+    <span>· Effective Note-Taking</span>
+  </div>
+
+  <h1>The Cornell Method in Practice</h1>
+  <p class="tagline">A step-by-step walkthrough of the most well-tested note-taking format in existence — with a worked example you can copy.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>The three zones of a Cornell note and what belongs in each</li>
+      <li>The exact sequence: Notes first, Cues after, Summary last</li>
+      <li>The most common mistake in each step — and how to avoid it</li>
+      <li>A complete worked example you can use as a template</li>
+    </ul>
+  </div>
+
+  <h2>Why Cornell? A quick recap</h2>
+
+  <p>In Lesson 1, we established the core principle: notes should capture your thinking, not just copied words. The Cornell Method is a structure that forces exactly that — it has three zones, each serving a different cognitive function. <cite>(<a href="https://lsc.cornell.edu/how-to-study/taking-notes/cornell-note-taking-system/" target="_blank">Cornell University Learning Strategies Center</a>)</cite></p>
+
+  <div class="cornell-template">
+    <div class="cornell-top-bar">Cornell Note Layout</div>
+    <div class="cornell-body">
+      <div class="cornell-cue-col">
+        <div class="zone-label">Cue Column (~30%)</div>
+        <div class="zone-hint">Added <em>after</em> the session. Questions and keywords that prompt recall of the right column without re-reading it.</div>
+      </div>
+      <div class="cornell-notes-col">
+        <div class="zone-label">Notes Column (~70%)</div>
+        <div class="zone-hint">Written <em>during</em> the session. Your understanding in your own words — abbreviated, connected, never copied verbatim.</div>
+      </div>
+    </div>
+    <div class="cornell-summary">
+      <div class="zone-label">Summary (bottom strip)</div>
+      <div class="zone-hint">Written <em>after</em> both columns are done. 2–3 sentences: "The main idea here is…" The hardest zone to write — and the most valuable.</div>
+    </div>
+  </div>
+
+  <div class="callout key">
+    <strong>The key timing insight</strong>
+    Most people try to fill all three zones at once. Don't. Notes column first (during). Cue column next (immediately after). Summary last (same day). Each step requires you to process the previous one — that processing is where the learning happens.
+  </div>
+
+  <h2>Step 1: The Notes column (during the session)</h2>
+
+  <p>The Notes column is your live capture zone. The goal is not to write everything — it's to write your understanding of what matters.</p>
+
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num"><div class="step-circle">1</div></div>
+      <div class="step-body">
+        <strong>Write in your own words</strong>
+        <p>If you catch yourself copying a sentence word-for-word, stop. Finish the idea in your own phrasing. Even an imperfect paraphrase proves you understood it.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num"><div class="step-circle">2</div></div>
+      <div class="step-body">
+        <strong>Abbreviate freely</strong>
+        <p>Use shorthand: "→" for "leads to", "∴" for "therefore", "vs." for comparisons. Speed matters more than neatness here — you'll clean up when adding cues.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num"><div class="step-circle">3</div></div>
+      <div class="step-body">
+        <strong>Skip what you already know</strong>
+        <p>If a point confirms something you already believe, a single word or ✓ is enough. Note the surprising, counter-intuitive, or directly useful — not the obvious.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num"><div class="step-circle">4</div></div>
+      <div class="step-body">
+        <strong>Leave space</strong>
+        <p>Don't cram. Generous line spacing lets you add connections and corrections later without rewriting the whole page.</p>
+      </div>
+    </div>
+  </div>
+
+  <p><strong>Common mistake:</strong> Writing full sentences for every point. This slows you down and forces you into transcription mode. Fragments and bullets are fine — your brain fills in the context later as long as the core idea is there.</p>
+
+  <h2>Step 2: The Cue column (immediately after)</h2>
+
+  <p>Once the session ends — before you do anything else — fill in the Cue column. This is the step most people skip, and it's why their Cornell notes end up as useless as any other notes.</p>
+
+  <p>For each cluster of notes in the right column, write a question or keyword in the left column that would prompt you to recall those notes from memory. <cite>(<a href="https://lsc.cornell.edu/how-to-study/taking-notes/cornell-note-taking-system/" target="_blank">Cornell LSC</a>)</cite></p>
+
+  <p>Good cues:</p>
+  <ul style="padding-left: 24px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; font-size: 0.92rem;">
+    <li>"What are the 3 causes of X?"</li>
+    <li>"What's the difference between A and B?"</li>
+    <li>"Why does Y happen?"</li>
+    <li>A single word: "Forgetting curve" or "Active recall"</li>
+  </ul>
+
+  <p><strong>Common mistake:</strong> Writing cues that just label the content ("Memory section", "Key points"). A label doesn't force retrieval — a question does. Write cues you can cover with your hand and use to quiz yourself.</p>
+
+  <h2>Step 3: The Summary (same day)</h2>
+
+  <p>At the bottom of the page, write 2–3 sentences completing this prompt: <em>"The main idea of this session is…"</em></p>
+
+  <p>This is the hardest step. If you can't summarise it in 3 sentences, you don't know it yet — and that's useful information. Either the material was genuinely complex, or you didn't process your notes deeply enough.</p>
+
+  <p><strong>Common mistake:</strong> Writing a list of bullet points instead of a summary. Bullets are another form of collection. A sentence forces you to connect ideas into a single coherent thought.</p>
+
+  <h2>Worked example</h2>
+
+  <p>Here's a complete Cornell note on the topic of spaced repetition, taken from a 20-minute reading session:</p>
+
+  <div class="worked-example">
+    <div class="worked-header">Cornell note — Spaced Repetition reading session</div>
+    <div class="worked-grid">
+      <div class="worked-cue">
+        <p>What is spaced repetition?</p>
+        <p>Why does spacing beat massing?</p>
+        <p>How big are the gains?</p>
+        <p>What's the scheduling rule?</p>
+      </div>
+      <div class="worked-note">
+        <p>SR = reviewing material at increasing intervals (today → 3d → 1wk → 2wk)</p>
+        <p>Brain treats repeated use as signal to keep memory. No use = prune it. SR exploits this.</p>
+        <p>Cramming = same review hours, far less retained after 1 week. SR wins by 200% in some studies.</p>
+        <p>Review just before forgetting = strongest reset. Anki does this automatically.</p>
+      </div>
+    </div>
+    <div class="worked-summary">
+      <span>Summary: </span>Spaced repetition works by reviewing material right before you'd forget it, which resets the forgetting curve each time. The key is the interval — not total study time. Review today, then at 3 days, then weekly. Each review strengthens the memory and extends the next safe interval.
+    </div>
+  </div>
+
+  <p>Notice: the notes column uses fragments, arrows, and abbreviations — not sentences. The cues are questions that could work as flashcard fronts. The summary is three connected sentences, not another list.</p>
+
+  <div class="callout">
+    <strong>Your one action from this lesson</strong>
+    Take your next set of notes using this exact sequence. During: notes in your own words. After: add cues as questions. Same day: write a 2–3 sentence summary. Don't skip the sequence — the order is what makes it work.
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <span class="quiz-badge">Self-Check</span>
+      <h3>Test what you just learned</h3>
+    </div>
+
+    <div class="question" id="q1">
+      <p>1. When should you fill in the Cue column?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">A</span> During the session, as you write the Notes column</div>
+        <div class="option" onclick="answer(this,'q1',true)"><span class="option-letter">B</span> Immediately after the session ends — before doing anything else</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">C</span> When you next review your notes, days later</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">D</span> It doesn't matter when, as long as it gets done</div>
+      </div>
+      <div class="feedback correct-fb" id="q1-correct">Exactly. The cue column should be filled immediately after — while the session is fresh. This forces a first processing pass while you can still remember context. Leaving it for later defeats the purpose.</div>
+      <div class="feedback wrong-fb" id="q1-wrong">The cue column goes in immediately after the session — before checking your phone, making a coffee, or doing anything else. The session context is still in working memory. Leaving it for later means you lose that context and the cues become labels instead of retrieval triggers.</div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. Which is the better cue for a section of notes about why habits are hard to break?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">A</span> "Habits" (a label)</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">B</span> "Habits section — key points" (a label with context)</div>
+        <div class="option" onclick="answer(this,'q2',true)"><span class="option-letter">C</span> "Why are habits hard to break, and what's the neurological mechanism?" (a question)</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">D</span> "See page 3" (a pointer)</div>
+      </div>
+      <div class="feedback correct-fb" id="q2-correct">Correct. A question forces retrieval — you have to actively produce the answer. Labels just tell you what category the notes are in, which doesn't test or strengthen memory at all.</div>
+      <div class="feedback wrong-fb" id="q2-wrong">Option C is the best cue. A question prompts retrieval — you cover the right column and try to answer it. Labels (A, B) and pointers (D) give you the answer without making you work for it, which means no memory strengthening occurs.</div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. You finish reading a chapter and try to write the Cornell summary, but you can't summarise it in 3 sentences. What does this most likely mean?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">A</span> The chapter was too complex to summarise — some material just can't be compressed</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">B</span> You need to re-read the chapter before writing the summary</div>
+        <div class="option" onclick="answer(this,'q3',true)"><span class="option-letter">C</span> You haven't deeply understood the material yet — the difficulty writing the summary is diagnostic</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">D</span> You should skip the summary for complex material and just use bullet points</div>
+      </div>
+      <div class="feedback correct-fb" id="q3-correct">Exactly. Struggling to summarise is feedback, not failure. It means you've captured but not yet understood. The right response is to re-read your notes and try again — not to skip the step.</div>
+      <div class="feedback wrong-fb" id="q3-wrong">If you can't summarise in 3 sentences, that's diagnostic — it reveals that the material hasn't been fully understood yet. The summary isn't a reporting task, it's a comprehension test. Struggle is part of the process, not a reason to give up or switch to bullets.</div>
+    </div>
+
+    <div id="score-box" class="quiz-score"></div>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Anything unclear? Come back to this chat. Good starters: <em>"Can Cornell work on a laptop or does it need to be handwritten?"</em> or <em>"What do I do when the content comes faster than I can write?"</em> or <em>"How do I do Cornell for a long book vs. a short article?"</em></p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0001-why-most-notes-fail.html" class="nav-btn">← Lesson 1</a>
+    <a href="0003-note-taking-for-books.html" class="nav-btn primary">Next: Note-Taking for Books →</a>
+  </div>
+
+</div>
+<script>
+  let answers = {}, totalQ = 3;
+  function answer(el, qId, isCorrect) {
+    if (answers[qId] !== undefined) return;
+    answers[qId] = isCorrect;
+    el.parentElement.querySelectorAll('.option').forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    document.getElementById(qId + (isCorrect ? '-correct' : '-wrong')).classList.add('show');
+    if (Object.keys(answers).length === totalQ) {
+      const score = Object.values(answers).filter(Boolean).length;
+      const box = document.getElementById('score-box');
+      box.classList.add('show');
+      if (score === totalQ) {
+        box.innerHTML = `<strong>3/3 — Perfect.</strong> You've got the Cornell sequence locked in. Lesson 3 applies it to books — where the pace is yours to control.`;
+      } else if (score >= 2) {
+        box.innerHTML = `<strong>${score}/3 — Good.</strong> Re-read the section you got wrong, then move on.`;
+      } else {
+        box.innerHTML = `<strong>${score}/3 — Review needed.</strong> Go back through the lesson — the sequence and timing are the whole point of Cornell.`;
+      }
+    }
+  }
+</script>
+</body>
+</html>

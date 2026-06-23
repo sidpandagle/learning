@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1 — Why Most Notes Fail</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #0891b2;
+      --accent-light: #ecfeff;
+      --accent-border: #a5f3fc;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --tag-bg: #f3f4f6;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px; font-size: 13px; color: var(--text-muted);
+    }
+    .lesson-number {
+      background: var(--accent); color: white; font-weight: 700;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box {
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 12px; padding: 20px 24px; margin-bottom: 48px;
+    }
+    .learn-box h3 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px;
+    }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 {
+      font-size: 1.3rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px;
+      padding-top: 16px; border-top: 2px solid var(--border);
+    }
+
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout {
+      border-left: 4px solid var(--accent); background: var(--accent-light);
+      padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem;
+    }
+    .callout.key { border-left-color: #7c3aed; background: #faf5ff; }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    /* Two-column comparison */
+    .compare {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0;
+    }
+    .compare-col {
+      border-radius: 10px; padding: 18px 20px; border: 1px solid var(--border);
+    }
+    .compare-col.bad { background: var(--danger-light); border-color: #fecaca; }
+    .compare-col.good { background: var(--success-light); border-color: #bbf7d0; }
+    .compare-col h4 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .compare-col.bad h4 { color: var(--danger); }
+    .compare-col.good h4 { color: var(--success); }
+    .compare-col p { font-size: 0.9rem; margin-bottom: 0; font-family: 'Courier New', monospace; line-height: 1.6; color: #374151; }
+
+    /* Note anatomy */
+    .note-anatomy {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; margin: 28px 0;
+    }
+    .note-anatomy-header {
+      background: var(--tag-bg); padding: 10px 20px;
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .note-anatomy-grid {
+      display: grid; grid-template-columns: 140px 1fr; border-bottom: 1px solid var(--border);
+    }
+    .note-anatomy-grid:last-child { border-bottom: none; }
+    .note-zone {
+      padding: 14px 16px; font-size: 0.85rem; font-weight: 700;
+      color: var(--accent); border-right: 1px solid var(--border);
+      display: flex; align-items: center;
+    }
+    .note-content { padding: 14px 16px; font-size: 0.9rem; line-height: 1.6; }
+
+    /* Stat row */
+    .stat-row { display: flex; gap: 16px; margin: 24px 0; flex-wrap: wrap; }
+    .stat-card {
+      flex: 1; min-width: 130px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center;
+    }
+    .stat-card .num { font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
+    /* Quiz */
+    .quiz-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px; margin: 48px 0;
+    }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-badge {
+      background: #7c3aed; color: white; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+    }
+    .quiz-header h3 { font-size: 1rem; font-weight: 700; }
+
+    .question { margin-bottom: 28px; }
+    .question p { font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option {
+      display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer;
+      font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none;
+    }
+    .option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option.correct { border-color: var(--success); background: var(--success-light); }
+    .option.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option.disabled { cursor: default; }
+    .option.disabled:hover { border-color: var(--border); background: transparent; }
+    .option.correct.disabled:hover { border-color: var(--success); background: var(--success-light); }
+    .option.wrong.disabled:hover { border-color: var(--danger); background: var(--danger-light); }
+
+    .option-letter {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+
+    .feedback {
+      display: none; margin-top: 12px; padding: 12px 14px;
+      border-radius: 8px; font-size: 0.875rem; line-height: 1.5;
+    }
+    .feedback.correct-fb { background: var(--success-light); color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback.wrong-fb { background: var(--danger-light); color: #7f1d1d; border: 1px solid #fecaca; }
+    .feedback.show { display: block; }
+
+    .quiz-score {
+      display: none; background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; margin-top: 16px;
+    }
+    .quiz-score.show { display: block; }
+    .quiz-score strong { color: var(--accent); }
+
+    /* Nav */
+    .lesson-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none;
+      border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #0e7490; border-color: #0e7490; color: white; }
+
+    .teacher-box {
+      background: #fdf4ff; border: 1px solid #e9d5ff;
+      border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem;
+    }
+    .teacher-box h3 {
+      font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #7c3aed; margin-bottom: 8px;
+    }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    @media (max-width: 520px) { .compare { grid-template-columns: 1fr; } }
+
+    @media print {
+      .quiz-section, .lesson-nav, .teacher-box { display: none; }
+      body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 1</span>
+    <span>⏱ ~10 minutes</span>
+    <span>· Effective Note-Taking</span>
+  </div>
+
+  <h1>Why Most Notes Fail</h1>
+  <p class="tagline">The single mistake that makes most notes useless — and the one shift that fixes it.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Why copying words into notes is almost always wasted effort</li>
+      <li>The "transcription trap" and why it feels productive but isn't</li>
+      <li>The one principle that makes notes actually useful</li>
+      <li>What a good note looks like vs. a bad one — with real examples</li>
+    </ul>
+  </div>
+
+  <h2>The problem with most notes</h2>
+
+  <p>Most people take notes like this: something interesting appears — a sentence in a book, a slide in a presentation, a key point in a video — and they copy it down. Word for word, or close to it.</p>
+
+  <p>The problem isn't the copying. It's what copying doesn't do: it doesn't require you to understand anything. You can transcribe a sentence without processing it at all. And if you didn't process it, the note can't help you later — because you don't actually know what it means.</p>
+
+  <p>This is the <strong>transcription trap</strong>: the illusion that capturing something is the same as learning it. It feels productive. You have pages of notes. But when you come back a week later, you can't remember the context, you don't understand your own writing, and you never look at it again. <cite>(<a href="https://fortelabs.com/blog/basboverview/" target="_blank">Tiago Forte, Building a Second Brain</a>)</cite></p>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="num">~0%</div>
+      <div class="label">of copied notes are ever read again, on average</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">2×</div>
+      <div class="label">better retention when you write ideas in your own words vs. copying</div>
+    </div>
+  </div>
+
+  <h2>The one principle that changes everything</h2>
+
+  <p>Here it is:</p>
+
+  <div class="callout key">
+    <strong>The core principle</strong>
+    A note is not a copy of someone else's words. A note is <em>your thinking</em> about someone else's idea.
+  </div>
+
+  <p>This means the value isn't in capturing the source's words — it's in recording what <em>you</em> understood, what it connects to, what it means for you, and what questions it raises. That's what makes a note retrievable and useful. <cite>(<a href="https://lsc.cornell.edu/how-to-study/taking-notes/cornell-note-taking-system/" target="_blank">Cornell University Learning Strategies Center</a>)</cite></p>
+
+  <p>German sociologist Niklas Luhmann wrote over 90,000 cards of notes over his lifetime and produced more than 70 books and 400 articles. His method? Never copy. Always write in your own words. Always link to another idea. The note had to represent his understanding, not the source's words. <cite>(<a href="https://zettelkasten.de/posts/zettelkasten-improves-thinking-writing-reading/" target="_blank">Zettelkasten.de</a>)</cite></p>
+
+  <h2>What this looks like in practice</h2>
+
+  <p>Here's the same piece of information, captured two different ways:</p>
+
+  <div class="compare">
+    <div class="compare-col bad">
+      <h4>Transcription (bad)</h4>
+      <p>"The hippocampus is central to the consolidation of information from short-term memory to long-term memory, and is also important for spatial navigation."</p>
+    </div>
+    <div class="compare-col good">
+      <h4>Your thinking (good)</h4>
+      <p>The hippocampus is basically the brain's filing clerk — it decides what goes to long-term storage. Damage it and you can't form new memories (like H.M. case). Also handles maps in the head — makes sense why spatial memory feels linked to episodic memory.</p>
+    </div>
+  </div>
+
+  <p>The second note is messier, less precise — and far more useful. It shows you processed it. When you come back a week later, that note triggers a real memory. The first one is just a quotation you don't own.</p>
+
+  <h2>A simple structure to start with: The Cornell Method</h2>
+
+  <p>You don't need a complex system. The Cornell Method is one of the most well-studied note-taking formats in existence, and it has one job: force you to process what you've captured. <cite>(<a href="https://lsc.cornell.edu/how-to-study/taking-notes/cornell-note-taking-system/" target="_blank">Cornell Learning Strategies Center</a>)</cite></p>
+
+  <div class="note-anatomy">
+    <div class="note-anatomy-header">Cornell Note Structure</div>
+    <div class="note-anatomy-grid">
+      <div class="note-zone">Cue Column</div>
+      <div class="note-content"><strong>Questions and keywords</strong> — written after you take the main notes. "What was the main point?" "What problem does this solve?" These are your retrieval triggers.</div>
+    </div>
+    <div class="note-anatomy-grid">
+      <div class="note-zone">Notes Column</div>
+      <div class="note-content"><strong>Your understanding in your own words</strong> — not copies. Abbreviate, use your own examples, draw connections. If you wrote this from memory, would it still make sense?</div>
+    </div>
+    <div class="note-anatomy-grid">
+      <div class="note-zone">Summary</div>
+      <div class="note-content"><strong>2–3 sentences at the bottom</strong> — written after the session. "The main idea here is..." This is the hardest part and the most valuable.</div>
+    </div>
+  </div>
+
+  <p>You don't need to use Cornell format strictly. The key insight is its <em>sequence</em>: capture first (in your own words), then add cues, then summarise. Each step forces a bit more processing.</p>
+
+  <div class="callout">
+    <strong>Your one action from this lesson</strong>
+    Next time you take a note from anything — a book, a video, a conversation — write one sentence about it in your own words before you write anything else. Not a copy. Your interpretation. That single habit is the foundation.
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <span class="quiz-badge">Self-Check</span>
+      <h3>Test what you just learned</h3>
+    </div>
+
+    <div class="question" id="q1">
+      <p>1. What is the "transcription trap"?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q1',false)">
+          <span class="option-letter">A</span> Writing too slowly and missing key points during a lecture
+        </div>
+        <div class="option" onclick="answer(this,'q1',true)">
+          <span class="option-letter">B</span> Copying information without understanding it — mistaking capture for learning
+        </div>
+        <div class="option" onclick="answer(this,'q1',false)">
+          <span class="option-letter">C</span> Spending too long on note formatting instead of content
+        </div>
+        <div class="option" onclick="answer(this,'q1',false)">
+          <span class="option-letter">D</span> Taking notes on a laptop instead of by hand
+        </div>
+      </div>
+      <div class="feedback correct-fb" id="q1-correct">Exactly. The trap is that copying feels like productive work — but it bypasses the understanding step entirely. If you didn't process it, the note can't help you later.</div>
+      <div class="feedback wrong-fb" id="q1-wrong">Not quite. The transcription trap is specifically about mistaking the act of copying for the act of learning. You can copy anything without understanding it — and most people do.</div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. Which of these is the better note on the idea that "habits form when a behaviour is consistently rewarded"?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q2',false)">
+          <span class="option-letter">A</span> "Habits form when a behaviour is consistently rewarded." (copied verbatim)
+        </div>
+        <div class="option" onclick="answer(this,'q2',true)">
+          <span class="option-letter">B</span> "Brain links action → reward. Repeat = habit. This explains why checking phone is so sticky — the variable reward (like slot machine) is especially powerful."
+        </div>
+        <div class="option" onclick="answer(this,'q2',false)">
+          <span class="option-letter">C</span> "Habits. Rewards. Behaviour. Consistent."
+        </div>
+        <div class="option" onclick="answer(this,'q2',false)">
+          <span class="option-letter">D</span> A perfectly formatted bullet point with source citation and page number
+        </div>
+      </div>
+      <div class="feedback correct-fb" id="q2-correct">Yes. Option B shows thinking — a connection to an existing idea (slot machine variable rewards), a personal inference, and shortened language that proves you own the idea. That note is retrievable and useful.</div>
+      <div class="feedback wrong-fb" id="q2-wrong">The best note here is B. It's messy but shows real processing — a personal connection, an inference, shortened language. That's what makes it retrievable. A copied sentence or fragmented keywords prove nothing was understood.</div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. In the Cornell Method, what is the purpose of the "Cue Column"?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q3',false)">
+          <span class="option-letter">A</span> To write down the source title and page numbers for citation
+        </div>
+        <div class="option" onclick="answer(this,'q3',false)">
+          <span class="option-letter">B</span> To colour-code your notes by topic for visual organisation
+        </div>
+        <div class="option" onclick="answer(this,'q3',true)">
+          <span class="option-letter">C</span> To write questions and keywords that act as retrieval triggers — added after the notes are taken
+        </div>
+        <div class="option" onclick="answer(this,'q3',false)">
+          <span class="option-letter">D</span> To summarise the whole session in 2–3 sentences
+        </div>
+      </div>
+      <div class="feedback correct-fb" id="q3-correct">Correct. Cues are added after — not during — note-taking. They're questions or keywords designed to help you retrieve the content later without re-reading everything.</div>
+      <div class="feedback wrong-fb" id="q3-wrong">The Cue Column contains retrieval triggers: questions like "What was the main point?" or keywords that prompt you to recall the note without re-reading it. The summary box (at the bottom) is for the 2–3 sentence overview.</div>
+    </div>
+
+    <div id="score-box" class="quiz-score"></div>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Something unclear? Come back to this chat. Good questions to start with: <em>"Can you show me more examples of good vs. bad notes?"</em> or <em>"What should I do if I'm taking notes from a fast-moving video?"</em> or <em>"How do I know when I've processed something enough to note it?"</em></p>
+  </div>
+
+  <div class="lesson-nav">
+    <span style="color: var(--text-muted); font-size: 0.875rem;">You're on Lesson 1</span>
+    <a href="0002-the-cornell-method-in-practice.html" class="nav-btn primary">Next: Cornell in Practice →</a>
+  </div>
+
+</div>
+<script>
+  let answers = {}, totalQ = 3;
+
+  function answer(el, qId, isCorrect) {
+    if (answers[qId] !== undefined) return;
+    answers[qId] = isCorrect;
+    el.parentElement.querySelectorAll('.option').forEach(o => {
+      o.classList.add('disabled'); o.onclick = null;
+    });
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    document.getElementById(qId + (isCorrect ? '-correct' : '-wrong')).classList.add('show');
+    if (Object.keys(answers).length === totalQ) {
+      const score = Object.values(answers).filter(Boolean).length;
+      const box = document.getElementById('score-box');
+      box.classList.add('show');
+      if (score === totalQ) {
+        box.innerHTML = `<strong>3/3 — Perfect.</strong> You've nailed the core principle. Move on to Lesson 2 to practice the Cornell method on real material.`;
+      } else if (score >= 2) {
+        box.innerHTML = `<strong>${score}/3 — Good.</strong> Re-read the section you got wrong, then try the next lesson.`;
+      } else {
+        box.innerHTML = `<strong>${score}/3 — Review needed.</strong> Go back through the lesson before moving on — these concepts underpin everything in this workspace.`;
+      }
+    }
+  }
+</script>
+</body>
+</html>

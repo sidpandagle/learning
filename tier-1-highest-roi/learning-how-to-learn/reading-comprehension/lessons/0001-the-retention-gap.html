@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 1 — The Retention Gap</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --accent: #7c3aed;
+      --accent-light: #faf5ff;
+      --accent-border: #e9d5ff;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --tag-bg: #f3f4f6;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px;
+    }
+
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 13px; color: var(--text-muted); }
+    .lesson-number { background: var(--accent); color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 12px; padding: 20px 24px; margin-bottom: 48px; }
+    .learn-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 { font-size: 1.3rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border); }
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem; }
+    .callout.key { border-left-color: #0891b2; background: #ecfeff; }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    /* Passive vs Active */
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0; }
+    .mode-card { border-radius: 10px; padding: 18px 20px; border: 1px solid var(--border); }
+    .mode-card.passive { background: #fff7ed; border-color: #fed7aa; }
+    .mode-card.active { background: var(--success-light); border-color: #bbf7d0; }
+    .mode-card h4 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .mode-card.passive h4 { color: #d97706; }
+    .mode-card.active h4 { color: var(--success); }
+    .mode-card ul { list-style: none; display: flex; flex-direction: column; gap: 5px; font-size: 0.88rem; color: #374151; }
+    .mode-card li::before { margin-right: 6px; }
+    .mode-card.passive li::before { content: "✗"; color: #d97706; }
+    .mode-card.active li::before { content: "✓"; color: var(--success); }
+
+    /* SQ3R steps */
+    .steps { display: flex; flex-direction: column; gap: 0; margin: 28px 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .step { display: grid; grid-template-columns: 60px 1fr; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-letter { display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: var(--accent); background: var(--accent-light); }
+    .step-body { padding: 14px 18px; }
+    .step-body strong { font-size: 0.95rem; display: block; margin-bottom: 3px; }
+    .step-body p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0; }
+    .step.highlight .step-letter { background: var(--accent); color: white; }
+    .step.highlight .step-body { background: var(--accent-light); }
+
+    /* Stat row */
+    .stat-row { display: flex; gap: 16px; margin: 24px 0; flex-wrap: wrap; }
+    .stat-card { flex: 1; min-width: 130px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+    .stat-card .num { font-size: 2rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
+    /* Quiz */
+    .quiz-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 48px 0; }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-badge { background: #0891b2; color: white; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .quiz-header h3 { font-size: 1rem; font-weight: 700; }
+
+    .question { margin-bottom: 28px; }
+    .question p { font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none; }
+    .option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option.correct { border-color: var(--success); background: var(--success-light); }
+    .option.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option.disabled { cursor: default; }
+    .option.disabled:hover { border-color: var(--border); background: transparent; }
+    .option.correct.disabled:hover { border-color: var(--success); background: var(--success-light); }
+    .option.wrong.disabled:hover { border-color: var(--danger); background: var(--danger-light); }
+
+    .option-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    .feedback { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.875rem; line-height: 1.5; }
+    .feedback.correct-fb { background: var(--success-light); color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback.wrong-fb { background: var(--danger-light); color: #7f1d1d; border: 1px solid #fecaca; }
+    .feedback.show { display: block; }
+
+    .quiz-score { display: none; background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; margin-top: 16px; }
+    .quiz-score.show { display: block; }
+    .quiz-score strong { color: var(--accent); }
+
+    .lesson-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; }
+    .nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #6d28d9; border-color: #6d28d9; color: white; }
+
+    .teacher-box { background: #ecfeff; border: 1px solid #a5f3fc; border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem; }
+    .teacher-box h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #0891b2; margin-bottom: 8px; }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    @media (max-width: 520px) { .mode-grid { grid-template-columns: 1fr; } }
+    @media print { .quiz-section, .lesson-nav, .teacher-box { display: none; } body { font-size: 14px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 1</span>
+    <span>⏱ ~12 minutes</span>
+    <span>· Reading Comprehension</span>
+  </div>
+
+  <h1>The Retention Gap</h1>
+  <p class="tagline">Why you can read a whole chapter and remember almost nothing — and what to do before you even start reading.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Why passive reading produces almost zero long-term retention</li>
+      <li>The key difference between reading and active reading</li>
+      <li>The SQ3R method — and specifically the two steps that happen <em>before</em> you read</li>
+      <li>How to prime your brain to retain what it's about to read</li>
+    </ul>
+  </div>
+
+  <h2>The uncomfortable truth about reading</h2>
+
+  <p>You've probably had this experience: you finish a chapter, close the book, and feel like you understood it. Then someone asks you what it was about. And you can barely say.</p>
+
+  <p>This isn't a memory problem. It's a reading problem. Most reading is passive — your eyes move across words, your brain processes the surface meaning, but nothing deeper happens. Without active engagement, the material never forms a durable memory. <cite>(<a href="https://ucc.vt.edu/academic_support/study_skills_information/sq3r_reading-study_system.html" target="_blank">Virginia Tech University Counseling Center</a>)</cite></p>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="num">~10%</div>
+      <div class="label">of what you passively read is retained after 72 hours</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">3×</div>
+      <div class="label">more retained when you read with a question in mind vs. without</div>
+    </div>
+  </div>
+
+  <p>The gap between what you read and what you retain is called the <strong>retention gap</strong>. Closing it doesn't require reading slower. It requires reading differently — specifically, reading with your brain actively engaged before, during, and after.</p>
+
+  <h2>Passive vs. active reading</h2>
+
+  <p>The difference is not about speed or effort. It's about whether your brain is asking questions or just receiving.</p>
+
+  <div class="mode-grid">
+    <div class="mode-card passive">
+      <h4>Passive reading</h4>
+      <ul>
+        <li>Start at page 1 and read through</li>
+        <li>Highlight things that seem important</li>
+        <li>No questions before you start</li>
+        <li>Finish and feel like you "know" it</li>
+        <li>Forget most of it within 2 days</li>
+      </ul>
+    </div>
+    <div class="mode-card active">
+      <h4>Active reading</h4>
+      <ul>
+        <li>Survey the structure before reading</li>
+        <li>Form questions you expect it to answer</li>
+        <li>Read to find answers, not just words</li>
+        <li>Pause and recite what you just read</li>
+        <li>Review soon after — while it's fresh</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>Active reading recruits more cognitive resources. Your brain isn't just a receiver — it's hunting for answers. And brains that hunt retain more. <cite>(<a href="https://www.learningscientists.org/elaborative-interrogation" target="_blank">The Learning Scientists — Elaborative Interrogation</a>)</cite></p>
+
+  <h2>The SQ3R method: a framework for active reading</h2>
+
+  <p>SQ3R was developed by educational psychologist Francis P. Robinson in 1941 — and it has been validated by decades of research since. <cite>(<a href="https://fs.blog/how-to-read-a-book/" target="_blank">Farnam Street</a>)</cite> It stands for:</p>
+
+  <div class="steps">
+    <div class="step highlight">
+      <div class="step-letter">S</div>
+      <div class="step-body">
+        <strong>Survey</strong>
+        <p>Before reading, scan the whole thing. Headings, subheadings, intro, conclusion, summary, figures. Build the skeleton in 2–3 minutes. You're not reading yet — you're building a map.</p>
+      </div>
+    </div>
+    <div class="step highlight">
+      <div class="step-letter">Q</div>
+      <div class="step-body">
+        <strong>Question</strong>
+        <p>Turn every heading into a question. "Types of Memory" becomes "What are the types of memory and how do they differ?" Now you have a purpose. Your brain reads to answer questions, not consume words.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-letter">R</div>
+      <div class="step-body">
+        <strong>Read</strong>
+        <p>Now read the section — hunting for answers to your questions. You're not reading every word equally. You're scanning for what matters.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-letter">R</div>
+      <div class="step-body">
+        <strong>Recite</strong>
+        <p>After each section, close the material and answer your question from memory. Out loud, or in writing. This is active recall — and it's where the retention happens.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-letter">R</div>
+      <div class="step-body">
+        <strong>Review</strong>
+        <p>At the end, review all your questions and answers. Then review again in 24 hours. This locks in the forgetting curve gains from spaced repetition.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout key">
+    <strong>This lesson focuses on S and Q only</strong>
+    The Survey and Question steps are the highest-leverage part of SQ3R — and they happen before you read a single word. Master these first. Lessons 2 and 3 cover the rest.
+  </div>
+
+  <h2>How to Survey in 3 minutes</h2>
+
+  <p>Before your next reading session, do this:</p>
+
+  <ol style="padding-left: 24px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; font-size: 0.95rem;">
+    <li>Read the title and introduction (first 1–2 paragraphs only)</li>
+    <li>Read all the headings and subheadings</li>
+    <li>Read the first sentence of each section</li>
+    <li>Read the conclusion or summary</li>
+    <li>Look at any figures, charts, or callouts</li>
+  </ol>
+
+  <p>You now have the skeleton. You know roughly what this piece covers, how it's structured, and what the main argument probably is. That skeleton is what your brain will hang the details on as you read.</p>
+
+  <h2>How to Question</h2>
+
+  <p>Take each heading and turn it into a question. The transformation is usually simple:</p>
+
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 20px 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); background: var(--tag-bg); padding: 10px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">
+      <span>Heading</span><span>Your question</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); padding: 12px 16px; font-size: 0.9rem; gap: 16px;">
+      <span style="color: var(--text-muted);">The Causes of Inflation</span>
+      <span>What are the causes of inflation?</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border); padding: 12px 16px; font-size: 0.9rem; gap: 16px;">
+      <span style="color: var(--text-muted);">Why Habits Are Hard to Break</span>
+      <span>Why are habits hard to break — what makes them stick?</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; padding: 12px 16px; font-size: 0.9rem; gap: 16px;">
+      <span style="color: var(--text-muted);">Types of Learning</span>
+      <span>What types of learning exist and how do they differ?</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Your one action from this lesson</strong>
+    Next time you pick up a book or article, spend 3 minutes surveying before you read a single paragraph. Then write down one question per heading. That's it. You'll notice the difference in how much you retain — even without changing anything else.
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <span class="quiz-badge">Self-Check</span>
+      <h3>Test what you just learned</h3>
+    </div>
+
+    <div class="question" id="q1">
+      <p>1. What is the "retention gap"?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">A</span> The difference between how fast you read and how fast you should read</div>
+        <div class="option" onclick="answer(this,'q1',true)"><span class="option-letter">B</span> The gap between what you read and what you actually retain — caused by passive reading</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">C</span> The time delay between reading and taking notes</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">D</span> The difference between what you read in a lesson and what's on the exam</div>
+      </div>
+      <div class="feedback correct-fb" id="q1-correct">Exactly. Passive reading lets information in but doesn't form durable memories. The gap between "read it" and "remember it" is the retention gap — and closing it requires active engagement.</div>
+      <div class="feedback wrong-fb" id="q1-wrong">The retention gap is specifically the gap between what you've read and what you actually retain afterward. It's caused by passive reading — moving your eyes over words without active cognitive engagement.</div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. In SQ3R, what is the purpose of the "Survey" step?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">A</span> To decide whether the material is worth reading at all</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">B</span> To read the first chapter quickly before slowing down</div>
+        <div class="option" onclick="answer(this,'q2',true)"><span class="option-letter">C</span> To build a mental skeleton of the material before reading — headings, structure, intro, conclusion</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">D</span> To highlight the most important sentences so you can focus on them</div>
+      </div>
+      <div class="feedback correct-fb" id="q2-correct">Correct. Surveying gives your brain a map to hang the details on. When you read with a skeleton already in mind, new information has somewhere to attach — which is what makes it stick.</div>
+      <div class="feedback wrong-fb" id="q2-wrong">The Survey step is about building a mental skeleton — scanning headings, intro, conclusion, and figures before reading a word of the main text. This primes your brain to organise incoming information as you read.</div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. How should you convert the heading "The Effects of Sleep Deprivation" into a Question step?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">A</span> Write "Sleep deprivation" as a keyword in the margin</div>
+        <div class="option" onclick="answer(this,'q3',true)"><span class="option-letter">B</span> Ask: "What are the effects of sleep deprivation — and how significant are they?"</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">C</span> Highlight the heading in yellow so you pay more attention when you reach it</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">D</span> Read that section first, before all others, since it's the most important-sounding</div>
+      </div>
+      <div class="feedback correct-fb" id="q3-correct">Yes. Turning a heading into a genuine question gives your reading a purpose. You're no longer consuming words — you're hunting for an answer. That shift in intent is what drives retention.</div>
+      <div class="feedback wrong-fb" id="q3-wrong">The Question step means literally turning the heading into a question: "What are the effects of sleep deprivation?" This gives your brain a target. You read to answer questions, not to passively absorb words.</div>
+    </div>
+
+    <div id="score-box" class="quiz-score"></div>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Something unclear? Come back to this chat. Good starters: <em>"How do I Survey something with no headings, like a novel?"</em> or <em>"What if I don't know enough to write a good question before I read?"</em> or <em>"How long should the Survey step actually take?"</em></p>
+  </div>
+
+  <div class="lesson-nav">
+    <span style="color: var(--text-muted); font-size: 0.875rem;">You're on Lesson 1</span>
+    <a href="0002-read-recite-review.html" class="nav-btn primary">Next: Read, Recite, Review →</a>
+  </div>
+
+</div>
+<script>
+  let answers = {}, totalQ = 3;
+  function answer(el, qId, isCorrect) {
+    if (answers[qId] !== undefined) return;
+    answers[qId] = isCorrect;
+    el.parentElement.querySelectorAll('.option').forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    document.getElementById(qId + (isCorrect ? '-correct' : '-wrong')).classList.add('show');
+    if (Object.keys(answers).length === totalQ) {
+      const score = Object.values(answers).filter(Boolean).length;
+      const box = document.getElementById('score-box');
+      box.classList.add('show');
+      if (score === totalQ) {
+        box.innerHTML = `<strong>3/3 — Perfect.</strong> You've got the foundation. Move to Lesson 2 to learn the Read, Recite, and Review steps — where the real retention happens.`;
+      } else if (score >= 2) {
+        box.innerHTML = `<strong>${score}/3 — Good.</strong> Re-read the section you got wrong, then continue.`;
+      } else {
+        box.innerHTML = `<strong>${score}/3 — Review needed.</strong> Go back through the lesson before moving on.`;
+      }
+    }
+  }
+</script>
+</body>
+</html>

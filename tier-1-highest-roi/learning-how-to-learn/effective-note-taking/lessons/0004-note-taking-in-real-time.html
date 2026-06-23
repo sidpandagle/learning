@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4 — Note-Taking in Real Time</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --border: #e5e7eb;
+      --text: #1a1a1a; --text-muted: #6b7280;
+      --accent: #0891b2; --accent-light: #ecfeff; --accent-border: #a5f3fc;
+      --success: #16a34a; --success-light: #f0fdf4;
+      --danger: #dc2626; --danger-light: #fef2f2;
+      --tag-bg: #f3f4f6;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px; }
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 13px; color: var(--text-muted); }
+    .lesson-number { background: var(--accent); color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 12px; padding: 20px 24px; margin-bottom: 48px; }
+    .learn-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 { font-size: 1.3rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border); }
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem; }
+    .callout.key { border-left-color: #7c3aed; background: #faf5ff; }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    /* Two-pass visual */
+    .two-pass { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .pass-card { border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+    .pass-card-header { padding: 10px 16px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    .pass-card.pass-1 .pass-card-header { background: #fff7ed; color: #d97706; border-bottom: 1px solid #fed7aa; }
+    .pass-card.pass-2 .pass-card-header { background: var(--success-light); color: var(--success); border-bottom: 1px solid #bbf7d0; }
+    .pass-card-body { padding: 14px 16px; font-size: 0.87rem; color: #374151; line-height: 1.6; }
+    .pass-card-body ul { list-style: none; display: flex; flex-direction: column; gap: 5px; padding-left: 0; }
+    .pass-card.pass-1 .pass-card-body li::before { content: "→ "; color: #d97706; }
+    .pass-card.pass-2 .pass-card-body li::before { content: "✓ "; color: var(--success); }
+
+    /* Meeting capture table */
+    .capture-table { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 24px 0; }
+    .capture-table-header { display: grid; grid-template-columns: 2fr 3fr; background: var(--tag-bg); border-bottom: 1px solid var(--border); padding: 10px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+    .capture-row { display: grid; grid-template-columns: 2fr 3fr; border-bottom: 1px solid var(--border); }
+    .capture-row:last-child { border-bottom: none; }
+    .capture-type { padding: 12px 16px; font-size: 0.85rem; font-weight: 700; color: var(--accent); border-right: 1px solid var(--border); display: flex; align-items: center; }
+    .capture-example { padding: 12px 16px; font-size: 0.85rem; color: #374151; font-family: 'Courier New', monospace; line-height: 1.5; }
+
+    /* Shorthand table */
+    .shorthand { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0; }
+    .sh-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; }
+    .sh-sym { font-size: 1rem; font-weight: 800; color: var(--accent); width: 24px; text-align: center; flex-shrink: 0; }
+    .sh-mean { font-size: 0.82rem; color: #374151; }
+
+    /* 5-min process */
+    .process-steps { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 20px 0; }
+    .process-step { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .process-step:last-child { border-bottom: none; }
+    .process-time { font-size: 0.75rem; font-weight: 700; color: white; background: var(--accent); padding: 2px 8px; border-radius: 20px; flex-shrink: 0; margin-top: 2px; }
+    .process-step p { font-size: 0.9rem; color: #374151; margin-bottom: 0; }
+
+    /* Quiz */
+    .quiz-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 48px 0; }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-badge { background: #7c3aed; color: white; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .quiz-header h3 { font-size: 1rem; font-weight: 700; }
+    .question { margin-bottom: 28px; }
+    .question p { font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none; }
+    .option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option.correct { border-color: var(--success); background: var(--success-light); }
+    .option.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option.disabled { cursor: default; }
+    .option.disabled:hover { border-color: var(--border); background: transparent; }
+    .option.correct.disabled:hover { border-color: var(--success); background: var(--success-light); }
+    .option.wrong.disabled:hover { border-color: var(--danger); background: var(--danger-light); }
+    .option-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .feedback { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.875rem; line-height: 1.5; }
+    .feedback.correct-fb { background: var(--success-light); color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback.wrong-fb { background: var(--danger-light); color: #7f1d1d; border: 1px solid #fecaca; }
+    .feedback.show { display: block; }
+    .quiz-score { display: none; background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; margin-top: 16px; }
+    .quiz-score.show { display: block; }
+    .quiz-score strong { color: var(--accent); }
+
+    .lesson-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; }
+    .nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .nav-btn.primary:hover { background: #0e7490; border-color: #0e7490; color: white; }
+
+    .teacher-box { background: #fdf4ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 20px 24px; margin: 48px 0 24px; font-size: 0.9rem; }
+    .teacher-box h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7c3aed; margin-bottom: 8px; }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    @media (max-width: 520px) { .two-pass { grid-template-columns: 1fr; } .shorthand { grid-template-columns: 1fr 1fr; } .capture-table-header, .capture-row { grid-template-columns: 1fr; } .capture-type { border-right: none; border-bottom: 1px solid var(--border); } }
+    @media print { .quiz-section, .lesson-nav, .teacher-box { display: none; } body { font-size: 14px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 4</span>
+    <span>⏱ ~11 minutes</span>
+    <span>· Effective Note-Taking</span>
+  </div>
+
+  <h1>Note-Taking in Real Time</h1>
+  <p class="tagline">Meetings, videos, and talks don't wait for you to think. Here's how to capture what matters when you can't slow down.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Why trying to capture everything in real time always fails</li>
+      <li>The two-pass approach: capture fast, process after</li>
+      <li>Exactly what to capture in meetings — and what to ignore</li>
+      <li>A shorthand toolkit for faster note-taking</li>
+      <li>The 5-minute post-meeting process that turns raw notes into useful ones</li>
+    </ul>
+  </div>
+
+  <h2>The real-time problem</h2>
+
+  <p>Books let you pause. Meetings, videos, and live talks don't. Information arrives at a fixed pace — often faster than you can write, understand, and process simultaneously. Most people respond to this by trying to capture everything, and end up with notes that are simultaneously too long and too thin to be useful.</p>
+
+  <p>The solution isn't faster writing. It's a two-pass system: capture first (fast, messy, incomplete), process after (slow, clean, deliberate).</p>
+
+  <div class="two-pass">
+    <div class="pass-card pass-1">
+      <div class="pass-card-header">Pass 1: Capture (during)</div>
+      <div class="pass-card-body">
+        <ul>
+          <li>Speed over neatness</li>
+          <li>Fragments and shorthand OK</li>
+          <li>Mark unclear spots with ?</li>
+          <li>Don't re-read or edit yet</li>
+          <li>Just keep up</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pass-card pass-2">
+      <div class="pass-card-header">Pass 2: Process (after)</div>
+      <div class="pass-card-body">
+        <ul>
+          <li>Fill in gaps while fresh</li>
+          <li>Add cues and connections</li>
+          <li>Write a 2-sentence summary</li>
+          <li>Extract decisions and actions</li>
+          <li>Delete what wasn't useful</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout key">
+    <strong>The key insight</strong>
+    Pass 1 and Pass 2 require completely different mental modes. Don't try to do both at once — that's the mistake that produces pages of notes you never use. Capture messily. Process deliberately. Always separate.
+  </div>
+
+  <h2>What to capture in meetings</h2>
+
+  <p>Most meeting notes are bloated because people record context, conversation, and pleasantries instead of output. A meeting produces three types of valuable content — everything else is noise.</p>
+
+  <div class="capture-table">
+    <div class="capture-table-header">
+      <span>What to capture</span>
+      <span>Example</span>
+    </div>
+    <div class="capture-row">
+      <div class="capture-type">Decisions</div>
+      <div class="capture-example">DEC: shipping Thursday, not Friday. Budget approved at £5k.</div>
+    </div>
+    <div class="capture-row">
+      <div class="capture-type">Actions (who/what/when)</div>
+      <div class="capture-example">ACT: [Sarah] send revised brief → [Mon]. [Me] review specs → [Wed].</div>
+    </div>
+    <div class="capture-row">
+      <div class="capture-type">Surprising statements</div>
+      <div class="capture-example">! "70% of support tickets are about onboarding" — hadn't realised</div>
+    </div>
+  </div>
+
+  <p>That's it. Context you already know, process discussion, and background information don't need to be captured — you were there. The only things that need to survive the meeting are things you'd otherwise forget or dispute later.</p>
+
+  <p>Use a simple prefix system: <strong>DEC:</strong> for decisions, <strong>ACT:</strong> for action items, <strong>!</strong> for surprises. Scan for these prefixes when processing — everything unmarked can be quickly reviewed and deleted.</p>
+
+  <h2>A shorthand toolkit</h2>
+
+  <p>Good shorthand speeds up capture without reducing quality. These symbols are readable by any future version of you:</p>
+
+  <div class="shorthand">
+    <div class="sh-item"><span class="sh-sym">→</span><span class="sh-mean">leads to / causes</span></div>
+    <div class="sh-item"><span class="sh-sym">∴</span><span class="sh-mean">therefore</span></div>
+    <div class="sh-item"><span class="sh-sym">∵</span><span class="sh-mean">because</span></div>
+    <div class="sh-item"><span class="sh-sym">≈</span><span class="sh-mean">approximately</span></div>
+    <div class="sh-item"><span class="sh-sym">vs.</span><span class="sh-mean">compared to</span></div>
+    <div class="sh-item"><span class="sh-sym">↑↓</span><span class="sh-mean">increase / decrease</span></div>
+    <div class="sh-item"><span class="sh-sym">w/</span><span class="sh-mean">with</span></div>
+    <div class="sh-item"><span class="sh-sym">w/o</span><span class="sh-mean">without</span></div>
+    <div class="sh-item"><span class="sh-sym">?</span><span class="sh-mean">unclear — follow up</span></div>
+    <div class="sh-item"><span class="sh-sym">!</span><span class="sh-mean">surprising / important</span></div>
+    <div class="sh-item"><span class="sh-sym">*</span><span class="sh-mean">return to this</span></div>
+    <div class="sh-item"><span class="sh-sym">→me</span><span class="sh-mean">action for me</span></div>
+  </div>
+
+  <p>You don't need all of these — pick 5–6 you'll actually use and stick to them. Consistency matters more than completeness.</p>
+
+  <h2>The 5-minute post-meeting process</h2>
+
+  <p>The most valuable thing you can do immediately after any meeting or talk is spend 5 minutes processing your notes. Context evaporates fast — what seems obvious now will be cryptic tomorrow.</p>
+
+  <div class="process-steps">
+    <div class="process-step">
+      <span class="process-time">1 min</span>
+      <p><strong>Fill gaps.</strong> Find every "?" and complete the thought while you still remember what you meant. Add context that only makes sense because you were in the room.</p>
+    </div>
+    <div class="process-step">
+      <span class="process-time">2 min</span>
+      <p><strong>Extract actions and decisions.</strong> Copy all DEC: and ACT: items to wherever you track tasks — your to-do app, project doc, or calendar. Don't leave them buried in notes.</p>
+    </div>
+    <div class="process-step">
+      <span class="process-time">1 min</span>
+      <p><strong>Write one summary sentence.</strong> "The main outcome of this meeting was…" If you can't write it, the meeting may not have had one — worth noting either way.</p>
+    </div>
+    <div class="process-step">
+      <span class="process-time">1 min</span>
+      <p><strong>Delete the rest.</strong> Strike out everything that wasn't a decision, action, or surprise. What's left is your real note.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Your one action from this lesson</strong>
+    In your next meeting or video, use the prefix system: mark DEC:, ACT:, and ! as you go. Don't try to write everything else. Immediately after, spend 5 minutes on the post-meeting process. Compare how much useful information you have vs. your usual approach.
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <span class="quiz-badge">Self-Check</span>
+      <h3>Test what you just learned</h3>
+    </div>
+
+    <div class="question" id="q1">
+      <p>1. What is the core idea behind the two-pass approach to real-time note-taking?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">A</span> Write notes twice — once during and once from memory afterward — to reinforce retention</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">B</span> One person captures during the meeting while another processes immediately after</div>
+        <div class="option" onclick="answer(this,'q1',true)"><span class="option-letter">C</span> Separate fast, messy capture from slow, deliberate processing — because they require different mental modes that can't be done simultaneously</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">D</span> Take notes on paper first, then type them up digitally for storage</div>
+      </div>
+      <div class="feedback correct-fb" id="q1-correct">Exactly. Capture and process are cognitively incompatible in real time — you can't deeply understand something while simultaneously trying to keep up with incoming information. Separate them.</div>
+      <div class="feedback wrong-fb" id="q1-wrong">The two-pass approach separates capture from processing because they require different mental modes. Trying to do both simultaneously produces notes that are simultaneously too long (you captured too much) and too thin (you didn't process any of it).</div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. In a meeting, a colleague spends 10 minutes explaining the background context of a project you've worked on for months. What should your notes contain?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">A</span> A detailed summary of the background — it might be useful to have a written record</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">B</span> The most important 3–4 sentences from the background explanation</div>
+        <div class="option" onclick="answer(this,'q2',true)"><span class="option-letter">C</span> Nothing from that section — you already know the background, and no decision, action, or surprise occurred</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">D</span> A note that "background was discussed" to log that it happened</div>
+      </div>
+      <div class="feedback correct-fb" id="q2-correct">Correct. You were there, and you already knew the context. Notes should capture what you'd otherwise forget or dispute — not what you already know. Skip the background entirely.</div>
+      <div class="feedback wrong-fb" id="q2-wrong">If you already know the background and no decision, action, or surprise came from that section — skip it completely. Notes are for what you'd otherwise forget or dispute later, not a transcript of what was said.</div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. Why should you do the 5-minute post-meeting process immediately after the meeting ends?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">A</span> So you can share the notes with the team before they forget what was discussed</div>
+        <div class="option" onclick="answer(this,'q3',true)"><span class="option-letter">B</span> Because meeting context evaporates fast — what makes sense now will be cryptic tomorrow, and gaps can only be filled while the session is fresh</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">C</span> Because it's easier to process notes before your next meeting starts</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">D</span> So you can update your calendar with any dates that were mentioned</div>
+      </div>
+      <div class="feedback correct-fb" id="q3-correct">Yes. Context is in your working memory right after the meeting and gone within hours. Every "?" you left in the notes is answerable right now — and unanswerable tomorrow. Process immediately.</div>
+      <div class="feedback wrong-fb" id="q3-wrong">The reason to process immediately is that meeting context lives in working memory — and working memory clears fast. Every unclear note you had is answerable right now. Wait an hour and those gaps become permanent.</div>
+    </div>
+
+    <div id="score-box" class="quiz-score"></div>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>Something unclear? Come back to this chat. Good starters: <em>"What if I'm the one running the meeting — can I still take notes?"</em> or <em>"How should I handle action items if we already have a project management tool?"</em> or <em>"What about video calls I can rewatch?"</em></p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0003-note-taking-for-books.html" class="nav-btn">← Lesson 3</a>
+    <a href="0005-processing-your-notes.html" class="nav-btn primary">Next: Processing Your Notes →</a>
+  </div>
+
+</div>
+<script>
+  let answers = {}, totalQ = 3;
+  function answer(el, qId, isCorrect) {
+    if (answers[qId] !== undefined) return;
+    answers[qId] = isCorrect;
+    el.parentElement.querySelectorAll('.option').forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    document.getElementById(qId + (isCorrect ? '-correct' : '-wrong')).classList.add('show');
+    if (Object.keys(answers).length === totalQ) {
+      const score = Object.values(answers).filter(Boolean).length;
+      const box = document.getElementById('score-box');
+      box.classList.add('show');
+      if (score === totalQ) {
+        box.innerHTML = `<strong>3/3 — Perfect.</strong> Real-time capture sorted. Lesson 5 covers the step most people completely skip: processing raw notes into something retrievable.`;
+      } else if (score >= 2) {
+        box.innerHTML = `<strong>${score}/3 — Good.</strong> Re-read the section you got wrong, then move on.`;
+      } else {
+        box.innerHTML = `<strong>${score}/3 — Review needed.</strong> The two-pass concept is central to everything from here. Go back through the lesson.`;
+      }
+    }
+  }
+</script>
+</body>
+</html>

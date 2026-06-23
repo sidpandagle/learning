@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 6 — Your Note-Taking System</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafaf8; --surface: #ffffff; --border: #e5e7eb;
+      --text: #1a1a1a; --text-muted: #6b7280;
+      --accent: #0891b2; --accent-light: #ecfeff; --accent-border: #a5f3fc;
+      --success: #16a34a; --success-light: #f0fdf4;
+      --danger: #dc2626; --danger-light: #fef2f2;
+      --tag-bg: #f3f4f6;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 17px; }
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 96px; }
+
+    .lesson-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-size: 13px; color: var(--text-muted); }
+    .lesson-number { background: var(--accent); color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .final-badge { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+
+    h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+    .tagline { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 40px; line-height: 1.5; }
+
+    .learn-box { background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 12px; padding: 20px 24px; margin-bottom: 48px; }
+    .learn-box h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px; }
+    .learn-box ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .learn-box li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+    h2 { font-size: 1.3rem; font-weight: 700; margin-top: 48px; margin-bottom: 16px; padding-top: 16px; border-top: 2px solid var(--border); }
+    p { margin-bottom: 20px; }
+    a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    .callout { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; font-size: 0.95rem; }
+    .callout.key { border-left-color: #7c3aed; background: #faf5ff; }
+    .callout.success { border-left-color: var(--success); background: var(--success-light); }
+    .callout strong { display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    /* Tool options */
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+    .tool-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; }
+    .tool-card .tool-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .tool-card .tool-best { font-size: 0.8rem; color: var(--accent); margin-bottom: 8px; }
+    .tool-card .tool-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* Folder structure */
+    .folder-tree { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin: 20px 0; font-family: 'Courier New', monospace; font-size: 0.88rem; line-height: 1.9; color: #374151; }
+    .folder-tree .folder { font-weight: 700; color: var(--accent); }
+    .folder-tree .file { color: #374151; }
+    .folder-tree .indent { padding-left: 20px; }
+    .folder-tree .comment { color: var(--text-muted); font-style: italic; font-family: system-ui; font-size: 0.8rem; }
+
+    /* Weekly review */
+    .review-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 20px 0; }
+    .review-item { display: flex; align-items: flex-start; gap: 14px; padding: 13px 16px; border-bottom: 1px solid var(--border); }
+    .review-item:last-child { border-bottom: none; }
+    .review-time { background: var(--accent-light); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; margin-top: 3px; }
+    .review-item p { font-size: 0.9rem; color: #374151; margin-bottom: 0; }
+
+    /* Three tests */
+    .test-grid { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+    .test-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+    .test-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .test-item p { font-size: 0.9rem; color: #374151; margin-bottom: 0; }
+    .test-item strong { display: block; margin-bottom: 3px; }
+
+    /* Course complete */
+    .complete-box { background: var(--success-light); border: 1.5px solid #bbf7d0; border-radius: 14px; padding: 24px 28px; margin: 48px 0 24px; }
+    .complete-box h3 { font-size: 1rem; font-weight: 800; color: var(--success); margin-bottom: 12px; }
+    .complete-box ul { list-style: none; display: flex; flex-direction: column; gap: 7px; font-size: 0.92rem; color: #14532d; }
+    .complete-box li::before { content: "✓ "; font-weight: 700; }
+
+    /* Quiz */
+    .quiz-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin: 48px 0; }
+    .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .quiz-badge { background: #7c3aed; color: white; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+    .quiz-header h3 { font-size: 1rem; font-weight: 700; }
+    .question { margin-bottom: 28px; }
+    .question p { font-weight: 600; margin-bottom: 12px; font-size: 0.95rem; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: border-color 0.15s, background 0.15s; user-select: none; }
+    .option:hover { border-color: var(--accent); background: var(--accent-light); }
+    .option.correct { border-color: var(--success); background: var(--success-light); }
+    .option.wrong { border-color: var(--danger); background: var(--danger-light); }
+    .option.disabled { cursor: default; }
+    .option.disabled:hover { border-color: var(--border); background: transparent; }
+    .option.correct.disabled:hover { border-color: var(--success); background: var(--success-light); }
+    .option.wrong.disabled:hover { border-color: var(--danger); background: var(--danger-light); }
+    .option-letter { width: 22px; height: 22px; border-radius: 50%; background: var(--tag-bg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .feedback { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.875rem; line-height: 1.5; }
+    .feedback.correct-fb { background: var(--success-light); color: #14532d; border: 1px solid #bbf7d0; }
+    .feedback.wrong-fb { background: var(--danger-light); color: #7f1d1d; border: 1px solid #fecaca; }
+    .feedback.show { display: block; }
+    .quiz-score { display: none; background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; margin-top: 16px; }
+    .quiz-score.show { display: block; }
+    .quiz-score strong { color: var(--accent); }
+
+    .lesson-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; }
+    .nav-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--border); color: var(--text); transition: border-color 0.15s; }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .nav-btn.primary { background: var(--success); border-color: var(--success); color: white; }
+    .nav-btn.primary:hover { background: #15803d; border-color: #15803d; color: white; }
+
+    .teacher-box { background: #fdf4ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 20px 24px; margin: 24px 0; font-size: 0.9rem; }
+    .teacher-box h3 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7c3aed; margin-bottom: 8px; }
+
+    cite { font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+
+    @media (max-width: 520px) { .tool-grid { grid-template-columns: 1fr; } }
+    @media print { .quiz-section, .lesson-nav, .teacher-box { display: none; } body { font-size: 14px; } }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="lesson-meta">
+    <span class="lesson-number">Lesson 6</span>
+    <span class="final-badge">Final Lesson</span>
+    <span>⏱ ~12 minutes</span>
+  </div>
+
+  <h1>Your Note-Taking System</h1>
+  <p class="tagline">All the pieces exist. Now build the system that makes them automatic — and know when it's actually working.</p>
+
+  <div class="learn-box">
+    <h3>What you'll learn</h3>
+    <ul>
+      <li>Where to keep notes — and why one place beats many</li>
+      <li>The minimum viable folder structure that works for any context</li>
+      <li>The 10-minute weekly review that keeps your system alive</li>
+      <li>Three tests to know if your system is genuinely working</li>
+      <li>How to make note-taking stick as a habit, not a chore</li>
+    </ul>
+  </div>
+
+  <h2>The tool trap</h2>
+
+  <p>Before building your system, one warning: most people spend more energy choosing and switching tools than they spend taking notes. Notion vs. Obsidian vs. Roam vs. a paper notebook. This is a distraction.</p>
+
+  <p>The tool is nearly irrelevant. The practices — Cornell structure, the pause, processing levels, connections — work identically across all of them. Choose one tool and stay there for at least 3 months before reconsidering.</p>
+
+  <div class="tool-grid">
+    <div class="tool-card">
+      <div class="tool-name">Notion</div>
+      <div class="tool-best">Best for: structured, visual organisation</div>
+      <div class="tool-desc">Flexible databases, good templates. Slightly slower for quick capture. Free tier covers most needs.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Obsidian</div>
+      <div class="tool-best">Best for: linking ideas, long-term depth</div>
+      <div class="tool-desc">Local files, powerful linking, best PKM ecosystem. Steeper learning curve. Free for personal use.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Apple Notes / Notepad</div>
+      <div class="tool-best">Best for: starting immediately</div>
+      <div class="tool-desc">Zero friction. Already installed. Surprisingly capable for Cornell + book summaries. Often underestimated.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Paper notebook</div>
+      <div class="tool-best">Best for: retention and focus</div>
+      <div class="tool-desc">Research suggests handwriting improves retention. No distractions. Cornell works perfectly on paper. Retrieval is harder.</div>
+    </div>
+  </div>
+
+  <div class="callout key">
+    <strong>The recommendation</strong>
+    Start with whatever is least friction — probably something you already use. Build the habits first. Switch tools only if the tool becomes the bottleneck, which is rarely the real problem.
+  </div>
+
+  <h2>A minimal folder structure</h2>
+
+  <p>Over-organising notes is a form of procrastination. You don't need tags, nested folders, and PARA systems from day one. You need three folders:</p>
+
+  <div class="folder-tree">
+    <div class="folder">📁 Notes</div>
+    <div class="indent">
+      <div class="folder">📁 Inbox</div>
+      <div class="indent">
+        <span class="file">All new captures go here first</span><br>
+        <span class="comment">Processed during weekly review</span>
+      </div>
+    </div>
+    <div class="indent">
+      <div class="folder">📁 Reference</div>
+      <div class="indent">
+        <span class="file">Processed notes, book summaries, glossaries</span><br>
+        <span class="comment">Things you'll return to</span>
+      </div>
+    </div>
+    <div class="indent">
+      <div class="folder">📁 Archive</div>
+      <div class="indent">
+        <span class="file">Old notes, completed projects, irrelevant captures</span><br>
+        <span class="comment">Out of sight, not deleted</span>
+      </div>
+    </div>
+  </div>
+
+  <p>Everything enters the Inbox. The weekly review processes Inbox into Reference or Archive. Reference is where your system lives. The Archive keeps things without cluttering your view.</p>
+
+  <p>Add sub-folders inside Reference only when you have 10+ notes on a topic. Don't create structure before you have enough notes to justify it.</p>
+
+  <h2>The 10-minute weekly review</h2>
+
+  <p>Systems die without maintenance. The weekly review is what keeps yours alive. It should take 10 minutes — no more. Do it on the same day each week so it becomes automatic.</p>
+
+  <div class="review-list">
+    <div class="review-item">
+      <span class="review-time">3 min</span>
+      <p><strong>Clear the Inbox.</strong> Process every note in the Inbox: complete any Level 1 gaps, add cues if needed, file to Reference or Archive. Delete anything that didn't survive the week.</p>
+    </div>
+    <div class="review-item">
+      <span class="review-time">3 min</span>
+      <p><strong>Skim Reference notes from this week.</strong> Quickly re-read anything you filed in the last 7 days. Add any missing connections you notice now that you have more distance.</p>
+    </div>
+    <div class="review-item">
+      <span class="review-time">2 min</span>
+      <p><strong>Check for stranded actions.</strong> Any action items from meeting notes that haven't been moved to your task system? Move them now.</p>
+    </div>
+    <div class="review-item">
+      <span class="review-time">2 min</span>
+      <p><strong>Ask one question.</strong> "What's the most useful thing I captured this week?" Spend 2 minutes thinking about where it connects to what you're working on. This habit over time produces genuine insight.
+      </p>
+    </div>
+  </div>
+
+  <h2>Three tests: is your system working?</h2>
+
+  <p>You don't need to track metrics. You need three yes/no tests, run monthly:</p>
+
+  <div class="test-grid">
+    <div class="test-item">
+      <span class="test-icon">🔍</span>
+      <p><strong>The retrieval test.</strong> Think of something you've learned in the last 3 months. Can you find the relevant note in under 2 minutes? If not: your organisation or search is the bottleneck.</p>
+    </div>
+    <div class="test-item">
+      <span class="test-icon">🧠</span>
+      <p><strong>The memory test.</strong> Pick a note from 4 weeks ago. Before reading it, try to recall what it says. If the note surprises you, your processing was insufficient. If it confirms memory, your system is working.</p>
+    </div>
+    <div class="test-item">
+      <span class="test-icon">⚡</span>
+      <p><strong>The friction test.</strong> The next time you want to take a note, notice whether you hesitate. Hesitation means the system is too complex. Notes should feel like zero effort to start.</p>
+    </div>
+  </div>
+
+  <h2>Making it a habit</h2>
+
+  <p>The system you built across these 6 lessons has two main habits to anchor:</p>
+
+  <ol style="padding-left: 24px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; font-size: 0.95rem;">
+    <li><strong>Capture + same-day process.</strong> Every time you finish a learning session (book chapter, meeting, video), you process the same day. Attach it to the end of the session: "The session ends when I've done Level 1 processing."</li>
+    <li><strong>Weekly review.</strong> Attach it to an existing weekly anchor: Friday end-of-day, Sunday morning, Monday startup. Same time, same day. Set a 10-minute calendar block. Protect it.</li>
+  </ol>
+
+  <p>Don't try to do both perfectly from week one. Start with same-day processing. Add the weekly review once that's automatic. Add connections (Level 2) once the review is automatic. Build in layers. <cite>(<a href="https://jamesclear.com/habit-stacking" target="_blank">James Clear — Habit Stacking</a>)</cite></p>
+
+  <div class="callout success">
+    <strong>Your one action from this lesson</strong>
+    Set up your three folders (Inbox / Reference / Archive) in whatever tool you'll use. Move any existing notes into the right folders. Then set a recurring 10-minute block in your calendar for the same time each week. That's your system. Everything else follows from practice.
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-header">
+      <span class="quiz-badge">Final Self-Check</span>
+      <h3>Test what you just learned</h3>
+    </div>
+
+    <div class="question" id="q1">
+      <p>1. You're trying to decide between Notion and Obsidian for your note-taking system. You've spent two hours reading comparisons. What's the most useful thing to do next?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">A</span> Read one more in-depth comparison to make sure you choose the right tool</div>
+        <div class="option" onclick="answer(this,'q1',true)"><span class="option-letter">B</span> Pick one — whichever has least friction — and commit to it for 3 months before reconsidering</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">C</span> Use both in parallel to figure out which fits better over time</div>
+        <div class="option" onclick="answer(this,'q1',false)"><span class="option-letter">D</span> Start with paper until you're confident in the habits, then migrate to digital</div>
+      </div>
+      <div class="feedback correct-fb" id="q1-correct">Correct. Two hours of tool comparison is already too much. The tool is not the bottleneck — the habits are. Pick whichever has least friction and start taking notes today. You can always switch later.</div>
+      <div class="feedback wrong-fb" id="q1-wrong">The tool matters far less than the habits. The practices — Cornell structure, the pause, processing, connections — work in any tool. Pick one with least friction and commit for 3 months. Spending more time comparing tools is procrastination in disguise.</div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. You have 50 processed notes across 8 different topics. Your Reference folder has no sub-folders. Should you add them?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">A</span> Yes — 8 topics is already enough to warrant organised sub-folders</div>
+        <div class="option" onclick="answer(this,'q2',true)"><span class="option-letter">B</span> Only if a specific topic has 10+ notes — don't create structure before the volume justifies it</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">C</span> Yes — sub-folders are always better than one flat folder for retrieval speed</div>
+        <div class="option" onclick="answer(this,'q2',false)"><span class="option-letter">D</span> No — never use sub-folders, rely on search instead</div>
+      </div>
+      <div class="feedback correct-fb" id="q2-correct">Exactly. Create structure when volume demands it, not in anticipation of it. If most topics have 3–5 notes, search is faster than navigating sub-folders. Add sub-folders only when you find yourself scrolling past 10+ notes on a topic looking for the right one.</div>
+      <div class="feedback wrong-fb" id="q2-wrong">Add sub-folders when a topic has 10+ notes — not before. Pre-emptive organisation is overhead that slows you down without providing real benefit. Most digital tools have good search, which is often faster than folder navigation anyway.</div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. You run the "memory test" on a note you took 4 weeks ago and discover it says something you had completely forgotten. What does this tell you?</p>
+      <div class="options">
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">A</span> Your memory is weak — consider taking fewer notes so each one gets more attention</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">B</span> The topic wasn't important enough to remember — archive the note</div>
+        <div class="option" onclick="answer(this,'q3',true)"><span class="option-letter">C</span> Your processing was insufficient — the note captured the idea but didn't consolidate it into memory, likely because you didn't process deeply enough or review it within the forgetting curve window</div>
+        <div class="option" onclick="answer(this,'q3',false)"><span class="option-letter">D</span> The system is working — your notes are storing what your brain can't</div>
+      </div>
+      <div class="feedback correct-fb" id="q3-correct">Correct. A note that surprises you is a note that wasn't processed deeply enough — or that wasn't reviewed within the forgetting curve window. The fix is more deliberate Level 2/3 processing and a first spaced repetition review within a few days of capture.</div>
+      <div class="feedback wrong-fb" id="q3-wrong">If the note surprises you, your processing was insufficient. The goal isn't to have notes store what your memory doesn't — it's to have notes reinforce memory. A good system means the notes remind you of something you almost remember. Complete amnesia means the processing chain broke somewhere.</div>
+    </div>
+
+    <div id="score-box" class="quiz-score"></div>
+  </div>
+
+  <div class="complete-box">
+    <h3>Course complete — Effective Note-Taking</h3>
+    <ul>
+      <li>You know why notes fail and the single principle that fixes it</li>
+      <li>You can take Cornell notes with the right sequence and timing</li>
+      <li>You have a different approach for books (Read → Pause → Note) and for real-time (two-pass capture)</li>
+      <li>You know the three levels of processing — and why most people skip them all</li>
+      <li>You have a minimum viable system: three folders, a weekly review, and three tests to know it's working</li>
+    </ul>
+  </div>
+
+  <div class="teacher-box">
+    <h3>Ask your teacher</h3>
+    <p>You've finished the course — but learning continues. Come back to this chat any time you hit a real-world scenario you're not sure how to handle: <em>"I'm taking notes in a language I'm learning — does the system change?"</em> or <em>"My Inbox has 200 old notes I've never processed — what should I do?"</em> or <em>"I want to connect my notes to my spaced repetition cards — how?"</em></p>
+  </div>
+
+  <div class="lesson-nav">
+    <a href="0005-processing-your-notes.html" class="nav-btn">← Lesson 5</a>
+    <a href="../reference/glossary.html" class="nav-btn primary">View Glossary →</a>
+  </div>
+
+</div>
+<script>
+  let answers = {}, totalQ = 3;
+  function answer(el, qId, isCorrect) {
+    if (answers[qId] !== undefined) return;
+    answers[qId] = isCorrect;
+    el.parentElement.querySelectorAll('.option').forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+    document.getElementById(qId + (isCorrect ? '-correct' : '-wrong')).classList.add('show');
+    if (Object.keys(answers).length === totalQ) {
+      const score = Object.values(answers).filter(Boolean).length;
+      const box = document.getElementById('score-box');
+      box.classList.add('show');
+      if (score === totalQ) {
+        box.innerHTML = `<strong>3/3 — Perfect.</strong> You've completed the Effective Note-Taking course. The system is built — now it just needs to be used. Start with one note, today.`;
+      } else if (score >= 2) {
+        box.innerHTML = `<strong>${score}/3 — Almost there.</strong> Re-read the section you got wrong — then go set up your three folders and weekly review block. You're done.`;
+      } else {
+        box.innerHTML = `<strong>${score}/3 — Review needed.</strong> Go back through the lesson. The system design and three tests are the practical output of this whole course.`;
+      }
+    }
+  }
+</script>
+</body>
+</html>
